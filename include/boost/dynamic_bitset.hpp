@@ -17,6 +17,8 @@
 // - Added __GNUC__ to compilers that cannot handle the constructor from basic_string. [JGS]
 // - corrected to_block_range [GP]
 // - corrected from_block_range [GP]
+// - Removed __GNUC__ from compilers that cannot handle the constructor
+//     from basic_string and added the workaround suggested by GP. [JGS]
 
 #ifndef BOOST_DYNAMIC_BITSET_HPP
 #define BOOST_DYNAMIC_BITSET_HPP
@@ -173,9 +175,7 @@ public:
                const Allocator& alloc = Allocator());
 
     // from string
-#if defined(BOOST_OLD_IOSTREAMS) || defined(__BORLANDC__) || defined(__GNUC__)
-    // The appearance of __GNUC__ in the above #if is due to a bug in g++
-    // concerning the expression std::basic_string<CharT, Traits, Alloc>::npos. -JGS
+#if defined(BOOST_OLD_IOSTREAMS) || defined(__BORLANDC__)
     explicit
     dynamic_bitset(const std::string& s,
                std::string::size_type pos = 0, 
@@ -184,12 +184,14 @@ public:
         : detail::dynamic_bitset_base<Block, Allocator>
             (std::min(n, s.size() - pos), alloc)
 #else
+    // The parenthesis around std::basic_string<CharT, Traits, Alloc>::npos
+    // in the code below are to avoid a g++ 3.2 bug. -JGS
     template <typename CharT, typename Traits, typename Alloc>
     explicit
     dynamic_bitset(const std::basic_string<CharT, Traits, Alloc>& s, 
         typename std::basic_string<CharT, Traits, Alloc>::size_type pos = 0, 
         typename std::basic_string<CharT, Traits, Alloc>::size_type n 
-            = std::basic_string<CharT, Traits, Alloc>::npos,
+            = (std::basic_string<CharT, Traits, Alloc>::npos),
         const Allocator& alloc = Allocator())
         : detail::dynamic_bitset_base<Block, Allocator>
             (std::min(n, s.size() - pos), alloc)
