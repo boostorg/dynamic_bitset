@@ -40,8 +40,7 @@
 #include "boost/dynamic_bitset_fwd.hpp" //G.P.S.
 #include "boost/detail/dynamic_bitset.hpp"
 
-#if defined (__STL_CONFIG_H) && (!defined (__SGI_STL_PORT) ||                  \
-                                  defined (__STL_USE_NEW_IOSTREAMS) ) /* old sgi */
+#if defined (__STL_CONFIG_H) && !defined (__STL_USE_NEW_IOSTREAMS)
 #define BOOST_OLD_IOSTREAMS
 #endif
 
@@ -314,10 +313,13 @@ public:
     friend void to_block_range(const dynamic_bitset<B, A>& b, 
                                BlockOutputIterator result);
 
+    template <typename BlockIterator, typename B, typename A>
+    friend void from_block_range(BlockIterator first, BlockIterator last,
+                                 dynamic_bitset<B, A>& result);
+
     template <typename B, typename A, typename CharT, typename Alloc>
     friend void dump_to_string(const dynamic_bitset<B, A>& b, 
                                std::basic_string<CharT, Alloc>& s);
-
 #endif
 
 private:
@@ -347,13 +349,6 @@ public:
 	        assert(s[pos + tot - i - 1] == '0');
             }
         }       
-    }
-
-    template <typename BlockIterator>
-    void from_block_range(BlockIterator first, BlockIterator last)
-    {
-        // PRE: distance(first, last) == this->num_blocks()
-        std::copy(first, last, result.m_bits);
     }
 
 };
@@ -429,7 +424,10 @@ void
 to_block_range(const dynamic_bitset<Block, Allocator>& b, 
                BlockOutputIterator result);
 
-
+template <typename BlockIterator, typename B, typename A>
+inline void
+from_block_range(BlockIterator first, BlockIterator last,
+                 dynamic_bitset<B, A>& result);
 
 //=============================================================================
 // dynamic_bitset implementation
@@ -998,6 +996,15 @@ to_block_range(const dynamic_bitset<Block, Allocator>& b,
 {
     assert(b.size() != 0 || b.num_blocks() == 0);
     std::copy (b.m_bits, b.m_bits + b.m_num_blocks, result); 
+}
+
+template <typename BlockIterator, typename B, typename A>
+inline void
+from_block_range(BlockIterator first, BlockIterator last,
+                 dynamic_bitset<B, A>& result)
+{
+    // PRE: distance(first, last) == numblocks()
+    std::copy (first, last, result.m_bits);
 }
 
 template <typename Block, typename Allocator>
