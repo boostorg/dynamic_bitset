@@ -15,6 +15,8 @@
 // - changed macro test for old iostreams [GP]
 // - removed #include <vector> for now. [JGS]
 // - Added __GNUC__ to compilers that cannot handle the constructor from basic_string. [JGS]
+// - corrected to_block_range [GP]
+// - corrected from_block_range [GP]
 
 #ifndef BOOST_DYNAMIC_BITSET_HPP
 #define BOOST_DYNAMIC_BITSET_HPP
@@ -348,9 +350,8 @@ public:
     template <typename BlockIterator>
     void from_block_range(BlockIterator first, BlockIterator last)
     {
-        // PRE: distance(first, last) == size() / bits_per_block
-        for (size_type i = 0; first != last; ++first, ++i)
-            this->m_bits[i] = *first;
+        // PRE: distance(first, last) == this->num_blocks()
+        std::copy(first, last, result.m_bits);
     }
 
 };
@@ -993,10 +994,8 @@ void
 to_block_range(const dynamic_bitset<Block, Allocator>& b, 
                BlockOutputIterator result)
 {
-  
-  //std::copy(m.m_bits, m.m_num_bits, result);
-  //[gps] Did you mean this?
-    std::copy (b.m_bits, b.m_bits + b.m_num_bits, result); 
+    assert(b.size() != 0 || b.num_blocks() == 0);
+    std::copy (b.m_bits, b.m_bits + b.m_num_blocks, result); 
 }
 
 template <typename Block, typename Allocator>

@@ -64,13 +64,8 @@ namespace boost {
 
       dynamic_bitset_base(size_type num_bits, const Allocator& alloc)
         : dynamic_bitset_alloc_base<Allocator>(alloc),
-#if (defined(_MSC_VER) && (_MSC_VER <= 1300)) || !defined(_CPPLIB_VER) || (_CPPLIB_VER < 306) // Dinkumware for VC6/7
           m_bits(dynamic_bitset_alloc_base<Allocator>::
-                 m_alloc.allocate(calc_num_blocks(num_bits), 0)),
-#else
-          m_bits(dynamic_bitset_alloc_base<Allocator>::
-                 m_alloc.allocate(calc_num_blocks(num_bits))),
-#endif
+                 m_alloc.allocate(calc_num_blocks(num_bits), static_cast<void const *>(0))),
           m_num_bits(num_bits),
           m_num_blocks(calc_num_blocks(num_bits))
       {
