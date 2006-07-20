@@ -462,15 +462,18 @@ std::ostream& operator<<(std::ostream& os,
 template <typename Block, typename Allocator>
 std::istream& operator>>(std::istream& is, dynamic_bitset<Block,Allocator>& b);
 #else
-template <typename CharT, typename Traits, typename Block, typename Allocator>
-std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& os,
-           const dynamic_bitset<Block, Allocator>& b);
+// NOTE: Digital Mars wants the same template parameter names
+//       here and in the definition! [last tested: 8.48.10]
+//
+template <typename Ch, typename Tr, typename Block, typename Alloc>
+std::basic_ostream<Ch, Tr>&
+operator<<(std::basic_ostream<Ch, Tr>& os,
+           const dynamic_bitset<Block, Alloc>& b);
 
-template <typename CharT, typename Traits, typename Block, typename Allocator>
-std::basic_istream<CharT, Traits>&
-operator>>(std::basic_istream<CharT, Traits>& is,
-           dynamic_bitset<Block, Allocator>& b);
+template <typename Ch, typename Tr, typename Block, typename Alloc>
+std::basic_istream<Ch, Tr>&
+operator>>(std::basic_istream<Ch, Tr>& is,
+           dynamic_bitset<Block, Alloc>& b);
 #endif
 
 // bitset operations
