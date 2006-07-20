@@ -966,7 +966,8 @@ struct bitset_test {
 
     bool did_throw = false;
     try {
-      s << b;
+      static_cast<void>
+          (s << b);
     }
 #if defined BOOST_OLD_IOSTREAMS
     catch(...) {
@@ -1041,7 +1042,8 @@ struct bitset_test {
     const std::ios::iostate except = is.exceptions();
     bool has_stream_exceptions = true;
     try {
-      is >> b;
+      static_cast<void>
+          (is >> b);
     }
     catch(const std::ios::failure &) {
       did_throw = true;
