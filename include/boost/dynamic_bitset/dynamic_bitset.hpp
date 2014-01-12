@@ -1257,11 +1257,11 @@ dynamic_bitset<Block, Allocator>::find_next(size_type pos) const
     const size_type blk = block_index(pos);
     const block_width_type ind = bit_index(pos);
 
-    // mask out bits before pos
-    const Block fore = m_bits[blk] & ( ~Block(0) << ind );
+    // shift bits upto one immediately after current
+    const Block fore = m_bits[blk] >> ind;
 
     return fore?
-        blk * bits_per_block + lowest_bit(fore)
+        pos + lowest_bit(fore)
         :
         m_do_find_from(blk + 1);
 
