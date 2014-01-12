@@ -39,6 +39,7 @@
 #include "boost/static_assert.hpp"
 #include "boost/limits.hpp"
 #include "boost/pending/lowest_bit.hpp"
+#include "boost/functional/hash/hash.hpp"
 
 
 namespace boost {
@@ -324,7 +325,12 @@ public:
     template <typename B, typename A, typename stringT>
     friend void to_string_helper(const dynamic_bitset<B, A> & b, stringT & s, bool dump_all);
 
-
+    template <typename B, typename A>
+    friend std::size_t hash_value(const dynamic_bitset<B, A>& a) {
+        std::size_t res = hash_value(a.m_num_bits);
+        hash_combine(res, hash_value(a.m_bits));
+        return res;
+    }
 #endif
 
 
