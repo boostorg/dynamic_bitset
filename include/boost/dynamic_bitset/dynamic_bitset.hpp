@@ -1428,8 +1428,9 @@ operator<<(std::basic_ostream<Ch, Tr>& os,
             typedef basic_streambuf<Ch, Tr> buffer_type;
 
             buffer_type * buf = os.rdbuf();
-            size_t npad = os.width() <= 0  // careful: os.width() is signed (and can be < 0)
-                || (bitset_size_type) os.width() <= b.size()? 0 : os.width() - b.size();
+            // careful: os.width() is signed (and can be < 0)
+            const bitset_size_type width = (os.width() <= 0) ? 0 : static_cast<bitset_size_type>(os.width());
+            streamsize npad = (width <= b.size()) ? 0 : width - b.size();
 
             const Ch fill_char = os.fill();
             const ios_base::fmtflags adjustfield = os.flags() & ios_base::adjustfield;
