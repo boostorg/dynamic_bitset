@@ -1434,7 +1434,7 @@ operator<<(std::basic_ostream<Ch, Tr>& os,
             const Ch fill_char = os.fill();
             const ios_base::fmtflags adjustfield = os.flags() & ios_base::adjustfield;
 
-            // if needed fill at left; pad is decresed along the way
+            // if needed fill at left; pad is decreased along the way
             if (adjustfield != ios_base::left) {
                 for (; 0 < npad; --npad)
                     if (Tr::eq_int_type(Tr::eof(), buf->sputc(fill_char))) {
