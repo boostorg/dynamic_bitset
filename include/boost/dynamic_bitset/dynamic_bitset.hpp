@@ -46,15 +46,15 @@ namespace boost {
 template <typename Block, typename Allocator>
 class dynamic_bitset
 {
-  // Portability note: member function templates are defined inside
-  // this class definition to avoid problems with VC++. Similarly,
-  // with the member functions of nested classes.
-  //
-  // [October 2008: the note above is mostly historical; new versions
-  // of VC++ are likely able to digest a more drinking form of the
-  // code; but changing it now is probably not worth the risks...]
+    // Portability note: member function templates are defined inside
+    // this class definition to avoid problems with VC++. Similarly,
+    // with the member functions of nested classes.
+    //
+    // [October 2008: the note above is mostly historical; new versions
+    // of VC++ are likely able to digest a more drinking form of the
+    // code; but changing it now is probably not worth the risks...]
 
-  BOOST_STATIC_ASSERT((bool)detail::dynamic_bitset_impl::allowed_block_type<Block>::value);
+    BOOST_STATIC_ASSERT((bool)detail::dynamic_bitset_impl::allowed_block_type<Block>::value);
 
 public:
     typedef Block block_type;
