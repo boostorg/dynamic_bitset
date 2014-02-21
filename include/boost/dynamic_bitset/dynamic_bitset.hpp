@@ -55,12 +55,13 @@ class dynamic_bitset
     // code; but changing it now is probably not worth the risks...]
 
     BOOST_STATIC_ASSERT((bool)detail::dynamic_bitset_impl::allowed_block_type<Block>::value);
+    typedef std::vector<Block, Allocator> buffer_type;
 
 public:
     typedef Block block_type;
     typedef Allocator allocator_type;
     typedef std::size_t size_type;
-    typedef block_type block_width_type;
+    typedef typename buffer_type::size_type block_width_type;
 
     BOOST_STATIC_CONSTANT(block_width_type, bits_per_block = (std::numeric_limits<Block>::digits));
     BOOST_STATIC_CONSTANT(size_type, npos = static_cast<size_type>(-1));
@@ -330,7 +331,6 @@ public:
 
 private:
     BOOST_STATIC_CONSTANT(block_width_type, ulong_width = std::numeric_limits<unsigned long>::digits);
-    typedef std::vector<block_type, allocator_type> buffer_type;
 
     void m_zero_unused_bits();
     bool m_check_invariants() const;
@@ -807,7 +807,7 @@ dynamic_bitset<Block, Allocator>::operator<<=(size_type n)
         }
 
         // zero out div blocks at the less significant end
-        std::fill_n(b, div, static_cast<block_type>(0));
+        std::fill_n(m_bits.begin(), div, static_cast<block_type>(0));
 
         // zero out any 1 bit that flowed into the unused part
         m_zero_unused_bits(); // thanks to Lester Gong
@@ -860,7 +860,7 @@ dynamic_bitset<B, A> & dynamic_bitset<B, A>::operator>>=(size_type n) {
 
 
         // div blocks are zero filled at the most significant end
-        std::fill_n(b + (num_blocks()-div), div, static_cast<block_type>(0));
+        std::fill_n(m_bits.begin() + (num_blocks()-div), div, static_cast<block_type>(0));
     }
 
     return *this;
@@ -1521,7 +1521,7 @@ operator>>(std::istream& is, dynamic_bitset<Block, Alloc>& b)
 
         const std::streamsize w = is.width();
         const size_type limit = w > 0 && static_cast<size_type>(w) < b.max_size()
-                                                         ? w : b.max_size();
+                                                         ? static_cast<size_type>(w) : b.max_size();
         typename bitset_type::bit_appender appender(b);
         std::streambuf * buf = is.rdbuf();
         for(int c = buf->sgetc(); appender.get_count() < limit; c = buf->snextc() ) {
@@ -1569,7 +1569,7 @@ operator>>(std::basic_istream<Ch, Tr>& is, dynamic_bitset<Block, Alloc>& b)
 
     const streamsize w = is.width();
     const size_type limit = 0 < w && static_cast<size_type>(w) < b.max_size()?
-                                         w : b.max_size();
+                                         static_cast<size_type>(w) : b.max_size();
 
     ios_base::iostate err = ios_base::goodbit;
     typename basic_istream<Ch, Tr>::sentry cerberos(is); // skips whitespaces

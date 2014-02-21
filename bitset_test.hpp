@@ -129,7 +129,7 @@ struct bitset_test {
     // - any remaining bit positions are initialized to zero
     //
 
-    Bitset b(num_bits, num);
+    Bitset b(static_cast<typename Bitset::size_type>(num_bits), static_cast<unsigned long>(num));
 
     // OK, we can now cast to size_type
     typedef typename Bitset::size_type size_type;
@@ -1048,7 +1048,7 @@ struct bitset_test {
       // This test require that os be an output _and_ input stream.
       // Of course dynamic_bitset's operator << doesn't require that.
 
-      size_type total_len = w <= 0 || (size_type)(w) < b.size()? b.size() : w;
+      size_type total_len = w <= 0 || static_cast<size_type>(w) < b.size()? b.size() : static_cast<size_type>(w);
       const string_type padding (total_len - b.size(), fill_char);
       string_type expected;
       boost::to_string(b, expected);
@@ -1139,7 +1139,7 @@ struct bitset_test {
       // {digits} or part of them
       const typename Bitset::size_type max_digits =
             w > 0 && static_cast<typename Bitset::size_type>(w) < b.max_size()
-                               ? w : b.max_size();
+                               ? static_cast<typename Bitset::size_type>(w) : b.max_size();
 
       for( ; pos < len && (pos - after_spaces) < max_digits; ++pos) {
           if(!is_one_or_zero(is, str[pos]))
