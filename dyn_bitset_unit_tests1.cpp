@@ -1,6 +1,7 @@
 // -----------------------------------------------------------
 //              Copyright (c) 2001 Jeremy Siek
 //           Copyright (c) 2003-2006 Gennaro Prota
+//             Copyright (c) 2014 Ahmed Charles
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -237,29 +238,70 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     Tests::copy_constructor(b);
   }
   //=====================================================================
-  // Test assignment operator
+  // Test copy assignment operator
   {
     bitset_type a, b;
-    Tests::assignment_operator(a, b);
+    Tests::copy_assignment_operator(a, b);
   }
   {
     bitset_type a(std::string("1")), b(std::string("0"));
-    Tests::assignment_operator(a, b);
+    Tests::copy_assignment_operator(a, b);
   }
   {
     bitset_type a(long_string), b(long_string);
-    Tests::assignment_operator(a, b);
+    Tests::copy_assignment_operator(a, b);
   }
   {
     bitset_type a;
     bitset_type b(long_string); // b greater than a, a empty
-    Tests::assignment_operator(a, b);
+    Tests::copy_assignment_operator(a, b);
   }
   {
     bitset_type a(std::string("0"));
     bitset_type b(long_string); // b greater than a
-    Tests::assignment_operator(a, b);
+    Tests::copy_assignment_operator(a, b);
   }
+
+#ifndef BOOST_NO_RVALUE_REFERENCES
+  //=====================================================================
+  // Test move constructor
+  {
+    boost::dynamic_bitset<Block> b;
+    Tests::move_constructor(b);
+  }
+  {
+    boost::dynamic_bitset<Block> b(std::string("0"));
+    Tests::move_constructor(b);
+  }
+  {
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::move_constructor(b);
+  }
+  //=====================================================================
+  // Test move assignment operator
+  {
+    bitset_type a, b;
+    Tests::move_assignment_operator(a, b);
+  }
+  {
+    bitset_type a(std::string("1")), b(std::string("0"));
+    Tests::move_assignment_operator(a, b);
+  }
+  {
+    bitset_type a(long_string), b(long_string);
+    Tests::move_assignment_operator(a, b);
+  }
+  {
+    bitset_type a;
+    bitset_type b(long_string); // b greater than a, a empty
+    Tests::move_assignment_operator(a, b);
+  }
+  {
+    bitset_type a(std::string("0"));
+    bitset_type b(long_string); // b greater than a
+    Tests::move_assignment_operator(a, b);
+  }
+#endif // BOOST_NO_RVALUE_REFERENCES
   //=====================================================================
   // Test swap
   {

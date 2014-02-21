@@ -1,6 +1,7 @@
 // -----------------------------------------------------------
 //              Copyright (c) 2001 Jeremy Siek
 //        Copyright (c) 2003-2006, 2008 Gennaro Prota
+//             Copyright (c) 2014 Ahmed Charles
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -267,11 +268,12 @@ struct bitset_test {
     }
   }
 
-  // assignment operator (absent from std::bitset)
-  static void assignment_operator(const Bitset& lhs, const Bitset& rhs)
+  // copy assignment operator (absent from std::bitset)
+  static void copy_assignment_operator(const Bitset& lhs, const Bitset& rhs)
   {
     Bitset b(lhs);
     b = rhs;
+    b = b; // self assignment check
     BOOST_CHECK(b == rhs);
 
     // Changes to the copy do not affect the original
@@ -281,6 +283,27 @@ struct bitset_test {
       BOOST_CHECK(b[pos] != rhs[pos]);
     }
   }
+
+#ifndef BOOST_NO_RVALUE_REFERENCES
+
+  // move constructor (absent from std::bitset)
+  static void move_constructor(const Bitset& b)
+  {
+    Bitset copy(boost::move(b));
+    BOOST_CHECK(b == copy);
+  }
+
+  // move assignment operator (absent from std::bitset)
+  static void move_assignment_operator(const Bitset& lhs, const Bitset& rhs)
+  {
+    Bitset b(lhs);
+    Bitset c(rhs);
+    b = boost::move(c);
+    b = boost::move(b); // self assignment check
+    BOOST_CHECK(b == rhs);
+  }
+
+#endif // BOOST_NO_RVALUE_REFERENCES
 
   static void swap(const Bitset& lhs, const Bitset& rhs)
   {

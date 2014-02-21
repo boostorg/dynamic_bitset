@@ -2,6 +2,7 @@
 //
 //   Copyright (c) 2001-2002 Chuck Allison and Jeremy Siek
 //        Copyright (c) 2003-2006, 2008 Gennaro Prota
+//             Copyright (c) 2014 Ahmed Charles
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -36,9 +37,10 @@
 #include "boost/dynamic_bitset_fwd.hpp"
 #include "boost/detail/dynamic_bitset.hpp"
 #include "boost/detail/iterator.hpp" // used to implement append(Iter, Iter)
-#include "boost/static_assert.hpp"
+#include "boost/move/move.hpp"
 #include "boost/limits.hpp"
 #include "boost/pending/lowest_bit.hpp"
+#include "boost/static_assert.hpp"
 
 
 namespace boost {
@@ -207,6 +209,11 @@ public:
 
     void swap(dynamic_bitset& b);
     dynamic_bitset& operator=(const dynamic_bitset& b);
+
+#ifndef BOOST_NO_RVALUE_REFERENCES
+    dynamic_bitset(dynamic_bitset&& src);
+    dynamic_bitset& operator=(dynamic_bitset&& src);
+#endif // BOOST_NO_RVALUE_REFERENCES
 
     allocator_type get_allocator() const;
 
@@ -632,6 +639,34 @@ operator=(const dynamic_bitset<Block, Allocator>& b)
     m_num_bits = b.m_num_bits;
     return *this;
 }
+
+#ifndef BOOST_NO_RVALUE_REFERENCES
+
+template <typename Block, typename Allocator>
+inline dynamic_bitset<Block, Allocator>::
+dynamic_bitset(dynamic_bitset<Block, Allocator>&& b)
+  : m_bits(boost::move(b.m_bits)), m_num_bits(boost::move(b.m_num_bits))
+{
+    // Required so that assert(m_check_invariants()); works.
+    assert((b.m_bits = buffer_type()).empty());
+    b.m_num_bits = 0;
+}
+
+template <typename Block, typename Allocator>
+inline dynamic_bitset<Block, Allocator>& dynamic_bitset<Block, Allocator>::
+operator=(dynamic_bitset<Block, Allocator>&& b)
+{
+    if (boost::addressof(b) == this) { return *this; }
+
+    m_bits = boost::move(b.m_bits);
+    m_num_bits = boost::move(b.m_num_bits);
+    // Required so that assert(m_check_invariants()); works.
+    assert((b.m_bits = buffer_type()).empty());
+    b.m_num_bits = 0;
+    return *this;
+}
+
+#endif // BOOST_NO_RVALUE_REFERENCES
 
 template <typename Block, typename Allocator>
 inline typename dynamic_bitset<Block, Allocator>::allocator_type
