@@ -202,6 +202,7 @@ public:
     dynamic_bitset&amp; <a href="#flip2">flip</a>(size_type n);
     dynamic_bitset&amp; <a href="#flip1">flip</a>();
     bool <a href="#test">test</a>(size_type n) const;
+    bool <a href="#all">all</a>() const;
     bool <a href="#any">any</a>() const;
     bool <a href="#none">none</a>() const;
     dynamic_bitset <a href="#op-not">operator~</a>() const;
@@ -1120,6 +1121,15 @@ size_type <a id="count">count</a>() const
 
 <b>Returns:</b> the number of bits in this bitset that are
 set.<br />
+<b>Throws:</b> nothing.
+
+<hr />
+<pre>
+bool <a id="all">all</a>() const
+</pre>
+
+<b>Returns:</b> <tt>true</tt> if all bits in this bitset are set or
+if <tt>size() == 0</tt>, and otherwise returns <tt>false</tt>.<br />
 <b>Throws:</b> nothing.
 
 <hr />

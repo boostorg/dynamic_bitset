@@ -712,6 +712,18 @@ struct bitset_test {
     BOOST_CHECK(Bitset(b).set().count() == b.size());
   }
 
+  static void all(const Bitset& b)
+  {
+    BOOST_CHECK(b.all() == (b.count() == b.size()));
+    bool result = true;
+    for(std::size_t i = 0; i < b.size(); ++i)
+      if(!b[i]) {
+        result = false;
+        break;
+      }
+    BOOST_CHECK(b.all() == result);
+  }
+
   static void any(const Bitset& b)
   {
     BOOST_CHECK(b.any() == (b.count() != 0));

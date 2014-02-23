@@ -1,6 +1,7 @@
 // -----------------------------------------------------------
 //              Copyright (c) 2001 Jeremy Siek
 //           Copyright (c) 2003-2006 Gennaro Prota
+//             Copyright (c) 2014 Ahmed Charles
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -119,6 +120,29 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   {
     boost::dynamic_bitset<Block> b(long_string);
     Tests::size(b);
+  }
+  //=====================================================================
+  // Test b.all()
+  {
+    boost::dynamic_bitset<Block> b;
+    Tests::all(b);
+    Tests::all(~b);
+    Tests::all(b.set());
+    Tests::all(b.reset());
+  }
+  {
+    boost::dynamic_bitset<Block> b(std::string("0"));
+    Tests::all(b);
+    Tests::all(~b);
+    Tests::all(b.set());
+    Tests::all(b.reset());
+  }
+  {
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::all(b);
+    Tests::all(~b);
+    Tests::all(b.set());
+    Tests::all(b.reset());
   }
   //=====================================================================
   // Test b.any()

@@ -278,6 +278,7 @@ public:
     dynamic_bitset& flip(size_type n);
     dynamic_bitset& flip();
     bool test(size_type n) const;
+    bool all() const;
     bool any() const;
     bool none() const;
     dynamic_bitset operator~() const;
@@ -999,6 +1000,36 @@ bool dynamic_bitset<Block, Allocator>::test(size_type pos) const
 {
     assert(pos < m_num_bits);
     return m_unchecked_test(pos);
+}
+
+template <typename Block, typename Allocator>
+bool dynamic_bitset<Block, Allocator>::all() const
+{
+    if (empty()) {
+        return true;
+    }
+
+    const block_width_type extra_bits = count_extra_bits();
+    block_type const all_ones = ~static_cast<Block>(0);
+
+    if (extra_bits == 0) {
+        for (size_type i = 0, e = num_blocks(); i < e; ++i) {
+            if (m_bits[i] != all_ones) {
+                return false;
+            }
+        }
+    } else {
+        for (size_type i = 0, e = num_blocks() - 1; i < e; ++i) {
+            if (m_bits[i] != all_ones) {
+                return false;
+            }
+        }
+        block_type const mask = ~(~static_cast<Block>(0) << extra_bits);
+        if (m_highest_block() != mask) {
+            return false;
+        }
+    }
+    return true;
 }
 
 template <typename Block, typename Allocator>
