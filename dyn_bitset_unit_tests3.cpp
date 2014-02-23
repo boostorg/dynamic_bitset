@@ -125,28 +125,46 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   {
     boost::dynamic_bitset<Block> b;
     Tests::any(b);
+    Tests::any(~b);
+    Tests::any(b.set());
+    Tests::any(b.reset());
   }
   {
     boost::dynamic_bitset<Block> b(std::string("0"));
     Tests::any(b);
+    Tests::any(~b);
+    Tests::any(b.set());
+    Tests::any(b.reset());
   }
   {
     boost::dynamic_bitset<Block> b(long_string);
     Tests::any(b);
+    Tests::any(~b);
+    Tests::any(b.set());
+    Tests::any(b.reset());
   }
   //=====================================================================
   // Test b.none()
   {
     boost::dynamic_bitset<Block> b;
     Tests::none(b);
+    Tests::none(~b);
+    Tests::none(b.set());
+    Tests::none(b.reset());
   }
   {
     boost::dynamic_bitset<Block> b(std::string("0"));
     Tests::none(b);
+    Tests::none(~b);
+    Tests::none(b.set());
+    Tests::none(b.reset());
   }
   {
     boost::dynamic_bitset<Block> b(long_string);
     Tests::none(b);
+    Tests::none(~b);
+    Tests::none(b.set());
+    Tests::none(b.reset());
   }
   //=====================================================================
   // Test a.is_subset_of(b)
