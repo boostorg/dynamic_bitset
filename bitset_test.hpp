@@ -714,7 +714,7 @@ struct bitset_test {
 
   static void any(const Bitset& b)
   {
-    //BOOST_CHECK(b.any() == (b.count() > 0));
+    BOOST_CHECK(b.any() == (b.count() != 0));
     bool result = false;
     for(std::size_t i = 0; i < b.size(); ++i)
       if(b[i]) {
