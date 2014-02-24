@@ -202,6 +202,7 @@ public:
     dynamic_bitset&amp; <a href="#flip2">flip</a>(size_type n);
     dynamic_bitset&amp; <a href="#flip1">flip</a>();
     bool <a href="#test">test</a>(size_type n) const;
+    bool <a href="#test">test_set</a>(size_type n, bool val = true);
     bool <a href="#all">all</a>() const;
     bool <a href="#any">any</a>() const;
     bool <a href="#none">none</a>() const;
@@ -1158,6 +1159,18 @@ bool <a id="test">test</a>(size_type n) const
 <b>Precondition:</b> <tt>n &lt; this-&gt;size()</tt>.<br />
  <b>Returns:</b> <tt>true</tt> if bit <tt>n</tt> is set and
 <tt>false</tt> is bit <tt>n</tt> is 0.
+
+<hr />
+<pre>
+bool <a id="test">test_set</a>(size_type n, bool val = true)
+</pre>
+
+<b>Precondition:</b> <tt>n &lt; this-&gt;size()</tt>.<br />
+ <b>Effects:</b> Sets bit <tt>n</tt> if <tt>val</tt> is
+<tt>true</tt>, and clears bit <tt>n</tt> if <tt>val</tt> is
+<tt>false</tt>. <br />
+ <b>Returns:</b> <tt>true</tt> if the previous state of bit
+<tt>n</tt> was set and <tt>false</tt> is bit <tt>n</tt> is 0.
 
 <hr />
 <pre>

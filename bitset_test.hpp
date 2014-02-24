@@ -960,6 +960,25 @@ struct bitset_test {
     }
   }
 
+  static void test_set_bit(const Bitset& b, std::size_t pos, bool value)
+  {
+    Bitset lhs(b);
+    std::size_t N = lhs.size();
+    if (pos < N) {
+      Bitset prev(lhs);
+      // Stores a new value in the bit at position pos in lhs.
+      BOOST_CHECK(lhs.test_set(pos, value) == prev[pos]);
+      BOOST_CHECK(lhs[pos] == value);
+
+      // All other values of lhs remain unchanged
+      for (std::size_t I = 0; I < N; ++I)
+        if (I != pos)
+          BOOST_CHECK(lhs[I] == prev[I]);
+    } else {
+      // Not in range, doesn't satisfy precondition.
+    }
+  }
+
   static void operator_shift_left(const Bitset& lhs, std::size_t pos)
   {
     Bitset x(lhs);

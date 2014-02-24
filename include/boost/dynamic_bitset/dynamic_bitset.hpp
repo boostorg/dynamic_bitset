@@ -278,6 +278,7 @@ public:
     dynamic_bitset& flip(size_type n);
     dynamic_bitset& flip();
     bool test(size_type n) const;
+    bool test_set(size_type n, bool val = true);
     bool all() const;
     bool any() const;
     bool none() const;
@@ -1000,6 +1001,16 @@ bool dynamic_bitset<Block, Allocator>::test(size_type pos) const
 {
     assert(pos < m_num_bits);
     return m_unchecked_test(pos);
+}
+
+template <typename Block, typename Allocator>
+bool dynamic_bitset<Block, Allocator>::test_set(size_type pos, bool val)
+{
+    bool const b = test(pos);
+    if (b != val) {
+        set(pos, val);
+    }
+    return b;
 }
 
 template <typename Block, typename Allocator>
