@@ -1424,17 +1424,18 @@ operator<<(std::basic_ostream<Ch, Tr>& os,
 
         try {
 
-            typedef typename dynamic_bitset<Block, Alloc>::size_type bitsetsize_type;
+            typedef typename dynamic_bitset<Block, Alloc>::size_type bitset_size_type;
             typedef basic_streambuf<Ch, Tr> buffer_type;
 
             buffer_type * buf = os.rdbuf();
-            size_t npad = os.width() <= 0  // careful: os.width() is signed (and can be < 0)
-                || (bitsetsize_type) os.width() <= b.size()? 0 : os.width() - b.size();
+            // careful: os.width() is signed (and can be < 0)
+            const bitset_size_type width = (os.width() <= 0) ? 0 : static_cast<bitset_size_type>(os.width());
+            streamsize npad = (width <= b.size()) ? 0 : width - b.size();
 
             const Ch fill_char = os.fill();
             const ios_base::fmtflags adjustfield = os.flags() & ios_base::adjustfield;
 
-            // if needed fill at left; pad is decresed along the way
+            // if needed fill at left; pad is decreased along the way
             if (adjustfield != ios_base::left) {
                 for (; 0 < npad; --npad)
                     if (Tr::eq_int_type(Tr::eof(), buf->sputc(fill_char))) {
@@ -1445,7 +1446,7 @@ operator<<(std::basic_ostream<Ch, Tr>& os,
 
             if (err == ok) {
                 // output the bitset
-                for (bitsetsize_type i = b.size(); 0 < i; --i) {
+                for (bitset_size_type i = b.size(); 0 < i; --i) {
                     typename buffer_type::int_type
                         ret = buf->sputc(b.test(i-1)? one : zero);
                     if (Tr::eq_int_type(Tr::eof(), ret)) {
