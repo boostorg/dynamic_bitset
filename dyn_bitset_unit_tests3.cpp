@@ -611,6 +611,23 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     Tests::test_bit(b, long_string.size()/2);
   }
   //=====================================================================
+  // Test b.test_set(pos)
+  { // case pos >= b.size()
+    boost::dynamic_bitset<Block> b;
+    Tests::test_set_bit(b, 0, true);
+    Tests::test_set_bit(b, 0, false);
+  }
+  { // case pos < b.size()
+    boost::dynamic_bitset<Block> b(std::string("0"));
+    Tests::test_set_bit(b, 0, true);
+    Tests::test_set_bit(b, 0, false);
+  }
+  { // case pos == b.size() / 2
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::test_set_bit(b, long_string.size() / 2, true);
+    Tests::test_set_bit(b, long_string.size() / 2, false);
+  }
+  //=====================================================================
   // Test b << pos
   { // case pos == 0
     std::size_t pos = 0;
