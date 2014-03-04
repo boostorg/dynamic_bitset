@@ -41,6 +41,7 @@
 #include "boost/limits.hpp"
 #include "boost/pending/lowest_bit.hpp"
 #include "boost/static_assert.hpp"
+#include "boost/utility/addressof.hpp"
 
 
 namespace boost {
