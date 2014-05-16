@@ -42,6 +42,7 @@
 #include "boost/pending/lowest_bit.hpp"
 #include "boost/static_assert.hpp"
 #include "boost/utility/addressof.hpp"
+#include "boost/detail/no_exceptions_support.hpp"
 
 
 namespace boost {
@@ -1179,7 +1180,7 @@ to_ulong() const
   // Check for overflows. This may be a performance burden on very
   // large bitsets but is required by the specification, sorry
   if (find_next(ulong_width - 1) != npos)
-    throw std::overflow_error("boost::dynamic_bitset::to_ulong overflow");
+    BOOST_THROW_EXCEPTION(std::overflow_error("boost::dynamic_bitset::to_ulong overflow"));
 
 
   // Ok, from now on we can be sure there's no "on" bit
@@ -1500,7 +1501,7 @@ operator<<(std::basic_ostream<Ch, Tr>& os,
         const Ch zero = BOOST_DYNAMIC_BITSET_WIDEN_CHAR(fac, '0');
         const Ch one  = BOOST_DYNAMIC_BITSET_WIDEN_CHAR(fac, '1');
 
-        try {
+        BOOST_TRY {
 
             typedef typename dynamic_bitset<Block, Alloc>::size_type bitset_size_type;
             typedef basic_streambuf<Ch, Tr> buffer_type;
@@ -1547,13 +1548,14 @@ operator<<(std::basic_ostream<Ch, Tr>& os,
 
             os.width(0);
 
-        } catch (...) { // see std 27.6.1.1/4
+        } BOOST_CATCH (...) { // see std 27.6.1.1/4
             bool rethrow = false;
-            try { os.setstate(ios_base::failbit); } catch (...) { rethrow = true; }
+            BOOST_TRY { os.setstate(ios_base::failbit); } BOOST_CATCH (...) { rethrow = true; } BOOST_CATCH_END
 
             if (rethrow)
-                throw;
+                BOOST_RETHROW;
         }
+        BOOST_CATCH_END
     }
 
     if(err != ok)
@@ -1612,13 +1614,14 @@ operator>>(std::istream& is, dynamic_bitset<Block, Alloc>& b)
                 break; // non digit character
 
             else {
-                try {
+                BOOST_TRY {
                     appender.do_append(char(c) == '1');
                 }
-                catch(...) {
+                BOOST_CATCH(...) {
                     is.setstate(std::ios::failbit); // assume this can't throw
-                    throw;
+                    BOOST_RETHROW;
                 }
+                BOOST_CATCH_END
             }
 
         } // for
@@ -1659,7 +1662,7 @@ operator>>(std::basic_istream<Ch, Tr>& is, dynamic_bitset<Block, Alloc>& b)
         const Ch one  = BOOST_DYNAMIC_BITSET_WIDEN_CHAR(fac, '1');
 
         b.clear();
-        try {
+        BOOST_TRY {
             typename bitset_type::bit_appender appender(b);
             basic_streambuf <Ch, Tr> * buf = is.rdbuf();
             typename Tr::int_type c = buf->sgetc();
@@ -1682,7 +1685,7 @@ operator>>(std::basic_istream<Ch, Tr>& is, dynamic_bitset<Block, Alloc>& b)
 
             } // for
         }
-        catch (...) {
+        BOOST_CATCH (...) {
             // catches from stream buf, or from vector:
             //
             // bits_stored bits have been extracted and stored, and
@@ -1690,13 +1693,15 @@ operator>>(std::basic_istream<Ch, Tr>& is, dynamic_bitset<Block, Alloc>& b)
             // append to the underlying vector (out of memory)
 
             bool rethrow = false;   // see std 27.6.1.1/4
-            try { is.setstate(ios_base::badbit); }
-            catch(...) { rethrow = true; }
+            BOOST_TRY { is.setstate(ios_base::badbit); }
+            BOOST_CATCH(...) { rethrow = true; }
+            BOOST_CATCH_END
 
             if (rethrow)
-                throw;
+                BOOST_RETHROW;
 
         }
+        BOOST_CATCH_END
     }
 
     is.width(0);
