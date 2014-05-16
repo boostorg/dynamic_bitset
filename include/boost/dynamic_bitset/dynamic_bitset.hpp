@@ -1308,7 +1308,7 @@ dynamic_bitset<Block, Allocator>::m_do_find_from(size_type first_block) const
     if (i >= num_blocks())
         return npos; // not found
 
-    return i * bits_per_block + boost::lowest_bit(m_bits[i]);
+    return i * bits_per_block + static_cast<size_type>(boost::lowest_bit(m_bits[i]));
 
 }
 
@@ -1339,7 +1339,7 @@ dynamic_bitset<Block, Allocator>::find_next(size_type pos) const
     const Block fore = m_bits[blk] >> ind;
 
     return fore?
-        pos + lowest_bit(fore)
+        pos + static_cast<size_type>(lowest_bit(fore))
         :
         m_do_find_from(blk + 1);
 
@@ -1773,7 +1773,7 @@ inline typename dynamic_bitset<Block, Allocator>::size_type
 dynamic_bitset<Block, Allocator>::calc_num_blocks(size_type num_bits)
 {
     return num_bits / bits_per_block
-           + static_cast<int>( num_bits % bits_per_block != 0 );
+           + static_cast<size_type>( num_bits % bits_per_block != 0 );
 }
 
 // gives a reference to the highest block
