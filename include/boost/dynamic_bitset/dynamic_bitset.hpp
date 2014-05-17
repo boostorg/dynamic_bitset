@@ -43,6 +43,7 @@
 #include "boost/static_assert.hpp"
 #include "boost/utility/addressof.hpp"
 #include "boost/detail/no_exceptions_support.hpp"
+#include "boost/throw_exception.hpp"
 
 
 namespace boost {
