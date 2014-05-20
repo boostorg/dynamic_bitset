@@ -3,6 +3,9 @@
 //           Copyright (c) 2003-2006 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
 //
+// Copyright (c) 2014 Glen Joseph Fernandes
+// glenfe at live dot com
+//
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +18,28 @@
 #include "boost/config.hpp"
 
 #include "boost/detail/workaround.hpp"
+
+#if !defined(BOOST_NO_CXX11_ALLOCATOR)
+#include <cstdlib>
+
+template<class T>
+class minimal_allocator {
+public:
+    typedef T value_type;
+
+    T* allocate(std::size_t n) {
+        void* p = std::malloc(sizeof(T) * n);
+        if (!p) {
+            throw std::bad_alloc();
+        }
+        return static_cast<T*>(p);
+    }
+
+    void deallocate(T* p, std::size_t) {
+        std::free(p);
+    }
+};
+#endif
 
 #define BOOST_BITSET_TEST_COUNT(x) (sizeof(x)/sizeof(x[0]))
 
@@ -459,6 +484,14 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
       bit_vec[i] = long_string[n - 1 - i] == '0' ? 0 : 1;
     Tests::operator_bracket(b, bit_vec);
   }
+#if !defined(BOOST_NO_CXX11_ALLOCATOR)
+  {
+     typedef boost::dynamic_bitset<Block,
+       minimal_allocator<Block> > Bitset;
+     Bitset b;
+     bitset_test<Bitset>::max_size(b);
+  }
+#endif
 }
 
 int

@@ -284,6 +284,11 @@ struct bitset_test {
     }
   }
 
+  static void max_size(const Bitset& b)
+  {
+    BOOST_CHECK(b.max_size() > 0);
+  }
+
 #ifndef BOOST_NO_RVALUE_REFERENCES
 
   // move constructor (absent from std::bitset)
