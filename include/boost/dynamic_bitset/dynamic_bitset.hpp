@@ -216,10 +216,10 @@ public:
     void swap(dynamic_bitset& b);
     dynamic_bitset& operator=(const dynamic_bitset& b);
 
-#ifndef BOOST_NO_RVALUE_REFERENCES
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
     dynamic_bitset(dynamic_bitset&& src);
     dynamic_bitset& operator=(dynamic_bitset&& src);
-#endif // BOOST_NO_RVALUE_REFERENCES
+#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
 
     allocator_type get_allocator() const;
 
@@ -648,7 +648,7 @@ operator=(const dynamic_bitset<Block, Allocator>& b)
     return *this;
 }
 
-#ifndef BOOST_NO_RVALUE_REFERENCES
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
 
 template <typename Block, typename Allocator>
 inline dynamic_bitset<Block, Allocator>::
@@ -674,7 +674,7 @@ operator=(dynamic_bitset<Block, Allocator>&& b)
     return *this;
 }
 
-#endif // BOOST_NO_RVALUE_REFERENCES
+#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
 
 template <typename Block, typename Allocator>
 inline typename dynamic_bitset<Block, Allocator>::allocator_type
