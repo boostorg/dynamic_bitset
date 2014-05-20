@@ -207,17 +207,17 @@ public:
     bool <a href="#any">any</a>() const;
     bool <a href="#none">none</a>() const;
     dynamic_bitset <a href="#op-not">operator~</a>() const;
-    size_type <a href="#count">count</a>() const;
+    size_type <a href="#count">count</a>() const noexcept;
 
     reference <a href="#bracket">operator[]</a>(size_type pos);
     bool <a href="#const-bracket">operator[]</a>(size_type pos) const;
 
     unsigned long <a href="#to_ulong">to_ulong</a>() const;
 
-    size_type <a href="#size">size</a>() const;
-    size_type <a href="#num_blocks">num_blocks</a>() const;
-    size_type <a href="#max_size">max_size</a>() const;
-    bool <a href="#empty">empty</a>() const;
+    size_type <a href="#size">size</a>() const noexcept;
+    size_type <a href="#num_blocks">num_blocks</a>() const noexcept;
+    size_type <a href="#max_size">max_size</a>() const noexcept;
+    bool <a href="#empty">empty</a>() const noexcept;
 
     bool <a href="#is_subset_of">is_subset_of</a>(const dynamic_bitset&amp; a) const;
     bool <a href="#is_proper_subset_of">is_proper_subset_of</a>(const dynamic_bitset&amp; a) const;
@@ -1572,6 +1572,7 @@ exception guarantee.
 <li>Support for C++11 move constructors.</li>
 <li>Warning fixes on MSVC 2013.</li>
 <li>Support for C++11 minimal allocators.</li>
+<li>Add noexcept specifications.</li>
 </ul>
 
 <h4><i>Changes in Boost 1.37.0</i></h4>
