@@ -4,6 +4,9 @@
 //        Copyright (c) 2003-2006, 2008 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
 //
+// Copyright (c) 2014 Glen Joseph Fernandes
+// glenfe at live dot com
+//
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
@@ -213,10 +216,10 @@ public:
     void swap(dynamic_bitset& b);
     dynamic_bitset& operator=(const dynamic_bitset& b);
 
-#ifndef BOOST_NO_RVALUE_REFERENCES
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
     dynamic_bitset(dynamic_bitset&& src);
     dynamic_bitset& operator=(dynamic_bitset&& src);
-#endif // BOOST_NO_RVALUE_REFERENCES
+#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
 
     allocator_type get_allocator() const;
 
@@ -286,7 +289,7 @@ public:
     bool any() const;
     bool none() const;
     dynamic_bitset operator~() const;
-    size_type count() const;
+    size_type count() const BOOST_NOEXCEPT;
 
     // subscript
     reference operator[](size_type pos) {
@@ -296,10 +299,10 @@ public:
 
     unsigned long to_ulong() const;
 
-    size_type size() const;
-    size_type num_blocks() const;
-    size_type max_size() const;
-    bool empty() const;
+    size_type size() const BOOST_NOEXCEPT;
+    size_type num_blocks() const BOOST_NOEXCEPT;
+    size_type max_size() const BOOST_NOEXCEPT;
+    bool empty() const BOOST_NOEXCEPT;
 
     bool is_subset_of(const dynamic_bitset& a) const;
     bool is_proper_subset_of(const dynamic_bitset& a) const;
@@ -349,10 +352,10 @@ private:
 
     size_type m_do_find_from(size_type first_block) const;
 
-    block_width_type count_extra_bits() const { return bit_index(size()); }
-    static size_type block_index(size_type pos) { return pos / bits_per_block; }
-    static block_width_type bit_index(size_type pos) { return static_cast<block_width_type>(pos % bits_per_block); }
-    static Block bit_mask(size_type pos) { return Block(1) << bit_index(pos); }
+    block_width_type count_extra_bits() const BOOST_NOEXCEPT { return bit_index(size()); }
+    static size_type block_index(size_type pos) BOOST_NOEXCEPT { return pos / bits_per_block; }
+    static block_width_type bit_index(size_type pos) BOOST_NOEXCEPT { return static_cast<block_width_type>(pos % bits_per_block); }
+    static Block bit_mask(size_type pos) BOOST_NOEXCEPT { return Block(1) << bit_index(pos); }
 
     template <typename CharT, typename Traits, typename Alloc>
     void init_from_string(const std::basic_string<CharT, Traits, Alloc>& s,
@@ -645,7 +648,7 @@ operator=(const dynamic_bitset<Block, Allocator>& b)
     return *this;
 }
 
-#ifndef BOOST_NO_RVALUE_REFERENCES
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
 
 template <typename Block, typename Allocator>
 inline dynamic_bitset<Block, Allocator>::
@@ -671,7 +674,7 @@ operator=(dynamic_bitset<Block, Allocator>&& b)
     return *this;
 }
 
-#endif // BOOST_NO_RVALUE_REFERENCES
+#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
 
 template <typename Block, typename Allocator>
 inline typename dynamic_bitset<Block, Allocator>::allocator_type
@@ -1072,7 +1075,7 @@ dynamic_bitset<Block, Allocator>::operator~() const
 
 template <typename Block, typename Allocator>
 typename dynamic_bitset<Block, Allocator>::size_type
-dynamic_bitset<Block, Allocator>::count() const
+dynamic_bitset<Block, Allocator>::count() const BOOST_NOEXCEPT
 {
     using detail::dynamic_bitset_impl::table_width;
     using detail::dynamic_bitset_impl::access_by_bytes;
@@ -1206,21 +1209,21 @@ to_ulong() const
 
 template <typename Block, typename Allocator>
 inline typename dynamic_bitset<Block, Allocator>::size_type
-dynamic_bitset<Block, Allocator>::size() const
+dynamic_bitset<Block, Allocator>::size() const BOOST_NOEXCEPT
 {
     return m_num_bits;
 }
 
 template <typename Block, typename Allocator>
 inline typename dynamic_bitset<Block, Allocator>::size_type
-dynamic_bitset<Block, Allocator>::num_blocks() const
+dynamic_bitset<Block, Allocator>::num_blocks() const BOOST_NOEXCEPT
 {
     return m_bits.size();
 }
 
 template <typename Block, typename Allocator>
 inline typename dynamic_bitset<Block, Allocator>::size_type
-dynamic_bitset<Block, Allocator>::max_size() const
+dynamic_bitset<Block, Allocator>::max_size() const BOOST_NOEXCEPT
 {
     // Semantics of vector<>::max_size() aren't very clear
     // (see lib issue 197) and many library implementations
@@ -1241,7 +1244,7 @@ dynamic_bitset<Block, Allocator>::max_size() const
 }
 
 template <typename Block, typename Allocator>
-inline bool dynamic_bitset<Block, Allocator>::empty() const
+inline bool dynamic_bitset<Block, Allocator>::empty() const BOOST_NOEXCEPT
 {
   return size() == 0;
 }

@@ -284,7 +284,12 @@ struct bitset_test {
     }
   }
 
-#ifndef BOOST_NO_RVALUE_REFERENCES
+  static void max_size(const Bitset& b)
+  {
+    BOOST_CHECK(b.max_size() > 0);
+  }
+
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
 
   // move constructor (absent from std::bitset)
   static void move_constructor(const Bitset& b)
@@ -303,7 +308,7 @@ struct bitset_test {
     BOOST_CHECK(b == rhs);
   }
 
-#endif // BOOST_NO_RVALUE_REFERENCES
+#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
 
   static void swap(const Bitset& lhs, const Bitset& rhs)
   {
