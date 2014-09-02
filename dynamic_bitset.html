@@ -180,6 +180,7 @@ public:
     void <a href=
 "#resize">resize</a>(size_type num_bits, bool value = false);
     void <a href="#clear">clear</a>();
+    void <a href="#pop_back">pop_back</a>();
     void <a href="#push_back">push_back</a>(bool bit);
     void <a href="#append1">append</a>(Block block);
 
@@ -834,6 +835,14 @@ void <a id="clear">clear</a>()
 <b>Effects:</b> The size of the bitset becomes zero.<br />
  <b>Throws:</b> nothing.
 
+<hr />
+<pre>
+void <a id="pop_back">pop_back</a>();
+</pre>
+
+<b>Effects:</b> Decreases the size of the bitset by one.<br />
+ <b>Throws:</b> nothing.
+ 
 <hr />
 <pre>
 void <a id="push_back">push_back</a>(bool value);
