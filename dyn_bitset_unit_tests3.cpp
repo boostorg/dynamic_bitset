@@ -2,6 +2,7 @@
 //              Copyright (c) 2001 Jeremy Siek
 //           Copyright (c) 2003-2006 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
+//          Copyright (c) 2014 Riccardo Marcangelo 
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -121,6 +122,36 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     boost::dynamic_bitset<Block> b(long_string);
     Tests::size(b);
   }
+  //=====================================================================
+	// Test b.capacity()
+	{
+		boost::dynamic_bitset<Block> b;
+		Tests::capacity_test_one(b);            
+	}
+	{
+		boost::dynamic_bitset<Block> b(100);
+		Tests::capacity_test_two(b);   
+	}
+	//=====================================================================
+	// Test b.reserve()
+	{
+	  boost::dynamic_bitset<Block> b;
+		Tests::reserve_test_one(b);		   
+	}	
+	{
+		boost::dynamic_bitset<Block> b(100);
+		Tests::reserve_test_two(b);		      
+	}
+	//=====================================================================
+	// Test b.shrink_to_fit()
+	{
+		boost::dynamic_bitset<Block> b;
+		Tests::shrink_to_fit_test_one(b);
+	}
+	{
+		boost::dynamic_bitset<Block> b(100);
+		Tests::shrink_to_fit_test_two(b);
+	}
   //=====================================================================
   // Test b.all()
   {
