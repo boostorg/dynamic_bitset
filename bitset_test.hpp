@@ -2,7 +2,7 @@
 //              Copyright (c) 2001 Jeremy Siek
 //        Copyright (c) 2003-2006, 2008 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
-//            Copyright (c) 2014 Riccardo Marcangelo 
+//            Copyright (c) 2014 Riccardo Marcangelo
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -730,6 +730,67 @@ struct bitset_test {
   static void size(const Bitset& b)
   {
     BOOST_CHECK(Bitset(b).set().count() == b.size());
+  }
+
+  static void capacity_test_one(const Bitset& lhs)
+  {
+    //empty bitset
+    Bitset b(lhs);
+    BOOST_CHECK(b.capacity() == 0);
+  }
+
+  static void capacity_test_two(const Bitset& lhs)
+  {
+    //bitset constructed with size "100"
+    Bitset b(lhs);
+    BOOST_CHECK(b.capacity() >= 100);
+    b.resize(200);
+    BOOST_CHECK(b.capacity() >= 200);
+  }
+
+  static void reserve_test_one(const Bitset& lhs)
+  {
+    //empty bitset
+    Bitset b(lhs);
+    b.reserve(16);
+    BOOST_CHECK(b.capacity() >= 16);
+  }
+
+  static void reserve_test_two(const Bitset& lhs)
+  {
+    //bitset constructed with size "100"
+    Bitset b(lhs);
+    BOOST_CHECK(b.capacity() >= 100);
+    b.reserve(60);
+    BOOST_CHECK(b.size() == 100);
+    BOOST_CHECK(b.capacity() >= 100);
+    b.reserve(160);
+    BOOST_CHECK(b.size() == 100);
+    BOOST_CHECK(b.capacity() >= 160);
+  }
+
+  static void shrink_to_fit_test_one(const Bitset& lhs)
+  {
+    //empty bitset
+    Bitset b(lhs);
+    b.shrink_to_fit();
+    BOOST_CHECK(b.size() == 0);
+    BOOST_CHECK(b.capacity() == 0);
+  }
+
+  static void shrink_to_fit_test_two(const Bitset& lhs)
+  {
+    //bitset constructed with size "100"
+    Bitset b(lhs);
+    b.shrink_to_fit();
+    BOOST_CHECK(b.capacity() >= 100);
+    BOOST_CHECK(b.size() == 100);
+    b.reserve(200);
+    BOOST_CHECK(b.capacity() >= 200);
+    BOOST_CHECK(b.size() == 100);
+    b.shrink_to_fit();
+    BOOST_CHECK(b.capacity() < 200);
+    BOOST_CHECK(b.size() == 100);
   }
 
   static void all(const Bitset& b)
