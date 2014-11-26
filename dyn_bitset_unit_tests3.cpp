@@ -123,35 +123,35 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     Tests::size(b);
   }
   //=====================================================================
-	// Test b.capacity()
-	{
-		boost::dynamic_bitset<Block> b;
-		Tests::capacity_test_one(b);            
-	}
-	{
-		boost::dynamic_bitset<Block> b(100);
-		Tests::capacity_test_two(b);   
-	}
-	//=====================================================================
-	// Test b.reserve()
-	{
-	  boost::dynamic_bitset<Block> b;
-		Tests::reserve_test_one(b);		   
-	}	
-	{
-		boost::dynamic_bitset<Block> b(100);
-		Tests::reserve_test_two(b);		      
-	}
-	//=====================================================================
-	// Test b.shrink_to_fit()
-	{
-		boost::dynamic_bitset<Block> b;
-		Tests::shrink_to_fit_test_one(b);
-	}
-	{
-		boost::dynamic_bitset<Block> b(100);
-		Tests::shrink_to_fit_test_two(b);
-	}
+  // Test b.capacity()
+  {
+    boost::dynamic_bitset<Block> b;
+    Tests::capacity_test_one(b);
+  }
+  {
+    boost::dynamic_bitset<Block> b(100);
+    Tests::capacity_test_two(b);
+  }
+  //=====================================================================
+  // Test b.reserve()
+  {
+    boost::dynamic_bitset<Block> b;
+    Tests::reserve_test_one(b);		   
+  }
+  {
+    boost::dynamic_bitset<Block> b(100);
+    Tests::reserve_test_two(b);
+  }
+  //=====================================================================
+  // Test b.shrink_to_fit()
+  {
+    boost::dynamic_bitset<Block> b;
+    Tests::shrink_to_fit_test_one(b);
+  }
+  {
+    boost::dynamic_bitset<Block> b(100);
+    Tests::shrink_to_fit_test_two(b);
+  }
   //=====================================================================
   // Test b.all()
   {
