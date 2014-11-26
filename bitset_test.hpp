@@ -741,7 +741,7 @@ struct bitset_test {
 
   static void capacity_test_two(const Bitset& lhs)
   {
-	  //bitset constructed with size "100"
+    //bitset constructed with size "100"
     Bitset b(lhs);
     BOOST_CHECK(b.capacity() >= 100);
     b.resize(200);
