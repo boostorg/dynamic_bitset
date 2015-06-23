@@ -11,4 +11,6 @@ test-suite dynamic_bitset :
     [ run dyn_bitset_unit_tests2.cpp ]
     [ run dyn_bitset_unit_tests3.cpp ]
     [ run dyn_bitset_unit_tests4.cpp ]
+    [ run dyn_bitset_unit_tests5.cpp /boost/serialization//boost_serialization
+       : : : <define>_SCL_SECURE_NO_WARNINGS=1 ]
     ;
