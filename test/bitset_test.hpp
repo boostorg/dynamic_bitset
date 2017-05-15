@@ -958,23 +958,44 @@ struct bitset_test {
 
   static bool less_than(const Bitset& a, const Bitset& b)
   {
-    // Compare from most significant to least.
-    // Careful, don't send unsigned int into negative territory!
-    if (a.size() == 0)
-      return false;
-
-    std::size_t I;
-    for (I = a.size() - 1; I > 0; --I)
-      if (a[I] < b[I])
+  
+    BOOST_DEDUCED_TYPENAME Bitset::size_type asize(a.size());
+    BOOST_DEDUCED_TYPENAME Bitset::size_type bsize(b.size());
+    
+    if (asize == bsize)
+        {
+    
+        // Compare from most significant to least.
+        // Careful, don't send unsigned int into negative territory!
+        if (asize == 0)
+          return false;
+    
+        std::size_t I;
+        for (I = asize - 1; I > 0; --I)
+          if (a[I] < b[I])
+            return true;
+          else if (a[I] > b[I])
+            return false;
+          // if (a[I] = b[I]) skip to next
+    
+        if (a[0] < b[0])
+          return true;
+        else
+          return false;
+        }
+    else if (!asize)
+        {
         return true;
-      else if (a[I] > b[I])
+        }
+    else if (!bsize)
+        {
         return false;
-      // if (a[I] = b[I]) skip to next
-
-    if (a[0] < b[0])
-      return true;
+        }
     else
-      return false;
+        {
+        return(a.to_ulong() < b.to_ulong());
+        }
+        
   }
 
   static typename Bitset::size_type next_bit_on(const Bitset& b, typename Bitset::size_type prev)

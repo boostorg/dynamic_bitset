@@ -478,6 +478,14 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     Tests::operator_less_than(a, b);
   }
   {
+    boost::dynamic_bitset<Block> a(std::string("101")), b(std::string("11"));
+    Tests::operator_less_than(a, b);
+  }
+  {
+    boost::dynamic_bitset<Block> a(std::string("10")), b(std::string("111"));
+    Tests::operator_less_than(a, b);
+  }
+  {
     boost::dynamic_bitset<Block> a(long_string), b(long_string);
     Tests::operator_less_than(a, b);
   }
@@ -497,11 +505,35 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     assert(a < b);
   }
   {
+    boost::dynamic_bitset<Block> a(4, 4ul), b(3, 5ul);
+    assert(a < b);
+  }
+  {
+    boost::dynamic_bitset<Block> a(3, 4ul), b(4, 5ul);
+    assert(a < b);
+  }
+  {
     boost::dynamic_bitset<Block> a(3, 4ul), b(3, 4ul);
     assert(!(a < b));
   }
   {
+    boost::dynamic_bitset<Block> a(4, 4ul), b(3, 4ul);
+    assert(!(a < b));
+  }
+  {
+    boost::dynamic_bitset<Block> a(3, 4ul), b(4, 4ul);
+    assert(!(a < b));
+  }
+  {
     boost::dynamic_bitset<Block> a(3, 5ul), b(3, 4ul);
+    assert(!(a < b));
+  }
+  {
+    boost::dynamic_bitset<Block> a(4, 5ul), b(3, 4ul);
+    assert(!(a < b));
+  }
+  {
+    boost::dynamic_bitset<Block> a(3, 5ul), b(4, 4ul);
     assert(!(a < b));
   }
   //=====================================================================

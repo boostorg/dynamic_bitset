@@ -1420,23 +1420,42 @@ template <typename Block, typename Allocator>
 bool operator<(const dynamic_bitset<Block, Allocator>& a,
                const dynamic_bitset<Block, Allocator>& b)
 {
-    assert(a.size() == b.size());
-    typedef typename dynamic_bitset<Block, Allocator>::size_type size_type;
+//    assert(a.size() == b.size());
 
-    //if (a.size() == 0)
-    //  return false;
+    BOOST_DEDUCED_TYPENAME dynamic_bitset<Block, Allocator>::size_type asize(a.size());
+    BOOST_DEDUCED_TYPENAME dynamic_bitset<Block, Allocator>::size_type bsize(b.size());
 
-    // Since we are storing the most significant bit
-    // at pos == size() - 1, we need to do the comparisons in reverse.
-    //
-    for (size_type ii = a.num_blocks(); ii > 0; --ii) {
-      size_type i = ii-1;
-      if (a.m_bits[i] < b.m_bits[i])
-        return true;
-      else if (a.m_bits[i] > b.m_bits[i])
+    if (asize == bsize)
+        {
+        typedef typename dynamic_bitset<Block, Allocator>::size_type size_type;
+    
+        //if (a.size() == 0)
+        //  return false;
+    
+        // Since we are storing the most significant bit
+        // at pos == size() - 1, we need to do the comparisons in reverse.
+        //
+        for (size_type ii = a.num_blocks(); ii > 0; --ii) {
+          size_type i = ii-1;
+          if (a.m_bits[i] < b.m_bits[i])
+            return true;
+          else if (a.m_bits[i] > b.m_bits[i])
+            return false;
+        }
         return false;
-    }
-    return false;
+        }
+    else if (!asize)
+        {
+        return true;
+        }
+    else if (!bsize)
+        {
+        return false;
+        }
+    else
+        {
+        return(a.to_ulong() < b.to_ulong());
+        }
 }
 
 template <typename Block, typename Allocator>
