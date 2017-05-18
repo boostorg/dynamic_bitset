@@ -73,13 +73,8 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     std::ios::iostate masks[] = {
                                   std::ios::goodbit,
                                   std::ios::eofbit,
-#if defined(BOOST_GCC) || (defined(BOOST_CLANG) && defined(BOOST_GNU_STDLIB))
-                                  std::ios::failbit | std::ios::badbit,
-                                  std::ios::eofbit | std::ios::badbit
-#else
                                   std::ios::failbit,
                                   std::ios::eofbit | std::ios::failbit
-#endif
                                 };
 
     static std::string strings[] = {
@@ -181,16 +176,11 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
 
 
   std::ios::iostate masks[] = {
-                                  std::ios::goodbit,
-                                  std::ios::eofbit,
-#if defined(BOOST_GCC) || (defined(BOOST_CLANG) && defined(BOOST_GNU_STDLIB))
-                                  std::ios::failbit | std::ios::badbit,
-                                  std::ios::eofbit | std::ios::badbit
-#else
-                                  std::ios::failbit,
-                                  std::ios::eofbit | std::ios::failbit
-#endif
-                                   };
+                                std::ios::goodbit,
+                                std::ios::eofbit,
+                                std::ios::failbit,
+                                std::ios::eofbit | std::ios::failbit
+                              };
 
   const std::string spaces = "\t\n "; //"\t\n\v\f ";
 
