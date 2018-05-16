@@ -125,13 +125,13 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
             }
             {
               // test 1a - file stream
+              scoped_temp_file stf;
               bitset_type b(strings[si]);
-              std::ofstream file(test_file_name(), std::ios::trunc);
+              std::ofstream file(stf.path().string().c_str(), std::ios::trunc);
               file.width(w);
               file.fill(fill_chars[ci]);
               file.exceptions(masks[mi]);
-              Tests::stream_inserter(b, file, test_file_name());
-
+              Tests::stream_inserter(b, file, stf.path().string().c_str());
             }
             {
               //NOTE: there are NO string stream tests
@@ -139,12 +139,13 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
 #if !defined (BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS)
             {
               // test 1b - wide file stream
+              scoped_temp_file stf;
               bitset_type b(strings[si]);
-              std::wofstream file(test_file_name());
+              std::wofstream file(stf.path().string().c_str());
               file.width(w);
               file.fill(fill_chars[ci]);
               file.exceptions(masks[mi]);
-              Tests::stream_inserter(b, file, test_file_name());
+              Tests::stream_inserter(b, file, stf.path().string().c_str()); 
             }
 #endif
           }
@@ -257,13 +258,14 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
         }
         // test 1a - (narrow) file stream
         {
+          scoped_temp_file stf;
           bitset_type b(1, 255ul);
           {
-            std::ofstream f(test_file_name());
+            std::ofstream f(stf.path().string().c_str());
             f << strings[si];
           }
 
-          std::ifstream f(test_file_name());
+          std::ifstream f(stf.path().string().c_str());
           f.width(w);
           f.exceptions(masks[mi]);
           Tests::stream_extractor(b, f, strings[si]);
@@ -282,14 +284,15 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
 #if !defined(BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS)
         // test 1b - wchar_t file stream
         {
+          scoped_temp_file stf;
           std::wstring wstr = widen_string(strings[si]);
           bitset_type b(1, 255ul);
           {
-            std::basic_ofstream<wchar_t> of(test_file_name());
+            std::basic_ofstream<wchar_t> of(stf.path().string().c_str());
             of << wstr;
           }
 
-          std::basic_ifstream<wchar_t> f(test_file_name());
+          std::basic_ifstream<wchar_t> f(stf.path().string().c_str());
           f.width(w);
           f.exceptions(masks[mi]);
           Tests::stream_extractor(b, f, wstr);
