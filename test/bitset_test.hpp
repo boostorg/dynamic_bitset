@@ -27,10 +27,12 @@
 #include "boost/limits.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
 #include "boost/test/minimal.hpp"
+#include "boost/filesystem.hpp"
 
 template <typename Block>
 inline bool nth_bit(Block num, std::size_t n)
 {
+#ifndef NDEBUG
 #ifdef __BORLANDC__
   // Borland deduces Block as a const qualified type,
   // and thus finds numeric_limits<Block> to be zero :(
@@ -40,8 +42,9 @@ inline bool nth_bit(Block num, std::size_t n)
 #else
   int block_width = std::numeric_limits<Block>::digits;
 #endif
-
   assert(n < (std::size_t) block_width);
+#endif
+
   return (num >> n) & 1;
 }
 
@@ -61,10 +64,27 @@ std::string get_long_string()
   return std::string(p);
 }
 
-const char * test_file_name()
+class scoped_temp_file
 {
-  return "boost_dynamic_bitset_tests";
-}
+public:
+  scoped_temp_file()
+    : m_path(boost::filesystem::unique_path())
+  {
+  }
+
+  ~scoped_temp_file()
+  {
+    boost::filesystem::remove(m_path);
+  }
+
+  const boost::filesystem::path& path() const
+  {
+    return m_path;
+  }
+
+private:
+  boost::filesystem::path m_path;
+};
 
 #if defined BOOST_OLD_IOSTREAMS || defined BOOST_NO_STD_LOCALE
 template <typename Stream>
