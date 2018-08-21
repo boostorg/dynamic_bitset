@@ -41,11 +41,11 @@
 #endif
 
 #include "boost/dynamic_bitset_fwd.hpp"
-#include "boost/detail/dynamic_bitset.hpp"
+#include "boost/dynamic_bitset/detail/dynamic_bitset.hpp"
+#include "boost/dynamic_bitset/detail/lowest_bit.hpp"
 #include "boost/detail/iterator.hpp" // used to implement append(Iter, Iter)
 #include "boost/move/move.hpp"
 #include "boost/limits.hpp"
-#include "boost/pending/lowest_bit.hpp"
 #include "boost/static_assert.hpp"
 #include "boost/utility/addressof.hpp"
 #include "boost/detail/no_exceptions_support.hpp"
@@ -1358,7 +1358,6 @@ bool dynamic_bitset<Block, Allocator>::intersects(const dynamic_bitset & b) cons
 // --------------------------------
 // lookup
 
-
 // look for the first bit "on", starting
 // from the block with index first_block
 //
@@ -1375,8 +1374,7 @@ dynamic_bitset<Block, Allocator>::m_do_find_from(size_type first_block) const
     if (i >= num_blocks())
         return npos; // not found
 
-    return i * bits_per_block + static_cast<size_type>(boost::lowest_bit(m_bits[i]));
-
+    return i * bits_per_block + static_cast<size_type>(detail::lowest_bit(m_bits[i]));
 }
 
 
@@ -1406,7 +1404,7 @@ dynamic_bitset<Block, Allocator>::find_next(size_type pos) const
     const Block fore = m_bits[blk] >> ind;
 
     return fore?
-        pos + static_cast<size_type>(lowest_bit(fore))
+        pos + static_cast<size_type>(detail::lowest_bit(fore))
         :
         m_do_find_from(blk + 1);
 
