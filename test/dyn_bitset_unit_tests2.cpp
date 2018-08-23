@@ -2,6 +2,7 @@
 //              Copyright (c) 2001 Jeremy Siek
 //           Copyright (c) 2003-2006 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
+//             Copyright (c) 2018 Evgeny Shulgin
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -206,6 +207,40 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     boost::dynamic_bitset<Block> b(long_string);
     Tests::set_one(b, long_string.size()/2, true);
     Tests::set_one(b, long_string.size()/2, false);
+  }
+  //=====================================================================
+  // Test b.set(pos, len)
+  { // case size is 1
+    boost::dynamic_bitset<Block> b(std::string("0"));
+    Tests::set_segment(b, 0, 1, true);
+    Tests::set_segment(b, 0, 1, false);
+  }
+  { // case fill the whole set
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::set_segment(b, 0, b.size(), true);
+    Tests::set_segment(b, 0, b.size(), false);
+  }
+  { // case pos = size / 4, len = size / 2
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::set_segment(b, b.size() / 4, b.size() / 2, true);
+    Tests::set_segment(b, b.size() / 4, b.size() / 2, false);
+  }
+  { // case pos = block_size / 2, len = size - block_size
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::set_segment(b, boost::dynamic_bitset<Block>::bits_per_block / 2,
+            b.size() - boost::dynamic_bitset<Block>::bits_per_block, true);
+    Tests::set_segment(b, boost::dynamic_bitset<Block>::bits_per_block / 2,
+            b.size() - boost::dynamic_bitset<Block>::bits_per_block, false);
+  }
+  { // case pos = 1, len = size - 2
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::set_segment(b, 1, b.size() - 2, true);
+    Tests::set_segment(b, 1, b.size() - 2, false);
+  }
+  { // case pos = 3, len = 7
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::set_segment(b, 3, 7, true);
+    Tests::set_segment(b, 3, 7, false);
   }
   //=====================================================================
   // Test b.reset()

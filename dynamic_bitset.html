@@ -8,6 +8,7 @@
               Copyright (c) 2003-2004, 2008 Gennaro Prota
                     Copyright (c) 2014 Ahmed Charles
                  Copyright (c) 2014 Riccardo Marcangelo
+                    Copyright (c) 2018 Evgeny Shulgin
 
        Distributed under the Boost Software License, Version 1.0.
           (See accompanying file LICENSE_1_0.txt or copy at
@@ -197,6 +198,7 @@ public:
     dynamic_bitset <a href="#op-sl">operator&lt;&lt;</a>(size_type n) const;
     dynamic_bitset <a href="#op-sr">operator&gt;&gt;</a>(size_type n) const;
 
+    dynamic_bitset&amp; <a href="#set3">set</a>(size_type n, size_type len, bool val = true);
     dynamic_bitset&amp; <a href="#set2">set</a>(size_type n, bool val = true);
     dynamic_bitset&amp; <a href="#set1">set</a>();
     dynamic_bitset&amp; <a href="#reset2">reset</a>(size_type n);
@@ -1061,6 +1063,18 @@ dynamic_bitset&amp; <a id="reset1">reset</a>()
 <b>Effects:</b> Clears every bit in this bitset.<br />
 <b>Returns:</b> <tt>*this</tt><br />
 <b>Throws:</b> nothing.
+
+<hr />
+<pre>
+dynamic_bitset&amp; <a id=
+"set3">set</a>(size_type n, size_type len, bool val = true);
+</pre>
+
+<b>Precondition:</b> <tt>n + len &lt; this-&gt;size()</tt>.<br />
+<b>Effects:</b> Sets every bit indexed from <tt>n</tt> to
+<tt>n + len - 1</tt> inclusively if <tt>val</tt> is <tt>true</tt>, and
+clears them if <tt>val</tt> is false</tt>. <br />
+<b>Returns:</b> <tt>*this</tt>
 
 <hr />
 <pre>
