@@ -7,6 +7,7 @@
 // Copyright (c) 2014 Glen Joseph Fernandes
 // glenfe at live dot com
 // Copyright (c) 2014 Riccardo Marcangelo
+//             Copyright (c) 2018 Evgeny Shulgin
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -1125,7 +1126,17 @@ dynamic_bitset<Block, Allocator>::count() const BOOST_NOEXCEPT
 
     enum { enough_table_width = table_width >= CHAR_BIT };
 
-    enum { mode = (no_padding && enough_table_width)
+#if ((defined(BOOST_MSVC) && (BOOST_MSVC >= 1600)) || (defined(__clang__) && defined(__c2__)) || (defined(BOOST_INTEL) && defined(_MSC_VER))) && (defined(_M_IX86) || defined(_M_X64))
+    // Windows popcount is effective starting from the unsigned short type
+    enum { uneffective_popcount = sizeof(Block) < sizeof(unsigned short) };
+#elif defined(BOOST_GCC) || defined(__clang__) || (defined(BOOST_INTEL) && defined(__GNUC__))
+    // GCC popcount is effective starting from the unsigned int type
+    enum { uneffective_popcount = sizeof(Block) < sizeof(unsigned int) };
+#else
+    enum { uneffective_popcount = true };
+#endif
+
+    enum { mode = (no_padding && enough_table_width && uneffective_popcount)
                           ? access_by_bytes
                           : access_by_blocks };
 

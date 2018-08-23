@@ -5,6 +5,7 @@
 //
 // Copyright (c) 2014 Glen Joseph Fernandes
 // glenfe at live dot com
+//             Copyright (c) 2018 Evgeny Shulgin
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -20,6 +21,9 @@
 #include "boost/config.hpp"
 #include "boost/detail/workaround.hpp"
 
+#if ((defined(BOOST_MSVC) && (BOOST_MSVC >= 1600)) || (defined(__clang__) && defined(__c2__)) || (defined(BOOST_INTEL) && defined(_MSC_VER))) && (defined(_M_IX86) || defined(_M_X64))
+#include <intrin.h>
+#endif
 
 namespace boost {
 
@@ -125,6 +129,61 @@ namespace boost {
      }
 
 
+     // Some platforms have fast popcount operation, that allow us to implement
+     // counting bits much more efficiently
+     //
+     template <typename ValueType>
+     BOOST_FORCEINLINE std::size_t popcount(ValueType value) BOOST_NOEXCEPT
+     {
+         std::size_t num = 0;
+         while (value) {
+             num += count_table<>::table[value & ((1u<<table_width) - 1)];
+             value >>= table_width;
+         }
+         return num;
+     }
+
+#if ((defined(BOOST_MSVC) && (BOOST_MSVC >= 1600)) || (defined(__clang__) && defined(__c2__)) || (defined(BOOST_INTEL) && defined(_MSC_VER))) && (defined(_M_IX86) || defined(_M_X64))
+     template <>
+     BOOST_FORCEINLINE std::size_t popcount<unsigned short>(unsigned short value) BOOST_NOEXCEPT
+     {
+         return static_cast<std::size_t>(__popcnt16(value));
+     }
+
+     template <>
+     BOOST_FORCEINLINE std::size_t popcount<unsigned int>(unsigned int value) BOOST_NOEXCEPT
+     {
+         return static_cast<std::size_t>(__popcnt(value));
+     }
+
+#ifdef _M_X64
+     template <>
+     BOOST_FORCEINLINE std::size_t popcount<unsigned __int64>(unsigned __int64 value) BOOST_NOEXCEPT
+     {
+         return static_cast<std::size_t>(__popcnt64(value));
+     }
+#endif
+
+#elif defined(BOOST_GCC) || defined(__clang__) || (defined(BOOST_INTEL) && defined(__GNUC__))
+     template <>
+     BOOST_FORCEINLINE std::size_t popcount<unsigned int>(unsigned int value) BOOST_NOEXCEPT
+     {
+         return __builtin_popcount(value);
+     }
+
+     template <>
+     BOOST_FORCEINLINE std::size_t popcount<unsigned long>(unsigned long value) BOOST_NOEXCEPT
+     {
+         return __builtin_popcountl(value);
+     }
+
+     template <>
+     BOOST_FORCEINLINE std::size_t popcount<boost::ulong_long_type>(boost::ulong_long_type value) BOOST_NOEXCEPT
+     {
+         return __builtin_popcountll(value);
+     }
+#endif
+
      // overload for access by blocks
      //
      template <typename Iterator, typename ValueType>
@@ -133,13 +192,7 @@ namespace boost {
      {
          std::size_t num = 0;
          while (length){
-
-             ValueType value = *first;
-             while (value) {
-                 num += count_table<>::table[value & ((1u<<table_width) - 1)];
-                 value >>= table_width;
-             }
-
+             num += popcount<ValueType>(*first);
              ++first;
              --length;
          }
