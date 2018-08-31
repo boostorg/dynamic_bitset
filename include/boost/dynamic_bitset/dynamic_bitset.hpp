@@ -363,6 +363,9 @@ public:
 private:
     BOOST_STATIC_CONSTANT(block_width_type, ulong_width = std::numeric_limits<unsigned long>::digits);
 
+    dynamic_bitset& range_operation(size_type pos, size_type len,
+        Block (*partial_block_operation)(Block, size_type, size_type),
+        Block (*full_block_operation)(Block));
     void m_zero_unused_bits();
     bool m_check_invariants() const;
 
@@ -387,6 +390,26 @@ private:
             return block | bit_mask(first, last);
         else
             return block & static_cast<Block>(~bit_mask(first, last));
+    }
+
+    // Functions for operations on ranges
+    inline static Block set_block_partial(Block block, size_type first,
+        size_type last) BOOST_NOEXCEPT
+    {
+        return set_block_bits(block, first, last, true);
+    }
+    inline static Block set_block_full(Block) BOOST_NOEXCEPT
+    {
+        return static_cast<Block>(~0);
+    }
+    inline static Block reset_block_partial(Block block, size_type first,
+        size_type last) BOOST_NOEXCEPT
+    {
+        return set_block_bits(block, first, last, false);
+    }
+    inline static Block reset_block_full(Block) BOOST_NOEXCEPT
+    {
+        return 0;
     }
 
     template <typename CharT, typename Traits, typename Alloc>
@@ -983,58 +1006,10 @@ dynamic_bitset<Block, Allocator>&
 dynamic_bitset<Block, Allocator>::set(size_type pos,
         size_type len, bool val)
 {
-    assert(pos + len <= m_num_bits);
-
-    // Do nothing in case of zero len
-    if (!len)
-        return *this;
-
-    // Use an additional asserts in order to detect size_type overflow
-    // For example: pos = 10, len = size_type_limit - 2, pos + len = 7
-    // In case of overflow, 'pos + len' is always smaller than 'len'
-    assert(pos + len >= len);
-
-    // Start and end blocks of the [pos; pos + len - 1] sequence
-    const int first_block = block_index(pos);
-    const int last_block = block_index(pos + len - 1);
-
-    const int first_bit_index = bit_index(pos);
-    const int last_bit_index = bit_index(pos + len - 1);
-
-    if (first_block == last_block) {
-        // Filling only a sub-block of a block
-        m_bits[first_block] = set_block_bits(m_bits[first_block],
-            first_bit_index, last_bit_index, val);
-    } else {
-        // Check if the corner blocks won't be fully filled with 'val'
-        const int first_block_shift = bit_index(pos) ? 1 : 0;
-        const int last_block_shift = (bit_index(pos + len - 1)
-            == bits_per_block - 1) ? 0 : 1;
-
-        // Blocks that will be filled with ~0 or 0 at once
-        const int first_full_block = first_block + first_block_shift;
-        const int last_full_block = last_block - last_block_shift;
-
-        if (first_full_block <= last_full_block) {
-            std::fill_n(m_bits.begin() + first_full_block,
-                    last_full_block - first_full_block + 1,
-                    val ? static_cast<Block>(~0) : Block(0));
-        }
-
-        // Fill the first block from the 'first' bit index to the end
-        if (first_block_shift) {
-            m_bits[first_block] = set_block_bits(m_bits[first_block],
-                first_bit_index, bits_per_block - 1, val);
-        }
-
-        // Fill the last block from the start to the 'last' bit index
-        if (last_block_shift) {
-            m_bits[last_block] = set_block_bits(m_bits[last_block],
-                0, last_bit_index, val);
-        }
-    }
-
-    return *this;
+    if (val)
+        return range_operation(pos, len, set_block_partial, set_block_full);
+    else
+        return range_operation(pos, len, reset_block_partial, reset_block_full);
 }
 
 template <typename Block, typename Allocator>
@@ -1064,7 +1039,7 @@ template <typename Block, typename Allocator>
 inline dynamic_bitset<Block, Allocator>&
 dynamic_bitset<Block, Allocator>::reset(size_type pos, size_type len)
 {
-    return set(pos, len, false);
+    return range_operation(pos, len, reset_block_partial, reset_block_full);
 }
 
 template <typename Block, typename Allocator>
@@ -2010,6 +1985,63 @@ inline const Block& dynamic_bitset<Block, Allocator>::m_highest_block() const
     return m_bits.back();
 }
 
+template <typename Block, typename Allocator>
+dynamic_bitset<Block, Allocator>& dynamic_bitset<Block, Allocator>::range_operation(
+    size_type pos, size_type len,
+    Block (*partial_block_operation)(Block, size_type, size_type),
+    Block (*full_block_operation)(Block))
+{
+    assert(pos + len <= m_num_bits);
+
+    // Do nothing in case of zero length
+    if (!len)
+        return *this;
+
+    // Use an additional asserts in order to detect size_type overflow
+    // For example: pos = 10, len = size_type_limit - 2, pos + len = 7
+    // In case of overflow, 'pos + len' is always smaller than 'len'
+    assert(pos + len >= len);
+
+    // Start and end blocks of the [pos; pos + len - 1] sequence
+    const size_type first_block = block_index(pos);
+    const size_type last_block = block_index(pos + len - 1);
+
+    const size_type first_bit_index = bit_index(pos);
+    const size_type last_bit_index = bit_index(pos + len - 1);
+
+    if (first_block == last_block) {
+        // Filling only a sub-block of a block
+        m_bits[first_block] = partial_block_operation(m_bits[first_block],
+            first_bit_index, last_bit_index);
+    } else {
+        // Check if the corner blocks won't be fully filled with 'val'
+        const size_type first_block_shift = bit_index(pos) ? 1 : 0;
+        const size_type last_block_shift = (bit_index(pos + len - 1)
+            == bits_per_block - 1) ? 0 : 1;
+
+        // Blocks that will be filled with ~0 or 0 at once
+        const size_type first_full_block = first_block + first_block_shift;
+        const size_type last_full_block = last_block - last_block_shift;
+
+        for (size_type i = first_full_block; i <= last_full_block; ++i) {
+            m_bits[i] = full_block_operation(m_bits[i]);
+        }
+
+        // Fill the first block from the 'first' bit index to the end
+        if (first_block_shift) {
+            m_bits[first_block] = partial_block_operation(m_bits[first_block],
+                first_bit_index, bits_per_block - 1);
+        }
+
+        // Fill the last block from the start to the 'last' bit index
+        if (last_block_shift) {
+            m_bits[last_block] = partial_block_operation(m_bits[last_block],
+                0, last_bit_index);
+        }
+    }
+
+    return *this;
+}
 
 // If size() is not a multiple of bits_per_block
 // then not all the bits in the last block are used.
