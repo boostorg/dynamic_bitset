@@ -201,6 +201,7 @@ public:
     dynamic_bitset&amp; <a href="#set3">set</a>(size_type n, size_type len, bool val = true);
     dynamic_bitset&amp; <a href="#set2">set</a>(size_type n, bool val = true);
     dynamic_bitset&amp; <a href="#set1">set</a>();
+    dynamic_bitset&amp; <a href="#reset3">reset</a>(size_type n, size_type len);
     dynamic_bitset&amp; <a href="#reset2">reset</a>(size_type n);
     dynamic_bitset&amp; <a href="#reset1">reset</a>();
     dynamic_bitset&amp; <a href="#flip2">flip</a>(size_type n);
@@ -1073,7 +1074,7 @@ dynamic_bitset&amp; <a id=
 <b>Precondition:</b> <tt>n + len &lt; this-&gt;size()</tt>.<br />
 <b>Effects:</b> Sets every bit indexed from <tt>n</tt> to
 <tt>n + len - 1</tt> inclusively if <tt>val</tt> is <tt>true</tt>, and
-clears them if <tt>val</tt> is false</tt>. <br />
+clears them if <tt>val</tt> is <tt>false</tt>. <br />
 <b>Returns:</b> <tt>*this</tt>
 
 <hr />
@@ -1087,6 +1088,17 @@ dynamic_bitset&amp; <a id=
 <tt>true</tt>, and clears bit <tt>n</tt> if <tt>val</tt> is
 <tt>false</tt>. <br />
  <b>Returns:</b> <tt>*this</tt>
+
+<hr />
+<pre>
+dynamic_bitset&amp; <a id=
+"reset3">reset</a>(size_type n, size_type len);
+</pre>
+
+<b>Precondition:</b> <tt>n + len &lt; this-&gt;size()</tt>.<br />
+<b>Effects:</b> Clears every bit indexed from <tt>n</tt> to
+<tt>n + len - 1</tt> inclusively.<br />
+<b>Returns:</b> <tt>*this</tt>
 
 <hr />
 <pre>

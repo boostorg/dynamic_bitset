@@ -283,6 +283,7 @@ public:
     dynamic_bitset& set(size_type n, size_type len, bool val = true);
     dynamic_bitset& set(size_type n, bool val = true);
     dynamic_bitset& set();
+    dynamic_bitset& reset(size_type n, size_type len);
     dynamic_bitset& reset(size_type n);
     dynamic_bitset& reset();
     dynamic_bitset& flip(size_type n);
@@ -1057,6 +1058,13 @@ dynamic_bitset<Block, Allocator>::set()
   std::fill(m_bits.begin(), m_bits.end(), static_cast<Block>(~0));
   m_zero_unused_bits();
   return *this;
+}
+
+template <typename Block, typename Allocator>
+inline dynamic_bitset<Block, Allocator>&
+dynamic_bitset<Block, Allocator>::reset(size_type pos, size_type len)
+{
+    return set(pos, len, false);
 }
 
 template <typename Block, typename Allocator>

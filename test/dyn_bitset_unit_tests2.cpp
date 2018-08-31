@@ -271,6 +271,33 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     Tests::reset_one(b, long_string.size()/2);
   }
   //=====================================================================
+  // Test b.reset(pos, len)
+  { // case size is 1
+    boost::dynamic_bitset<Block> b(std::string("0"));
+    Tests::reset_segment(b, 0, 1);
+  }
+  { // case fill the whole set
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::reset_segment(b, 0, b.size());
+  }
+  { // case pos = size / 4, len = size / 2
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::reset_segment(b, b.size() / 4, b.size() / 2);
+  }
+  { // case pos = block_size / 2, len = size - block_size
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::reset_segment(b, boost::dynamic_bitset<Block>::bits_per_block / 2,
+            b.size() - boost::dynamic_bitset<Block>::bits_per_block);
+  }
+  { // case pos = 1, len = size - 2
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::reset_segment(b, 1, b.size() - 2);
+  }
+  { // case pos = 3, len = 7
+    boost::dynamic_bitset<Block> b(long_string);
+    Tests::reset_segment(b, 3, 7);
+  }
+  //=====================================================================
   // Test ~b
   {
     boost::dynamic_bitset<Block> b;
