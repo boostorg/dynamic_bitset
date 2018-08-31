@@ -717,6 +717,22 @@ struct bitset_test {
     }
   }
 
+  static void flip_segment(const Bitset& b, std::size_t pos,
+    std::size_t len)
+  {
+    Bitset lhs(b);
+    std::size_t N = lhs.size();
+    Bitset prev(lhs);
+    lhs.flip(pos, len);
+    for (std::size_t I = 0; I < N; ++I)
+    {
+      if (I < pos || I >= pos + len)
+        BOOST_CHECK(lhs[I] == prev[I]);
+      else
+        BOOST_CHECK(lhs[I] != prev[I]);
+    }
+  }
+
   // empty
   static void empty(const Bitset& b)
   {

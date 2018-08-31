@@ -286,6 +286,7 @@ public:
     dynamic_bitset& reset(size_type n, size_type len);
     dynamic_bitset& reset(size_type n);
     dynamic_bitset& reset();
+    dynamic_bitset& flip(size_type n, size_type len);
     dynamic_bitset& flip(size_type n);
     dynamic_bitset& flip();
     bool test(size_type n) const;
@@ -410,6 +411,15 @@ private:
     inline static Block reset_block_full(Block) BOOST_NOEXCEPT
     {
         return 0;
+    }
+    inline static Block flip_block_partial(Block block, size_type first,
+        size_type last) BOOST_NOEXCEPT
+    {
+        return block ^ bit_mask(first, last);
+    }
+    inline static Block flip_block_full(Block block) BOOST_NOEXCEPT
+    {
+        return ~block;
     }
 
     template <typename CharT, typename Traits, typename Alloc>
@@ -1064,6 +1074,13 @@ dynamic_bitset<Block, Allocator>::reset()
 {
   std::fill(m_bits.begin(), m_bits.end(), Block(0));
   return *this;
+}
+
+template <typename Block, typename Allocator>
+dynamic_bitset<Block, Allocator>&
+dynamic_bitset<Block, Allocator>::flip(size_type pos, size_type len)
+{
+    return range_operation(pos, len, flip_block_partial, flip_block_full);
 }
 
 template <typename Block, typename Allocator>
