@@ -4,7 +4,7 @@
 //        Copyright (c) 2003-2006, 2008 Gennaro Prota
 //
 // Copyright (c) 2014 Glen Joseph Fernandes
-// glenfe at live dot com
+// (glenjofe@gmail.com)
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
