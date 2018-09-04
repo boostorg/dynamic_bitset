@@ -5,7 +5,8 @@
 //             Copyright (c) 2014 Ahmed Charles
 //
 // Copyright (c) 2014 Glen Joseph Fernandes
-// glenfe at live dot com
+// (glenjofe@gmail.com)
+//
 // Copyright (c) 2014 Riccardo Marcangelo
 //             Copyright (c) 2018 Evgeny Shulgin
 //
