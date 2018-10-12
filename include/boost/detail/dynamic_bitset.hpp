@@ -1,12 +1,10 @@
 // -----------------------------------------------------------
 //
 //   Copyright (c) 2001-2002 Chuck Allison and Jeremy Siek
-//        Copyright (c) 2003-2006, 2008 Gennaro Prota
-//
-// Copyright (c) 2014 Glen Joseph Fernandes
-// (glenjofe@gmail.com)
-//
-//             Copyright (c) 2018 Evgeny Shulgin
+//   Copyright (c) 2003-2006, 2008 Gennaro Prota
+//   Copyright (c) 2014 Glen Joseph Fernandes
+//       (glenjofe@gmail.com)
+//   Copyright (c) 2018 Evgeny Shulgin
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
