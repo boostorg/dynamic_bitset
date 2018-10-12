@@ -3,6 +3,7 @@
 //        Copyright (c) 2003-2006, 2008 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
 //            Copyright (c) 2014 Riccardo Marcangelo
+//             Copyright (c) 2018 Evgeny Shulgin
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -619,6 +620,22 @@ struct bitset_test {
     }
   }
 
+  static void set_segment(const Bitset& b, std::size_t pos,
+    std::size_t len, bool value)
+  {
+    Bitset lhs(b);
+    std::size_t N = lhs.size();
+    Bitset prev(lhs);
+    lhs.set(pos, len, value);
+    for (std::size_t I = 0; I < N; ++I)
+    {
+      if (I < pos || I >= pos + len)
+        BOOST_CHECK(lhs[I] == prev[I]);
+      else
+        BOOST_CHECK(lhs[I] == value);
+    }
+  }
+
   static void reset_all(const Bitset& b)
   {
     Bitset lhs(b);
@@ -644,6 +661,22 @@ struct bitset_test {
           BOOST_CHECK(lhs[I] == prev[I]);
     } else {
       // Not in range, doesn't satisfy precondition.
+    }
+  }
+
+  static void reset_segment(const Bitset& b, std::size_t pos,
+    std::size_t len)
+  {
+    Bitset lhs(b);
+    std::size_t N = lhs.size();
+    Bitset prev(lhs);
+    lhs.reset(pos, len);
+    for (std::size_t I = 0; I < N; ++I)
+    {
+      if (I < pos || I >= pos + len)
+        BOOST_CHECK(lhs[I] == prev[I]);
+      else
+        BOOST_CHECK(!lhs[I]);
     }
   }
 
@@ -681,6 +714,22 @@ struct bitset_test {
           BOOST_CHECK(lhs[I] == prev[I]);
     } else {
       // Not in range, doesn't satisfy precondition.
+    }
+  }
+
+  static void flip_segment(const Bitset& b, std::size_t pos,
+    std::size_t len)
+  {
+    Bitset lhs(b);
+    std::size_t N = lhs.size();
+    Bitset prev(lhs);
+    lhs.flip(pos, len);
+    for (std::size_t I = 0; I < N; ++I)
+    {
+      if (I < pos || I >= pos + len)
+        BOOST_CHECK(lhs[I] == prev[I]);
+      else
+        BOOST_CHECK(lhs[I] != prev[I]);
     }
   }
 
