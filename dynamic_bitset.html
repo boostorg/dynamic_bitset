@@ -198,7 +198,7 @@ public:
     dynamic_bitset <a href="#op-sl">operator&lt;&lt;</a>(size_type n) const;
     dynamic_bitset <a href="#op-sr">operator&gt;&gt;</a>(size_type n) const;
 
-    dynamic_bitset&amp; <a href="#set3">set</a>(size_type n, size_type len, bool val = true);
+    dynamic_bitset&amp; <a href="#set3">set</a>(size_type n, size_type len, bool val);
     dynamic_bitset&amp; <a href="#set2">set</a>(size_type n, bool val = true);
     dynamic_bitset&amp; <a href="#set1">set</a>();
     dynamic_bitset&amp; <a href="#reset3">reset</a>(size_type n, size_type len);
@@ -1069,7 +1069,7 @@ dynamic_bitset&amp; <a id="reset1">reset</a>()
 <hr />
 <pre>
 dynamic_bitset&amp; <a id=
-"set3">set</a>(size_type n, size_type len, bool val = true);
+"set3">set</a>(size_type n, size_type len, bool val);
 </pre>
 
 <b>Precondition:</b> <tt>n + len &lt; this-&gt;size()</tt>.<br />

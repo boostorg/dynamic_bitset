@@ -281,7 +281,7 @@ public:
     dynamic_bitset operator>>(size_type n) const;
 
     // basic bit operations
-    dynamic_bitset& set(size_type n, size_type len, bool val = true);
+    dynamic_bitset& set(size_type n, size_type len, bool val /* = true */); // default would make it ambiguous
     dynamic_bitset& set(size_type n, bool val = true);
     dynamic_bitset& set();
     dynamic_bitset& reset(size_type n, size_type len);
