@@ -49,7 +49,7 @@
 
 #include "boost/cstdlib.hpp"
 #include "boost/version.hpp"
-#include "boost/timer.hpp"
+#include "boost/timer/timer.hpp"
 #include "boost/dynamic_bitset.hpp"
 
 
@@ -94,8 +94,11 @@ void prologue()
 template <typename T>
 void timing_test(T* = 0) // dummy parameter to workaround VC6
 {
-
+#ifndef BOOST_NO_STRESS_TEST
     const unsigned long num = 30 * 100000;
+#else
+    const unsigned long num = 30 * 1000;
+#endif
 
 
     // This variable is printed at the end of the test,
@@ -108,16 +111,13 @@ void timing_test(T* = 0) // dummy parameter to workaround VC6
     std::cout << "--------------------------------------------------\n";
 
     {
-        boost::timer time;
+        boost::timer::auto_cpu_timer time;
 
         const typename boost::dynamic_bitset<T>::size_type sz = 5000;
         for (unsigned long i = 0; i < num; ++i) {
             boost::dynamic_bitset<T> bs(sz, i);
             dummy += bs.count();
         }
-
-        const double elaps = time.elapsed();
-        std::cout << "Elapsed: " << elaps << '\n';
     }
 
     std::cout << "(total count: " << dummy << ")\n\n";
