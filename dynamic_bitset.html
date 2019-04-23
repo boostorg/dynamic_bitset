@@ -91,7 +91,7 @@ constructor of the <tt>dynamic_bitset</tt>.</p>
 
 <p>The <tt>dynamic_bitset</tt> class is nearly identical to the
 <a href=
-"https://www.rrsd.com/software_development/stl/stl/bitset.html"><tt>std::bitset</tt></a>
+"https://boost.org/sgi/stl/bitset.html"><tt>std::bitset</tt></a>
 class. The difference is that the size of the
 <tt>dynamic_bitset</tt> (the number of bits) is specified at
 run-time during the construction of a <tt>dynamic_bitset</tt>
@@ -340,7 +340,7 @@ input/output and some bitwise operations).
 <h3><a id="rationale">Rationale</a></h3>
 <p>
 <tt>dynamic_bitset</tt> is not a <a href=
-"https://www.rrsd.com/software_development/stl/stl/Container.html">Container</a> and
+"https://boost.org/sgi/stl/Container.html">Container</a> and
 does not provide iterators for the following reason:
 </p>
 
@@ -355,7 +355,7 @@ people try to use iterators from <tt>std::vector&lt;bool&gt;</tt>
 with a Standard algorithm such as <tt>std::search</tt>. The
 <tt>std::search</tt> requirements say that the iterator must be a
 <a href=
-"https://www.rrsd.com/software_development/stl/stl/ForwardIterator.html">Forward
+"https://boost.org/sgi/stl/ForwardIterator.html">Forward
 Iterator</a>, but the <tt>std::vector&lt;bool&gt;::iterator</tt>
 does not meet this requirement because of the proxy reference.
 Depending on the implementation, they may or not be a compile
@@ -367,7 +367,7 @@ by not pretending to be a container.</li>
 
 <p>Some people prefer the name "toggle" to "flip". The name
 "flip" was chosen because that is the name used in <a href=
-"https://www.rrsd.com/software_development/stl/stl/bitset.html"><tt>std::bitset</tt></a>.
+"https://boost.org/sgi/stl/bitset.html"><tt>std::bitset</tt></a>.
 In fact, most of the function names for <tt>dynamic_bitset</tt>
 were chosen for this reason.</p>
 
@@ -409,13 +409,13 @@ in the header <a href=
 </table>
 <h3><a id="concepts-modeled">Concepts Modeled</a></h3>
 <a href=
-"https://www.rrsd.com/software_development/stl/stl/Assignable.html">Assignable</a>, <a
+"https://boost.org/sgi/stl/Assignable.html">Assignable</a>, <a
 href=
-"https://www.rrsd.com/software_development/stl/stl/DefaultConstructible.html">Default
+"https://boost.org/sgi/stl/DefaultConstructible.html">Default
 Constructible</a>, <a href=
-"https://www.rrsd.com/software_development/stl/stl/EqualityComparable.html">Equality
+"https://boost.org/sgi/stl/EqualityComparable.html">Equality
 Comparable</a>, <a href=
-"https://www.rrsd.com/software_development/stl/stl/LessThanComparable.html">LessThan
+"https://boost.org/sgi/stl/LessThanComparable.html">LessThan
 Comparable</a>.
 
 <h3><a id="type-requirements">Type requirements</a></h3>
@@ -581,7 +581,7 @@ operations such as <tt>resize</tt> to allocate memory.<br />
 (<tt>std::bad_alloc</tt> if
 <tt>Allocator=std::allocator</tt>).<br />
  (Required by <a href=
-"https://www.rrsd.com/software_development/stl/stl/DefaultConstructible.html">Default
+"https://boost.org/sgi/stl/DefaultConstructible.html">Default
 Constructible</a>.)
 
 <hr />
@@ -637,7 +637,7 @@ allocator in <tt>x</tt>. <br />
 (<tt>std::bad_alloc</tt> if
 <tt>Allocator=std::allocator</tt>).<br />
  (Required by <a href=
-"https://www.rrsd.com/software_development/stl/stl/Assignable.html">Assignable</a>.)
+"https://boost.org/sgi/stl/Assignable.html">Assignable</a>.)
 
 <hr />
 <pre>
@@ -720,7 +720,7 @@ position <tt>(b * bits_per_block + i)</tt> in the bitset (where
 <br />
 <b>Requires:</b> <tt>BlockInputIterator</tt> must be either an
 integral type or a model of <a href=
-    "https://www.rrsd.com/software_development/stl/stl/InputIterator.html">Input
+    "https://boost.org/sgi/stl/InputIterator.html">Input
     Iterator</a> whose <tt>value_type</tt> is the same type as
 <tt>Block</tt>.<br /> <b>Throws:</b> An allocation error if
 memory is exhausted (<tt>std::bad_alloc</tt> if
@@ -731,11 +731,11 @@ memory is exhausted (<tt>std::bad_alloc</tt> if
 template&lt;typename Char, typename Traits, typename Alloc&gt;
 explicit
 <a id="cons3">dynamic_bitset</a>(const <a href=
-"https://www.rrsd.com/software_development/stl/stl/basic_string.html">std::basic_string</a>&lt;Char,Traits,Alloc&gt;&amp; s,
+"https://boost.org/sgi/stl/basic_string.html">std::basic_string</a>&lt;Char,Traits,Alloc&gt;&amp; s,
                typename std::basic_string&lt;CharT, Traits, Alloc&gt;::size_type pos = 0,
                typename std::basic_string&lt;CharT, Traits, Alloc&gt;::size_type n = <a
  href=
-"https://www.rrsd.com/software_development/stl/stl/basic_string.html">std::basic_string</a>&lt;Char,Traits,Alloc&gt;::npos,
+"https://boost.org/sgi/stl/basic_string.html">std::basic_string</a>&lt;Char,Traits,Alloc&gt;::npos,
                const Allocator&amp; alloc = Allocator())
 </pre>
 
@@ -794,7 +794,7 @@ dynamic_bitset&amp; <a id=
  <b>Returns:</b> <tt>*this</tt>.<br />
  <b>Throws:</b> nothing. <br />
 (Required by <a href=
-"https://www.rrsd.com/software_development/stl/stl/Assignable.html">Assignable</a>.)
+"https://boost.org/sgi/stl/Assignable.html">Assignable</a>.)
 
 <hr />
 <pre>
@@ -897,7 +897,7 @@ for (; first != last; ++first)
 
 <b>Requires:</b> The <tt>BlockInputIterator</tt> type must be a
 model of <a href=
-"https://www.rrsd.com/software_development/stl/stl/InputIterator.html">Input
+"https://boost.org/sgi/stl/InputIterator.html">Input
 Iterator</a> and the <tt>value_type</tt> must be the same type as
 <tt>Block</tt>.<br />
  <b>Throws:</b> An allocation error if memory is exhausted
@@ -1360,7 +1360,7 @@ rhs.size()</tt> and if for all <tt>i</tt> in the range
 returns <tt>false</tt>.<br />
  <b>Throws:</b> nothing.<br />
  (Required by <a href=
-"https://www.rrsd.com/software_development/stl/stl/EqualityComparable.html">Equality
+"https://boost.org/sgi/stl/EqualityComparable.html">Equality
 Comparable</a>.)
 
 <hr />
@@ -1372,7 +1372,7 @@ bool <a id=
 <b>Returns:</b> <tt>!((*this) == rhs)</tt><br />
 <b>Throws:</b> nothing.<br />
 (Required by <a href=
-"https://www.rrsd.com/software_development/stl/stl/EqualityComparable.html">Equality
+"https://boost.org/sgi/stl/EqualityComparable.html">Equality
 Comparable</a>.)
 
 <hr />
@@ -1384,11 +1384,11 @@ bool <a id=
 <b>Returns:</b> <tt>true</tt> if this bitset is lexicographically
 less than <tt>rhs</tt>, and returns <tt>false</tt> otherwise.
 (See the description of <a href=
-"https://www.rrsd.com/software_development/stl/stl/lexicographical_compare.html">lexicographical_compare</a>
+"https://boost.org/sgi/stl/lexicographical_compare.html">lexicographical_compare</a>
 for a definition of lexicographic ordering). <br />
 <b>Throws:</b> nothing.<br />
 (Required by <a href=
-"https://www.rrsd.com/software_development/stl/stl/LessThanComparable.html">Less Than
+"https://boost.org/sgi/stl/LessThanComparable.html">Less Than
 Comparable</a>.)
 
 <hr />
@@ -1401,7 +1401,7 @@ bool <a id=
 rhs)</tt><br />
 <b>Throws:</b> nothing.<br />
 (Required by <a href=
-"https://www.rrsd.com/software_development/stl/stl/LessThanComparable.html">Less Than
+"https://boost.org/sgi/stl/LessThanComparable.html">Less Than
 Comparable</a>.)
 
 <hr />
@@ -1413,7 +1413,7 @@ bool <a id=
 <b>Returns:</b> <tt>(*this) &lt; rhs || (*this) == rhs</tt><br />
 <b>Throws:</b> nothing.<br />
 (Required by <a href=
-"https://www.rrsd.com/software_development/stl/stl/LessThanComparable.html">Less Than
+"https://boost.org/sgi/stl/LessThanComparable.html">Less Than
 Comparable</a>.)
 
 <hr />
@@ -1425,7 +1425,7 @@ bool <a id=
 <b>Returns:</b> <tt>(*this) &gt; rhs || (*this) == rhs</tt><br />
 <b>Throws:</b> nothing.<br />
 (Required by <a href=
-"https://www.rrsd.com/software_development/stl/stl/LessThanComparable.html">Less Than
+"https://boost.org/sgi/stl/LessThanComparable.html">Less Than
 Comparable</a>.)
 
 <hr />
@@ -1485,7 +1485,7 @@ template &lt;typename CharT, typename Alloc&gt;
 void <a id=
 "to_string">to_string</a>(const dynamic_bitset&lt;Block, Allocator&gt;&amp; b,
                <a href=
-"https://www.rrsd.com/software_development/stl/stl/basic_string.html">std::basic_string</a>&lt;Char,Traits,Alloc&gt;&amp; s)
+"https://boost.org/sgi/stl/basic_string.html">std::basic_string</a>&lt;Char,Traits,Alloc&gt;&amp; s)
 </pre>
 
 <b>Effects:</b> Copies a representation of <tt>b</tt> into the
@@ -1523,7 +1523,7 @@ block <tt>bval</tt> written, the bit <tt>(bval &gt;&gt; i) &amp;
 + i)</tt> in the bitset.<br />
  <b>Requires:</b> The type <tt>BlockOutputIterator</tt> must be a
 model of <a href=
-"https://www.rrsd.com/software_development/stl/stl/OutputIterator.html">Output
+"https://boost.org/sgi/stl/OutputIterator.html">Output
 Iterator</a> and its <tt>value_type</tt> must be the same type as
 <tt>Block</tt>. Further, the size of the output range must be
 greater or equal <tt>b.num_blocks()</tt>.
@@ -1539,7 +1539,7 @@ void <a id=
 <b>Effects:</b> Reads blocks from the iterator range into the
 bitset. <br />
  <b>Requires:</b> The type <tt>BlockIterator</tt> must be a model
-of <a href="https://www.rrsd.com/software_development/stl/stl/InputIterator.html">Input
+of <a href="https://boost.org/sgi/stl/InputIterator.html">Input
 Iterator</a> and its <tt>value_type</tt> must be the same type as
 <tt>Block</tt>. The size of the iterator range must be less or
 equal to <tt>b.num_blocks()</tt>.
@@ -1723,9 +1723,9 @@ nested class <tt>reference</tt>.
 <h3><a id="see-also">See also</a></h3>
 
 <tt><a href=
-"https://www.rrsd.com/software_development/stl/stl/bitset.html">std::bitset</a></tt>,
+"https://boost.org/sgi/stl/bitset.html">std::bitset</a></tt>,
 <tt><a href=
-"https://www.rrsd.com/software_development/stl/stl/Vector.html">std::vector</a></tt>,
+"https://boost.org/sgi/stl/Vector.html">std::vector</a></tt>,
 
 <h3><a id="acknowledgements">Acknowledgements</a></h3>
 
