@@ -13,7 +13,7 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/dynamic_bitset/detail/lowest_bit.hpp>
-#include <boost/detail/lightweight_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 int main(int, char*[])
 {

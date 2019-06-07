@@ -12,9 +12,9 @@
 
 #include <assert.h>
 #include "bitset_test.hpp"
-#include "boost/dynamic_bitset/dynamic_bitset.hpp"
-#include "boost/limits.hpp"
-#include "boost/config.hpp"
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+#include <boost/limits.hpp>
+#include <boost/config.hpp>
 
 template <typename Block>
 void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
@@ -800,7 +800,7 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
 
 
 int
-test_main(int, char*[])
+main()
 {
   run_test_cases<unsigned char>();
   run_test_cases<unsigned short>();
@@ -810,5 +810,5 @@ test_main(int, char*[])
   run_test_cases< ::boost::ulong_long_type>();
 # endif
 
-  return 0;
+  return boost::report_errors();
 }
