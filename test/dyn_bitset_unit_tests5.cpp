@@ -10,6 +10,8 @@
 //
 // -----------------------------------------------------------
 
+#define BOOST_TEST_MODULE dynamic_bitset_unit_5
+
 #include "boost/config.hpp"
 #if !defined (BOOST_NO_STRINGSTREAM)
 # include <sstream>
@@ -90,22 +92,8 @@ namespace {
         }
 }
 
-template <typename Block>
-void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
+BOOST_AUTO_TEST_CASE_TEMPLATE( run_test_cases, Block, dynamic_bitset_test_types )
 {
     test_binary_archive<Block>();
     test_xml_archive<Block>();
-}
-
-int test_main(int, char*[])
-{
-    run_test_cases<unsigned char>();
-    run_test_cases<unsigned short>();
-    run_test_cases<unsigned int>();
-    run_test_cases<unsigned long>();
-# ifdef BOOST_HAS_LONG_LONG
-    run_test_cases< ::boost::ulong_long_type>();
-# endif
-
-    return 0;
 }

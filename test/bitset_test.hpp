@@ -27,8 +27,19 @@
 
 #include "boost/limits.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
-#include "boost/test/minimal.hpp"
 #include "boost/filesystem.hpp"
+#include "boost/test/included/unit_test.hpp"
+#include "boost/mpl/list.hpp"
+
+typedef boost::mpl::list<
+  unsigned char,
+  unsigned short,
+  unsigned int,
+  unsigned long,
+# ifdef BOOST_HAS_LONG_LONG
+  ::boost::ulong_long_type
+# endif
+> dynamic_bitset_test_types;
 
 template <typename Block>
 inline bool nth_bit(Block num, std::size_t n)

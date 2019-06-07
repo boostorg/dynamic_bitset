@@ -13,6 +13,8 @@
 //
 // -----------------------------------------------------------
 
+#define BOOST_TEST_MODULE dynamic_bitset_unit_1
+
 #include "bitset_test.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
 #include "boost/limits.hpp"
@@ -135,9 +137,7 @@ void run_numeric_ctor_tests( BOOST_EXPLICIT_TEMPLATE_TYPE(Tests)
 
 }
 
-
-template <typename Block>
-void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
+BOOST_AUTO_TEST_CASE_TEMPLATE( run_test_cases, Block, dynamic_bitset_test_types )
 {
   typedef boost::dynamic_bitset<Block> bitset_type;
   typedef bitset_test<bitset_type> Tests;
@@ -517,18 +517,4 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
      bitset_test<Bitset>::max_size(b);
   }
 #endif
-}
-
-int
-test_main(int, char*[])
-{
-  run_test_cases<unsigned char>();
-  run_test_cases<unsigned short>();
-  run_test_cases<unsigned int>();
-  run_test_cases<unsigned long>();
-# ifdef BOOST_HAS_LONG_LONG
-  run_test_cases< ::boost::ulong_long_type>();
-# endif
-
-  return 0;
 }

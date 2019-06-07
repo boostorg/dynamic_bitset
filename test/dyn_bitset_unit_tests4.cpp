@@ -8,6 +8,8 @@
 //
 // -----------------------------------------------------------
 
+#define BOOST_TEST_MODULE dynamic_bitset_test_4
+
 #include <fstream>
 #include <string>
 #include <cstddef>   // for std::size_t
@@ -56,10 +58,8 @@ std::wstring widen_string( const std::string & str,
 }
 #endif
 
-template <typename Block>
-void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
+BOOST_AUTO_TEST_CASE_TEMPLATE( run_test_cases, Block, dynamic_bitset_test_types )
 {
-
   typedef boost::dynamic_bitset<Block> bitset_type;
   typedef bitset_test<bitset_type> Tests;
 
@@ -320,19 +320,4 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   // << Any other tests go here >>
   //         .....
 
-}
-
-
-int
-test_main(int, char*[])
-{
-  run_test_cases<unsigned char>();
-  run_test_cases<unsigned short>();
-  run_test_cases<unsigned int>();
-  run_test_cases<unsigned long>();
-# ifdef BOOST_HAS_LONG_LONG
-  run_test_cases< ::boost::ulong_long_type>();
-# endif
-
-  return 0;
 }
