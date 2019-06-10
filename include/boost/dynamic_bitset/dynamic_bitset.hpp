@@ -128,8 +128,10 @@ public:
     typedef bool const_reference;
 
     // constructors, etc.
+    dynamic_bitset() : m_num_bits(0) {}
+
     explicit
-    dynamic_bitset(const Allocator& alloc = Allocator());
+    dynamic_bitset(const Allocator& alloc);
 
     explicit
     dynamic_bitset(size_type num_bits, unsigned long value = 0,
