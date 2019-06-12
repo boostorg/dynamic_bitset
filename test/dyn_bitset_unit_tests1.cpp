@@ -517,6 +517,11 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
      bitset_test<Bitset>::max_size(b);
   }
 #endif
+  // Test copy-initialize with default constructor
+  {
+    boost::dynamic_bitset<Block> b[1] = {};
+    (void)b;
+  }
 }
 
 int
