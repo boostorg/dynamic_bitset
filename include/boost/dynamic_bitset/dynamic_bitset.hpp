@@ -55,6 +55,9 @@
 
 namespace boost {
 
+template<class T>
+class dynamic_bitset_span;
+
 template <typename Block, typename Allocator>
 class dynamic_bitset
 {
@@ -272,12 +275,11 @@ public:
         }
     }
 
-
     // bitset operations
-    dynamic_bitset& operator&=(const dynamic_bitset& b);
-    dynamic_bitset& operator|=(const dynamic_bitset& b);
-    dynamic_bitset& operator^=(const dynamic_bitset& b);
-    dynamic_bitset& operator-=(const dynamic_bitset& b);
+    dynamic_bitset& operator&=(const dynamic_bitset& rhs);
+    dynamic_bitset& operator|=(const dynamic_bitset& rhs);
+    dynamic_bitset& operator^=(const dynamic_bitset& rhs);
+    dynamic_bitset& operator-=(const dynamic_bitset& rhs);
     dynamic_bitset& operator<<=(size_type n);
     dynamic_bitset& operator>>=(size_type n);
     dynamic_bitset operator<<(size_type n) const;
@@ -375,6 +377,7 @@ private:
     dynamic_bitset& range_operation(size_type pos, size_type len,
         Block (*partial_block_operation)(Block, size_type, size_type),
         Block (*full_block_operation)(Block));
+
     void m_zero_unused_bits();
     bool m_check_invariants() const;
 
@@ -400,6 +403,15 @@ private:
             return block | bit_mask(first, last);
         else
             return block & static_cast<Block>(~bit_mask(first, last));
+    }
+
+    Block assemble_block(size_type index_first_block, size_type first_bit_index, size_type length_block) const
+    {
+        Block assembled_block = (m_bits[index_first_block] & bit_mask(first_bit_index, std::min(first_bit_index + length_block, bits_per_block - 1))) >> first_bit_index;
+        if (first_bit_index + length_block > bits_per_block - 1) {
+             assembled_block |= (m_bits[index_first_block + 1] & bit_mask(0, first_bit_index + length_block - bits_per_block)) << (bits_per_block - first_bit_index);
+        }
+        return assembled_block;        
     }
 
     // Functions for operations on ranges
@@ -429,6 +441,58 @@ private:
     inline static Block flip_block_full(Block block) BOOST_NOEXCEPT
     {
         return ~block;
+    }
+    inline static Block and_partial(Block lhs, Block rhs,
+        size_type first, size_type last) BOOST_NOEXCEPT
+    {
+        return (lhs & rhs) | ((~bit_mask(first, last)) & lhs);
+    }
+    inline static Block and_full(Block lhs, Block rhs) BOOST_NOEXCEPT
+    {
+        return lhs & rhs;
+    }
+    inline static Block or_partial(Block lhs, Block rhs,
+        size_type first, size_type last) BOOST_NOEXCEPT
+    {
+        return (lhs | (rhs & bit_mask(first, last)));
+    }
+    inline static Block or_full(Block lhs, Block rhs) BOOST_NOEXCEPT
+    {
+        return lhs | rhs;
+    }
+    inline static Block xor_partial(Block lhs, Block rhs,
+        size_type first, size_type last) BOOST_NOEXCEPT
+    {
+        return (lhs ^ (rhs & bit_mask(first, last)));
+    }
+    inline static Block xor_full(Block lhs, Block rhs) BOOST_NOEXCEPT
+    {
+        return lhs ^ rhs;
+    }
+    inline static Block difference_partial(Block lhs, Block rhs,
+        size_type first, size_type last) BOOST_NOEXCEPT
+    {
+        return (lhs & ~(rhs & bit_mask(first, last)));
+    }
+    inline static Block difference_full(Block lhs, Block rhs) BOOST_NOEXCEPT
+    {
+        return lhs & (~rhs);
+    }
+    inline static bool not_equal_partial(Block lhs, Block rhs, size_type first, size_type last) BOOST_NOEXCEPT
+    {
+        return (lhs & bit_mask(first, last)) != (rhs & bit_mask(first, last));
+    }
+    inline static bool not_equal_full(Block lhs, Block rhs) BOOST_NOEXCEPT
+    {
+        return lhs != rhs;
+    }
+    inline static bool intersects_partial(Block lhs, Block rhs, size_type first, size_type last) BOOST_NOEXCEPT
+    {
+        return (lhs & rhs & bit_mask(first, last)) != Block(0);
+    }
+    inline static bool intersects_full(Block lhs, Block rhs) BOOST_NOEXCEPT
+    {
+        return (lhs & rhs) != Block(0);
     }
 
     template <typename CharT, typename Traits, typename Alloc>
@@ -563,7 +627,152 @@ BOOST_DYNAMIC_BITSET_PRIVATE:
         size_type get_count() const { return n; }
     };
 
+    template<class T> friend
+    class dynamic_bitset_span;
+
+#if !defined BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+    // lexicographical comparison
+
+    template <class T>
+    friend bool operator==(const dynamic_bitset_span<T>& lhs,
+                           const dynamic_bitset_span<T>& rhs);
+
+#endif
+
 };
+
+
+// A view class, to operate on subsets of dynamic_bitset as if they were complete 
+//
+//template <template<class, class> class T, class Block, class Allocator>
+//template < template<class Block, class Allocator> class T>
+template<class T>
+class dynamic_bitset_span
+{
+
+public:
+    typedef typename T::size_type size_type;
+    typedef typename T::block_type block_type;
+    
+    dynamic_bitset_span(T& x, size_type start_subset=0, size_type length_subset=T::npos)
+         : start(start_subset),
+         length(length_subset), 
+         base(x) 
+        { }
+
+    //C++ does not allow the construction of const objects, hence we cast away the const-ness
+    //to avoid having two classes
+
+    /*dynamic_bitset_span(const T& x, size_type start_subset=0, size_type length_subset=T::npos)
+         : start(start_subset),
+         length(length_subset), 
+         base(const_cast<T&>(x)) 
+        { }*/
+
+    // bitset operations
+    dynamic_bitset_span& operator&=(const dynamic_bitset_span& rhs);
+    dynamic_bitset_span& operator|=(const dynamic_bitset_span& rhs);
+    dynamic_bitset_span& operator^=(const dynamic_bitset_span& rhs);
+    dynamic_bitset_span& operator-=(const dynamic_bitset_span& rhs);
+
+    bool intersects(const dynamic_bitset_span& rhs) const;
+
+#if !defined BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+
+// lexicographical comparison
+    template <class U>
+    friend bool operator==(const dynamic_bitset_span<U>& lhs,
+                           const dynamic_bitset_span<U>& rhs);
+
+    // bitset operations
+    template<class U>
+    friend U operator&(const dynamic_bitset_span<U>& b1,
+          const dynamic_bitset_span<U>& b2);
+
+    template<class U>
+    friend U operator|(const dynamic_bitset_span<U>& b1,
+          const dynamic_bitset_span<U>& b2);
+
+    template<class U>
+    friend U operator^(const dynamic_bitset_span<U>& b1,
+          const dynamic_bitset_span<U>& b2);
+
+    template<class U>
+    friend U operator-(const dynamic_bitset_span<U>& b1,
+          const dynamic_bitset_span<U>& b2);
+
+#endif
+
+private:
+    size_type start;
+    size_type length;
+    T &base;
+
+    dynamic_bitset_span& range_operation_pair(const dynamic_bitset_span& rhs,
+        block_type (*partial_block_operation)(block_type, block_type, size_type, size_type),
+        block_type (*full_block_operation)(block_type, block_type) );
+
+    bool boolean_range_operation_pair(const dynamic_bitset_span& rhs,
+        bool (*partial_block_operation)(block_type, block_type, size_type, size_type),
+        bool (*full_block_operation)(block_type, block_type) ) const;
+
+};
+
+template<class T>
+class const_dynamic_bitset_span
+{
+
+public:
+    typedef typename T::size_type size_type;
+    
+    const_dynamic_bitset_span(const T& x, size_type start_subset=0, size_type length_subset=T::npos)
+         : start(start_subset),
+         length(length_subset), 
+         base(x) 
+        { }
+
+    operator const dynamic_bitset_span<T>() const { return dynamic_bitset_span<T>(const_cast<T&>(base), start, length); };
+
+private:
+    size_type start;
+    size_type length;
+    const T &base;
+};
+
+template <typename Block, typename Allocator>
+dynamic_bitset<Block, Allocator>&
+dynamic_bitset<Block, Allocator>::operator&=(const dynamic_bitset<Block, Allocator>& rhs)
+{
+    dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(*this) &=  const_dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(rhs);
+    return *this;
+}
+
+template <typename Block, typename Allocator>
+dynamic_bitset<Block, Allocator>&
+dynamic_bitset<Block, Allocator>::operator|=(const dynamic_bitset<Block, Allocator>& rhs)
+{
+    dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(*this) |= const_dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(rhs);
+    return *this;
+
+}
+
+template <typename Block, typename Allocator>
+dynamic_bitset<Block, Allocator>&
+dynamic_bitset<Block, Allocator>::operator^=(const dynamic_bitset<Block, Allocator>& rhs)
+{
+    dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(*this) ^= const_dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(rhs);
+    return *this;
+
+}
+
+template <typename Block, typename Allocator>
+dynamic_bitset<Block, Allocator>&
+dynamic_bitset<Block, Allocator>::operator-=(const dynamic_bitset<Block, Allocator>& rhs)
+{
+    dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(*this) -= const_dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(rhs);
+    return *this;
+
+}
 
 #if !defined BOOST_NO_INCLASS_MEMBER_INITIALIZATION
 
@@ -642,7 +851,7 @@ operator-(const dynamic_bitset<Block, Allocator>& b1,
           const dynamic_bitset<Block, Allocator>& b2);
 
 // namespace scope swap
-template<typename Block, typename Allocator>
+template <typename Block, typename Allocator>
 void swap(dynamic_bitset<Block, Allocator>& b1,
           dynamic_bitset<Block, Allocator>& b2);
 
@@ -858,47 +1067,49 @@ append(Block value) // strong guarantee
 
 //-----------------------------------------------------------------------------
 // bitset operations
-template <typename Block, typename Allocator>
-dynamic_bitset<Block, Allocator>&
-dynamic_bitset<Block, Allocator>::operator&=(const dynamic_bitset& rhs)
+template <class T>
+dynamic_bitset_span<T>&
+dynamic_bitset_span<T>::operator&=(const dynamic_bitset_span<T>& rhs)
 {
-    assert(size() == rhs.size());
-    for (size_type i = 0; i < num_blocks(); ++i)
-        m_bits[i] &= rhs.m_bits[i];
-    return *this;
+    return dynamic_bitset_span(*this).range_operation_pair(rhs,
+        T::and_partial, T::and_full);
 }
 
-template <typename Block, typename Allocator>
-dynamic_bitset<Block, Allocator>&
-dynamic_bitset<Block, Allocator>::operator|=(const dynamic_bitset& rhs)
+template <class T>
+dynamic_bitset_span<T>&
+dynamic_bitset_span<T>::operator|=(const dynamic_bitset_span<T>& rhs)
 {
-    assert(size() == rhs.size());
-    for (size_type i = 0; i < num_blocks(); ++i)
-        m_bits[i] |= rhs.m_bits[i];
-    //m_zero_unused_bits();
-    return *this;
+    return dynamic_bitset_span(*this).range_operation_pair(rhs,
+        T::or_partial, T::or_full);
 }
 
-template <typename Block, typename Allocator>
-dynamic_bitset<Block, Allocator>&
-dynamic_bitset<Block, Allocator>::operator^=(const dynamic_bitset& rhs)
+template <class T>
+dynamic_bitset_span<T>&
+dynamic_bitset_span<T>::operator^=(const dynamic_bitset_span<T>& rhs)
 {
-    assert(size() == rhs.size());
-    for (size_type i = 0; i < this->num_blocks(); ++i)
-        m_bits[i] ^= rhs.m_bits[i];
-    //m_zero_unused_bits();
-    return *this;
+    return dynamic_bitset_span(*this).range_operation_pair(rhs,
+        T::xor_partial, T::xor_full);
 }
 
-template <typename Block, typename Allocator>
-dynamic_bitset<Block, Allocator>&
-dynamic_bitset<Block, Allocator>::operator-=(const dynamic_bitset& rhs)
+template <class T>
+dynamic_bitset_span<T>&
+dynamic_bitset_span<T>::operator-=(const dynamic_bitset_span<T>& rhs)
 {
-    assert(size() == rhs.size());
-    for (size_type i = 0; i < num_blocks(); ++i)
-        m_bits[i] &= ~rhs.m_bits[i];
-    //m_zero_unused_bits();
-    return *this;
+    return dynamic_bitset_span(*this).range_operation_pair(rhs,
+        T::difference_partial, T::difference_full);
+}
+
+template <class T>
+bool operator==(const dynamic_bitset_span<T>& lhs, const dynamic_bitset_span<T>& rhs)
+{
+    return !(lhs.boolean_range_operation_pair(rhs,
+        T::not_equal_partial, T::not_equal_full));
+}
+
+template <class T>
+bool operator!=(const dynamic_bitset_span<T>& lhs, const dynamic_bitset_span<T>& rhs)
+{
+    return !(lhs == rhs);
 }
 
 //
@@ -1445,16 +1656,19 @@ is_proper_subset_of(const dynamic_bitset<Block, Allocator>& a) const
 }
 
 template <typename Block, typename Allocator>
-bool dynamic_bitset<Block, Allocator>::intersects(const dynamic_bitset & b) const
+bool dynamic_bitset<Block, Allocator>::intersects(const dynamic_bitset & rhs) const
 {
-    size_type common_blocks = num_blocks() < b.num_blocks()
-                              ? num_blocks() : b.num_blocks();
+    //for backwards compatibility with previous behaviour, if the two dynamic_bitsets
+    //don't have the same length, choose the smallest length
+    const dynamic_bitset_span< dynamic_bitset<Block, Allocator> > wrapper = const_dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(*this, 0, std::min(size(), rhs.size()));
+    return wrapper.intersects(const_dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(rhs));
+}
 
-    for(size_type i = 0; i < common_blocks; ++i) {
-        if(m_bits[i] & b.m_bits[i])
-            return true;
-    }
-    return false;
+template <class T>
+bool dynamic_bitset_span<T>::intersects(const dynamic_bitset_span<T>& rhs) const
+{
+    return (*this).boolean_range_operation_pair(rhs,
+        T::intersects_partial, T::intersects_full);
 }
 
 // --------------------------------
@@ -1972,13 +2186,53 @@ operator>>(std::basic_istream<Ch, Tr>& is, dynamic_bitset<Block, Alloc>& b)
 //-----------------------------------------------------------------------------
 // bitset operations
 
+template<class T>
+T operator&(const dynamic_bitset_span<T>& x,
+          const dynamic_bitset_span<T>& y)
+{
+    T b(x.base);
+    dynamic_bitset_span<T>(b, x.start, x.length) &= y;
+    return b;
+}
+
+template<class T>
+T operator|(const dynamic_bitset_span<T>& x,
+          const dynamic_bitset_span<T>& y)
+{
+    T b(x.base);
+    dynamic_bitset_span<T>(b, x.start, x.length) |= y;
+    return b;
+}
+
+template<class T>
+T operator^(const dynamic_bitset_span<T>& x,
+          const dynamic_bitset_span<T>& y)
+{
+    T b(x.base);
+    dynamic_bitset_span<T>(b, x.start, x.length) ^= y;
+    return b;
+}
+
+template<class T>
+T operator-(const dynamic_bitset_span<T>& x,
+          const dynamic_bitset_span<T>& y)
+{
+    T b(x.base);
+    dynamic_bitset_span<T>(b, x.start, x.length) -= y;
+    return b;
+}
+
+//-----------------------------------------------------------------------------
+// bitset operations
+
 template <typename Block, typename Allocator>
 dynamic_bitset<Block, Allocator>
 operator&(const dynamic_bitset<Block, Allocator>& x,
           const dynamic_bitset<Block, Allocator>& y)
 {
     dynamic_bitset<Block, Allocator> b(x);
-    return b &= y;
+    dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(b) &= const_dynamic_bitset_span<dynamic_bitset< Block, Allocator> >(y);
+    return b;
 }
 
 template <typename Block, typename Allocator>
@@ -1987,7 +2241,8 @@ operator|(const dynamic_bitset<Block, Allocator>& x,
           const dynamic_bitset<Block, Allocator>& y)
 {
     dynamic_bitset<Block, Allocator> b(x);
-    return b |= y;
+    dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(b) |= const_dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(y);
+    return b;
 }
 
 template <typename Block, typename Allocator>
@@ -1996,7 +2251,8 @@ operator^(const dynamic_bitset<Block, Allocator>& x,
           const dynamic_bitset<Block, Allocator>& y)
 {
     dynamic_bitset<Block, Allocator> b(x);
-    return b ^= y;
+    dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(b) ^= const_dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(y);
+    return b;
 }
 
 template <typename Block, typename Allocator>
@@ -2005,7 +2261,8 @@ operator-(const dynamic_bitset<Block, Allocator>& x,
           const dynamic_bitset<Block, Allocator>& y)
 {
     dynamic_bitset<Block, Allocator> b(x);
-    return b -= y;
+    dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(b) -= const_dynamic_bitset_span< dynamic_bitset<Block, Allocator> >(y);
+    return b;
 }
 
 //-----------------------------------------------------------------------------
@@ -2107,6 +2364,203 @@ dynamic_bitset<Block, Allocator>& dynamic_bitset<Block, Allocator>::range_operat
 
     return *this;
 }
+
+template <class T>
+typename T::size_type get_common_length(
+    const typename T::size_type len_lhs, const typename T::size_type len_rhs,
+    const typename T::size_type size_lhs, const typename T::size_type size_rhs
+){
+
+    if (len_lhs == T::npos && len_rhs == T::npos) {
+        assert(size_lhs == size_rhs);
+        return size_lhs;
+    }else if (len_lhs == T::npos) {
+        return len_rhs;
+    }else if (len_rhs == T::npos) {
+        return len_lhs;
+    }
+
+    assert(len_lhs == len_rhs);
+    return len_lhs;
+
+}
+
+template <class T>
+dynamic_bitset_span<T>&
+dynamic_bitset_span<T>::range_operation_pair(const dynamic_bitset_span<T>& rhs,
+    block_type(*partial_block_operation)(block_type, block_type, size_type, size_type),
+    block_type (*full_block_operation)(block_type, block_type))
+{
+
+    size_type len = get_common_length<T>(length, rhs.length, base.size(), rhs.base.size());
+
+    // Do nothing in case of zero length
+    if (!len)
+        return *this;
+
+    size_type a_pos = start;
+    size_type b_pos = rhs.start;
+
+    assert((a_pos + len <= base.m_num_bits) && (b_pos + len <= rhs.base.m_num_bits));
+
+    // Use an additional asserts in order to detect size_type overflow
+    // For example: pos = 10, len = size_type_limit - 2, pos + len = 7
+    // In case of overflow, 'pos + len' is always smaller than 'len'
+    assert( (a_pos + len >= len) && (b_pos + len >= len));
+
+    // Start and end blocks of the [a_pos; a_pos + len - 1] sequence
+    const size_type a_first_block = base.block_index(a_pos);
+    const size_type a_last_block = base.block_index(a_pos + len - 1);
+
+    const size_type a_first_bit_index = base.bit_index(a_pos);
+    const size_type a_last_bit_index = base.bit_index(a_pos + len - 1);
+
+    // Start and end blocks of the b [b_pos; b_pos + len - 1] sequence
+    const size_type b_first_block = base.block_index(b_pos);
+    const size_type b_last_block = base.block_index(b_pos + len - 1);
+
+    const size_type b_first_bit_index = base.bit_index(b_pos);
+
+    T& a = base;
+    const T& b = rhs.base;
+    
+    {
+        const size_type a_end_first_block = (a_first_block == a_last_block) ?
+            a_last_bit_index : base.bits_per_block - 1;
+
+        block_type assembled_b = b.assemble_block(b_first_block,
+             b_first_bit_index, a_end_first_block - a_first_bit_index) << a_first_bit_index;
+
+         a.m_bits[a_first_block] = partial_block_operation(a.m_bits[a_first_block],
+             assembled_b, a_first_bit_index, a_end_first_block);
+    }
+
+    const size_type b_start_index_first_block = (b_first_bit_index >=
+        a_first_bit_index ? 0 : b.bits_per_block) + b_first_bit_index - a_first_bit_index;
+    //add one to ensure this never wraps around
+    const size_type b_block_adjustment = b_first_block + 1 -
+        (a_first_bit_index > b_first_bit_index ? 1 : 0);
+
+    for (size_type i = a_first_block + 1; i < a_last_block; ++i) {
+        //main iterator is a. b is adjusted to compute full blocks
+        const size_type b_block = i - a_first_block + b_block_adjustment - 1;
+
+        block_type assembled_b = b.assemble_block(b_block,
+            b_start_index_first_block, base.bits_per_block - 1);
+
+        a.m_bits[i] = full_block_operation(a.m_bits[i], assembled_b);
+    }
+
+    // Fill the last block from the start to the 'last' bit index
+    if (a_first_block != a_last_block) {
+        const size_type b_last_bit_index = base.bit_index(b_pos + len - 1);
+
+        size_type b_last_block_adjusted = b_last_block -
+            (b_last_bit_index >= b_start_index_first_block ? 0 : 1);
+        size_type b_last_block_length = (b_last_bit_index >=
+            b_start_index_first_block ? 0 : base.bits_per_block) +
+            b_last_bit_index - b_start_index_first_block;
+
+        block_type assembled_b = b.assemble_block(b_last_block_adjusted,
+            b_start_index_first_block, b_last_block_length);
+
+        a.m_bits[a_last_block] = partial_block_operation(a.m_bits[a_last_block],
+            assembled_b, 0, a_last_bit_index);
+    }
+
+    return *this;
+}
+
+template <class T>
+bool dynamic_bitset_span<T>::boolean_range_operation_pair(const dynamic_bitset_span& rhs,
+        bool (*partial_block_operation)(block_type, block_type, size_type, size_type),
+        bool (*full_block_operation)(block_type, block_type) ) const
+{
+
+    size_type len = get_common_length<T>(length, rhs.length, base.size(), rhs.base.size());
+
+    // Return false in case of zero length
+    if (!len)
+        return false;
+
+    size_type a_pos = start;
+    size_type b_pos = rhs.start;
+
+    assert((a_pos + len <= base.m_num_bits) && (b_pos + len <= rhs.base.m_num_bits));
+
+    // Use an additional asserts in order to detect size_type overflow
+    // For example: pos = 10, len = size_type_limit - 2, pos + len = 7
+    // In case of overflow, 'pos + len' is always smaller than 'len'
+    assert( (a_pos + len >= len) && (b_pos + len >= len));
+
+    // Start and end blocks of the [a_pos; a_pos + len - 1] sequence
+    const size_type a_first_block = base.block_index(a_pos);
+    const size_type a_last_block = base.block_index(a_pos + len - 1);
+
+    const size_type a_first_bit_index = base.bit_index(a_pos);
+    const size_type a_last_bit_index = base.bit_index(a_pos + len - 1);
+
+    // Start and end blocks of the b [b_pos; b_pos + len - 1] sequence
+    const size_type b_first_block = base.block_index(b_pos);
+    const size_type b_last_block = base.block_index(b_pos + len - 1);
+
+    const size_type b_first_bit_index = base.bit_index(b_pos);
+
+    const T& a = base;
+    const T& b = rhs.base;
+
+    {
+        const size_type a_end_first_block = (a_first_block == a_last_block) ?
+            a_last_bit_index : base.bits_per_block - 1;
+
+        block_type assembled_b = b.assemble_block(b_first_block,
+             b_first_bit_index, a_end_first_block - a_first_bit_index) << a_first_bit_index;
+
+        if ( partial_block_operation(a.m_bits[a_first_block], assembled_b,
+            a_first_bit_index, a_end_first_block)) {
+                return true;
+        }
+    }
+
+    const size_type b_start_index_first_block = (b_first_bit_index >=
+        a_first_bit_index ? 0 : b.bits_per_block) + b_first_bit_index - a_first_bit_index;
+    //add one to ensure this never wraps around
+    const size_type b_block_adjustment = b_first_block + 1 -
+        (a_first_bit_index > b_first_bit_index ? 1 : 0);
+
+    for (size_type i = a_first_block + 1; i < a_last_block; ++i) {
+        //main iterator is a. b is adjusted to compute full blocks
+        const size_type b_block = i - a_first_block + b_block_adjustment - 1;
+
+        block_type assembled_b = b.assemble_block(b_block,
+            b_start_index_first_block, base.bits_per_block - 1);
+
+        if (full_block_operation(a.m_bits[i], assembled_b)) {
+            return true;
+        }
+    }
+
+    // Fill the last block from the start to the 'last' bit index
+    if (a_first_block != a_last_block) {
+        const size_type b_last_bit_index = base.bit_index(b_pos + len - 1);
+
+        size_type b_last_block_adjusted = b_last_block -
+            (b_last_bit_index >= b_start_index_first_block ? 0 : 1);
+        size_type b_last_block_length = (b_last_bit_index >=
+            b_start_index_first_block ? 0 : base.bits_per_block) +
+            b_last_bit_index - b_start_index_first_block;
+
+        block_type assembled_b = b.assemble_block(b_last_block_adjusted,
+            b_start_index_first_block, b_last_block_length);
+
+        if (partial_block_operation(a.m_bits[a_last_block], assembled_b, 0, a_last_bit_index)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 
 // If size() is not a multiple of bits_per_block
 // then not all the bits in the last block are used.
