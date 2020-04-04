@@ -1445,11 +1445,10 @@ template <typename Block, typename Allocator>
 typename dynamic_bitset<Block, Allocator>::size_type
 dynamic_bitset<Block, Allocator>::m_do_find_from(size_type first_block) const
 {
-    size_type i = first_block;
 
-    // skip null blocks
-    while (i < num_blocks() && m_bits[i] == 0)
-        ++i;
+    size_type i = std::distance(
+        m_bits.begin(),
+        std::find_if(m_bits.begin() + first_block, m_bits.end(), [](Block x){ return x != 0; }));
 
     if (i >= num_blocks())
         return npos; // not found
