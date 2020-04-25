@@ -375,6 +375,7 @@ private:
     void m_zero_unused_bits();
     bool m_check_invariants() const;
 
+    static bool m_not_empty(Block x){ return x != Block(0); };
     size_type m_do_find_from(size_type first_block) const;
 
     block_width_type count_extra_bits() const BOOST_NOEXCEPT { return bit_index(size()); }
@@ -1441,14 +1442,14 @@ bool dynamic_bitset<Block, Allocator>::intersects(const dynamic_bitset & b) cons
 // look for the first bit "on", starting
 // from the block with index first_block
 //
+
 template <typename Block, typename Allocator>
 typename dynamic_bitset<Block, Allocator>::size_type
 dynamic_bitset<Block, Allocator>::m_do_find_from(size_type first_block) const
 {
 
     size_type i = std::distance(m_bits.begin(),
-        std::find_if(m_bits.begin() + first_block, m_bits.end(),
-        [](Block x){ return x != Block(0); } ) );
+        std::find_if(m_bits.begin() + first_block, m_bits.end(), m_not_empty) );
 
     if (i >= num_blocks())
         return npos; // not found
