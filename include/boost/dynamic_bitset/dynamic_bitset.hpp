@@ -2004,8 +2004,7 @@ template <typename Block, typename Allocator>
 inline typename dynamic_bitset<Block, Allocator>::size_type
 dynamic_bitset<Block, Allocator>::calc_num_blocks(size_type num_bits)
 {
-    return num_bits / bits_per_block
-           + static_cast<size_type>( num_bits % bits_per_block != 0 );
+    return (num_bits + bits_per_block - 1) / bits_per_block;
 }
 
 // gives a reference to the highest block
