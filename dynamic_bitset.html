@@ -1666,6 +1666,14 @@ exception guarantee.
 <hr />
 <h3><a id="changes-from-previous-ver">Changes from previous version(s)</a></h3>
 
+<h4><i>Changes in Boost 1.80.0</i></h4>
+<ul>
+<li>Mark <tt>dispatch_init()</tt>, <tt>init_from_block_range()</tt>, <tt>
+m_append()</tt> as deprecated
+(<a href="https://github.com/boostorg/dynamic_bitset/pull/67">#67</a>).
+</li>
+</ul>
+
 <h4><i>Changes in Boost 1.56.0</i></h4>
 <ul>
 <li>Support for C++11 move constructors.</li>
@@ -1730,6 +1738,17 @@ applied to their corresponding <tt>dynamic_bitset</tt>s.
 <li>
 Several optimizations to member and non-member functions and to the
 nested class <tt>reference</tt>.
+</li>
+</ul>
+<i>Deprecations</i>
+<p>Several member functions (<tt>dispatch_init()</tt>, <tt>init_from_block_range()
+</tt>, <tt>m_append()</tt>) will be deprecated since Boost 1.83.0. The milestone of deprecation is as follow:</p>
+<ul>
+<li>
+In Boost 1.81.0 these functions will only be public if macro <tt>BOOST_DYNAMIC_BITSET_NO_DEPRECATED</tt> is defined.
+</li>
+<li>
+In Boost 1.83.0 the functions will be unconditionally private.
 </li>
 </ul>
 
