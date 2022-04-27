@@ -136,6 +136,7 @@ struct bitset_test {
   typedef typename Bitset::block_type Block;
   BOOST_STATIC_CONSTANT(int, bits_per_block = Bitset::bits_per_block);
 
+  #ifdef BOOST_NO_LONG_LONG
   // from unsigned long
   //
   // Note: this is templatized so that we check that the do-the-right-thing
@@ -170,6 +171,42 @@ struct bitset_test {
     for ( ; i < sz; ++i)
       BOOST_TEST(b.test(i) == 0);
   }
+  #else
+  // from unsigned long long
+  //
+  // Note: this is templatized so that we check that the do-the-right-thing
+  // constructor dispatch is working correctly.
+  //
+  template <typename NumBits, typename Value>
+  static void from_unsigned_long_long(NumBits num_bits, Value num)
+  {
+    // An object of size sz = num_bits is constructed:
+    // - the first m bit positions are initialized to the corresponding
+    //   bit values in num (m being the smaller of sz and ullong_width)
+    //
+    // - any remaining bit positions are initialized to zero
+    //
+
+    Bitset b(static_cast<typename Bitset::size_type>(num_bits), static_cast<unsigned long long>(num));
+
+    // OK, we can now cast to size_type
+    typedef typename Bitset::size_type size_type;
+    const size_type sz = static_cast<size_type>(num_bits);
+
+    BOOST_TEST(b.size() == sz);
+
+    const std::size_t ullong_width = std::numeric_limits<unsigned long long>::digits;
+    size_type m = sz;
+    if (ullong_width < sz)
+        m = ullong_width;
+
+    size_type i = 0;
+    for ( ; i < m; ++i)
+      BOOST_TEST(b.test(i) == nth_bit(static_cast<unsigned long long>(num), i));
+    for ( ; i < sz; ++i)
+      BOOST_TEST(b.test(i) == 0);
+  }
+  #endif
 
   // from string
   //
@@ -774,6 +811,44 @@ struct bitset_test {
       }
     }
   }
+
+  // to_ullong()
+  #ifndef BOOST_NO_LONG_LONG
+  static void to_ullong(const Bitset& lhs)
+  {
+    typedef unsigned long long result_type;
+    std::size_t n = std::numeric_limits<result_type>::digits;
+    std::size_t sz = lhs.size();
+
+    bool will_overflow = false;
+    for (std::size_t i = n; i < sz; ++i) {
+      if (lhs.test(i) != 0) {
+        will_overflow = true;
+        break;
+      }
+    }
+    if (will_overflow) {
+      try {
+        (void)lhs.to_ullong();
+        BOOST_TEST(false); // It should have thrown an exception
+      } catch (std::overflow_error & ex) {
+        // Good!
+        BOOST_TEST(!!ex.what());
+      } catch (...) {
+        BOOST_TEST(false); // threw the wrong exception
+      }
+    } else {
+      result_type num = lhs.to_ullong();
+      // Be sure the number is right
+      if (sz == 0)
+        BOOST_TEST(num == 0);
+      else {
+        for (std::size_t i = 0; i < sz; ++i)
+          BOOST_TEST(lhs[i] == (i < n ? nth_bit(num, i) : 0));
+      }
+    }
+  }
+  #endif
 
   // to_string()
   static void to_string(const Bitset& b)

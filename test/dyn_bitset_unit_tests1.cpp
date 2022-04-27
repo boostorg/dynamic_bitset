@@ -111,7 +111,11 @@ void run_numeric_ctor_tests( BOOST_EXPLICIT_TEMPLATE_TYPE(Tests)
       for (std::size_t n = 0; n < BOOST_BITSET_TEST_COUNT(numbers); ++n ) {
 
           // can match ctor from ulong or templated one
+          #ifdef BOOST_NO_LONG_LONG
           Tests::from_unsigned_long(sizes[s], numbers[n]);
+          #else
+          Tests::from_unsigned_long_long(sizes[s], numbers[n]);
+          #endif
 
           typedef std::size_t compare_type;
           const compare_type sz = sizes[s];
@@ -127,7 +131,11 @@ void run_numeric_ctor_tests( BOOST_EXPLICIT_TEMPLATE_TYPE(Tests)
 
           if (fits) {
             // can match templated ctor only (so we test dispatching)
+            #ifdef BOOST_NO_LONG_LONG
             Tests::from_unsigned_long(static_cast<T>(sizes[s]), numbers[n]);
+            #else
+            Tests::from_unsigned_long_long(static_cast<T>(sizes[s]), numbers[n]);
+            #endif
           }
 
       }
@@ -166,8 +174,13 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
 
     for (std::size_t s = 0; s < BOOST_BITSET_TEST_COUNT(sizes); ++s) {
       for (std::size_t v = 0; v < BOOST_BITSET_TEST_COUNT(values); ++v) {
+          #ifdef BOOST_NO_LONG_LONG
           Tests::from_unsigned_long(sizes[s], values[v]);
           Tests::from_unsigned_long(sizes[s] != 0, values[v]);
+          #else
+          Tests::from_unsigned_long_long(sizes[s], values[v]);
+          Tests::from_unsigned_long_long(sizes[s] != 0, values[v]);
+          #endif
       }
     }
 
@@ -187,7 +200,7 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     run_numeric_ctor_tests<Tests, unsigned int>();
     run_numeric_ctor_tests<Tests, unsigned long>();
 
-#if defined(BOOST_HAS_LONG_LONG)
+#if !defined(BOOST_NO_LONG_LONG)
     run_numeric_ctor_tests<Tests, ::boost::long_long_type>();
     run_numeric_ctor_tests<Tests, ::boost::ulong_long_type>();
 #endif

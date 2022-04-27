@@ -26,6 +26,9 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
 
   std::string long_string = get_long_string();
   std::size_t ul_width = std::numeric_limits<unsigned long>::digits;
+  #ifndef BOOST_NO_LONG_LONG
+  std::size_t ull_width = std::numeric_limits<unsigned long long>::digits;
+  #endif
 
   //=====================================================================
   // Test b.empty()
@@ -43,7 +46,7 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     Tests::empty(b);
   }
   //=====================================================================
-  // Test b.to_long()
+  // Test b.to_ulong()
   {
     boost::dynamic_bitset<Block> b;
     Tests::to_ulong(b);
@@ -71,6 +74,37 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     boost::dynamic_bitset<Block> b(long_string);
     Tests::to_ulong(b);
   }
+  //=====================================================================
+  // Test b.to_ullong()
+  #ifndef BOOST_NO_LONG_LONG
+  {
+      boost::dynamic_bitset<Block> b;
+      Tests::to_ullong(b);
+  }
+  {
+      boost::dynamic_bitset<Block> b(std::string("1"));
+      Tests::to_ullong(b);
+  }
+  {
+      boost::dynamic_bitset<Block> b(bitset_type::bits_per_block,
+                                     static_cast<unsigned long long>(-1));
+      Tests::to_ullong(b);
+  }
+  {
+      std::string str(ull_width - 1, '1');
+      boost::dynamic_bitset<Block> b(str);
+      Tests::to_ullong(b);
+  }
+  {
+      std::string ull_str(ull_width, '1');
+      boost::dynamic_bitset<Block> b(ull_str);
+      Tests::to_ullong(b);
+  }
+  { // case overflow
+      boost::dynamic_bitset<Block> b(long_string);
+      Tests::to_ullong(b);
+  }
+  #endif
   //=====================================================================
   // Test to_string(b, str)
   {

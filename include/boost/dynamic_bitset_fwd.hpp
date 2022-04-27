@@ -16,9 +16,15 @@
 
 namespace boost {
 
+#ifdef BOOST_NO_LONG_LONG
 template <typename Block = unsigned long,
           typename Allocator = std::allocator<Block> >
 class dynamic_bitset;
+#else
+template <typename Block = unsigned long long,
+          typename Allocator = std::allocator<Block> >
+class dynamic_bitset;
+#endif
 
 }
 
