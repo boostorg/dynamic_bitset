@@ -1215,6 +1215,35 @@ struct bitset_test {
           }
           b.at(i).flip();
       }
+
+      // b.at(b.size())
+      bool will_out_of_range = false;
+      for (i = 0; i <= b.size(); ++i)
+      {
+          if (i == b.size())
+          {
+              will_out_of_range = true;
+              break;
+          }
+          b.at(i);
+      }
+      if (will_out_of_range)
+      {
+          try
+          {
+              b.at(b.size());
+              BOOST_TEST(false); // It should have thrown an exception
+          }
+          catch (const std::out_of_range& ex)
+          {
+              // Good!
+              BOOST_TEST(!!ex.what());
+          }
+          catch (...)
+          {
+              BOOST_TEST(false); // threw the wrong exception
+          }
+      }
   }
 
   // operator|
