@@ -51,36 +51,49 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     a[14] = b[14] = 1;
     Tests::intersects(a, b, 0, 1, 14);
   }
+  {
+    bitset_type a(long_string), b(long_string);
+    b[long_string.size()/2].flip();
+    Tests::intersects(a, b, 0, 0, long_string.size());
+  }
   //=====================================================================
   // Test operator==
   {
-    boost::dynamic_bitset<Block> a(3), b(4);
+    bitset_type a(3), b(4);
     Tests::operator_equal(a, b, 0, 0, 3);
     Tests::operator_equal(a, b, 0, 1, 3);
   }
   {
-    boost::dynamic_bitset<Block> a(std::string("00")), b(std::string("0"));
+    bitset_type a(3), b;
+    Tests::operator_equal(a, b, 0, 0, 0);
+  }
+  {
+    bitset_type a, b(4);
+    Tests::operator_equal(a, b, 0, 0, 0);
+  }
+  {
+    bitset_type a(std::string("00")), b(std::string("0"));
     Tests::operator_equal(a, b, 0, 0, 1);
     Tests::operator_equal(a, b, 1, 0, 1);
   }
   {
-    boost::dynamic_bitset<Block> a(std::string("11")), b(std::string("1"));
+    bitset_type a(std::string("11")), b(std::string("1"));
     Tests::operator_equal(a, b, 0, 0, 1);
     Tests::operator_equal(a, b, 1, 0, 1);
   }
   {
-    boost::dynamic_bitset<Block> a(long_string), b(long_string);
+    bitset_type a(long_string), b(long_string);
     Tests::operator_equal(a, b, 0, 0, long_string.size());
     Tests::operator_equal(a, b, long_string.size()/2, long_string.size()/2, long_string.size() - (long_string.size()/2));
   }
   {
-    boost::dynamic_bitset<Block> a(long_string), b(long_string);
+    bitset_type a(long_string), b(long_string);
     a[long_string.size()/2].flip();
     Tests::operator_equal(a, b, 0, 0, long_string.size());
     Tests::operator_equal(a, b, long_string.size()/2, long_string.size()/2, long_string.size()  - (long_string.size()/2));
   }
   {
-    boost::dynamic_bitset<Block> a(long_string), b(long_string);
+    bitset_type a(long_string), b(long_string);
     b[long_string.size()/2].flip();
     Tests::operator_equal(a, b, 0, 0, long_string.size());
     Tests::operator_equal(a, b, long_string.size()/2, long_string.size()/2, long_string.size()  - (long_string.size()/2));
@@ -88,33 +101,33 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   //=====================================================================
   // Test operator!=
   {
-    boost::dynamic_bitset<Block> a(3), b(4);
+    bitset_type a(3), b(4);
     Tests::operator_not_equal(a, b, 0, 0, 3);
     Tests::operator_not_equal(a, b, 0, 1, 3);
   }
   {
-    boost::dynamic_bitset<Block> a(std::string("00")), b(std::string("0"));
+    bitset_type a(std::string("00")), b(std::string("0"));
     Tests::operator_not_equal(a, b, 0, 0, 1);
     Tests::operator_not_equal(a, b, 1, 0, 1);
   }
   {
-    boost::dynamic_bitset<Block> a(std::string("11")), b(std::string("1"));
+    bitset_type a(std::string("11")), b(std::string("1"));
     Tests::operator_not_equal(a, b, 0, 0, 1);
     Tests::operator_not_equal(a, b, 1, 0, 1);
   }
   {
-    boost::dynamic_bitset<Block> a(long_string), b(long_string);
+    bitset_type a(long_string), b(long_string);
     Tests::operator_not_equal(a, b, 0, 0, long_string.size());
     Tests::operator_not_equal(a, b, long_string.size()/2, long_string.size()/2, long_string.size() - (long_string.size()/2));
   }
   {
-    boost::dynamic_bitset<Block> a(long_string), b(long_string);
+    bitset_type a(long_string), b(long_string);
     a[long_string.size()/2].flip();
     Tests::operator_not_equal(a, b, 0, 0, long_string.size());
     Tests::operator_not_equal(a, b, long_string.size()/2, long_string.size()/2, long_string.size() - (long_string.size()/2));
   }
   {
-    boost::dynamic_bitset<Block> a(long_string), b(long_string);
+    bitset_type a(long_string), b(long_string);
     b[long_string.size()/2].flip();
     Tests::operator_not_equal(a, b, 0, 0, long_string.size());
     Tests::operator_not_equal(a, b, long_string.size()/2, long_string.size()/2, long_string.size() - (long_string.size()/2));
@@ -122,23 +135,23 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   //=====================================================================
   // Test a & b
   {
-    boost::dynamic_bitset<Block> lhs(3), rhs(4);
+    bitset_type lhs(3), rhs(4);
     Tests::operator_and(lhs, rhs, 0, 0, 3);
     Tests::operator_and(lhs, rhs, 0, 1, 3);
   }
   {
-    boost::dynamic_bitset<Block> lhs(std::string("11")), rhs(std::string("0"));
+    bitset_type lhs(std::string("11")), rhs(std::string("0"));
     Tests::operator_and(lhs, rhs, 0, 0, 1);
     Tests::operator_and(lhs, rhs, 1, 0, 1);
   }
   {
-    boost::dynamic_bitset<Block> lhs(long_string.size(), 0), rhs(long_string);
+    bitset_type lhs(long_string.size(), 0), rhs(long_string);
     Tests::operator_and(lhs, rhs, 0, 0, long_string.size()/2);
     Tests::operator_and(lhs, rhs, 1, 2, long_string.size() - 2);
     Tests::operator_and(lhs, rhs, long_string.size()/2, 0, long_string.size() - (long_string.size()/2));
   }
   {
-    boost::dynamic_bitset<Block> lhs(long_string.size(), 1), rhs(long_string);
+    bitset_type lhs(long_string.size(), 1), rhs(long_string);
     Tests::operator_and(lhs, rhs, 0, 0, long_string.size()/2);
     Tests::operator_and(lhs, rhs, 1, 2, long_string.size() - 2);
     Tests::operator_and(lhs, rhs, long_string.size()/2, 0, long_string.size() - (long_string.size()/2));
@@ -146,23 +159,23 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   //=====================================================================
   // Test a | b
   {
-    boost::dynamic_bitset<Block> lhs(3), rhs(4);
+    bitset_type lhs(3), rhs(4);
     Tests::operator_or(lhs, rhs, 0, 0, 3);
     Tests::operator_or(lhs, rhs, 0, 1, 3);
   }
   {
-    boost::dynamic_bitset<Block> lhs(std::string("11")), rhs(std::string("0"));
+    bitset_type lhs(std::string("11")), rhs(std::string("0"));
     Tests::operator_or(lhs, rhs, 0, 0, 1);
     Tests::operator_or(lhs, rhs, 1, 0, 1);
   }
   {
-    boost::dynamic_bitset<Block> lhs(long_string.size(), 0), rhs(long_string);
+    bitset_type lhs(long_string.size(), 0), rhs(long_string);
     Tests::operator_or(lhs, rhs, 0, 0, long_string.size()/2);
     Tests::operator_or(lhs, rhs, 1, 2, long_string.size() - 2);
     Tests::operator_or(lhs, rhs, long_string.size()/2, 0, long_string.size() - (long_string.size()/2));
   }
   {
-    boost::dynamic_bitset<Block> lhs(long_string.size(), 1), rhs(long_string);
+    bitset_type lhs(long_string.size(), 1), rhs(long_string);
     Tests::operator_or(lhs, rhs, 0, 0, long_string.size()/2);
     Tests::operator_or(lhs, rhs, 1, 2, long_string.size() - 2);
     Tests::operator_or(lhs, rhs, long_string.size()/2, 0, long_string.size() - (long_string.size()/2));
@@ -170,23 +183,23 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   //=====================================================================
   // Test a^b
   {
-    boost::dynamic_bitset<Block> lhs(3), rhs(4);
+    bitset_type lhs(3), rhs(4);
     Tests::operator_xor(lhs, rhs, 0, 0, 3);
     Tests::operator_xor(lhs, rhs, 0, 1, 3);
   }
   {
-    boost::dynamic_bitset<Block> lhs(std::string("11")), rhs(std::string("0"));
+    bitset_type lhs(std::string("11")), rhs(std::string("0"));
     Tests::operator_xor(lhs, rhs, 0, 0, 1);
     Tests::operator_xor(lhs, rhs, 1, 0, 1);
   }
   {
-    boost::dynamic_bitset<Block> lhs(long_string.size(), 0), rhs(long_string);
+    bitset_type lhs(long_string.size(), 0), rhs(long_string);
     Tests::operator_xor(lhs, rhs, 0, 0, long_string.size()/2);
     Tests::operator_xor(lhs, rhs, 1, 2, long_string.size() - 2);
     Tests::operator_xor(lhs, rhs, long_string.size()/2, 0, long_string.size() - (long_string.size()/2));
   }
   {
-    boost::dynamic_bitset<Block> lhs(long_string.size(), 1), rhs(long_string);
+    bitset_type lhs(long_string.size(), 1), rhs(long_string);
     Tests::operator_xor(lhs, rhs, 0, 0, long_string.size()/2);
     Tests::operator_xor(lhs, rhs, 1, 2, long_string.size() - 2);
     Tests::operator_xor(lhs, rhs, long_string.size()/2, 0, long_string.size() - (long_string.size()/2));
@@ -194,23 +207,23 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   //=====================================================================
   // Test a-b
   {
-    boost::dynamic_bitset<Block> lhs(3), rhs(4);
+    bitset_type lhs(3), rhs(4);
     Tests::operator_sub(lhs, rhs, 0, 0, 3);
     Tests::operator_sub(lhs, rhs, 0, 1, 3);
   }
   {
-    boost::dynamic_bitset<Block> lhs(std::string("11")), rhs(std::string("0"));
+    bitset_type lhs(std::string("11")), rhs(std::string("0"));
     Tests::operator_sub(lhs, rhs, 0, 0, 1);
     Tests::operator_sub(lhs, rhs, 1, 0, 1);
   }
   {
-    boost::dynamic_bitset<Block> lhs(long_string.size(), 0), rhs(long_string);
+    bitset_type lhs(long_string.size(), 0), rhs(long_string);
     Tests::operator_sub(lhs, rhs, 0, 0, long_string.size()/2);
     Tests::operator_sub(lhs, rhs, 1, 2, long_string.size() - 2);
     Tests::operator_sub(lhs, rhs, long_string.size()/2, 0, long_string.size() - (long_string.size()/2));
   }
   {
-    boost::dynamic_bitset<Block> lhs(long_string.size(), 1), rhs(long_string);
+    bitset_type lhs(long_string.size(), 1), rhs(long_string);
     Tests::operator_sub(lhs, rhs, 0, 0, long_string.size()/2);
     Tests::operator_sub(lhs, rhs, 1, 2, long_string.size() - 2);
     Tests::operator_sub(lhs, rhs, long_string.size()/2, 0, long_string.size() - (long_string.size()/2));

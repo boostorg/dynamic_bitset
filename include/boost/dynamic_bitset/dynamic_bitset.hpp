@@ -2364,31 +2364,35 @@ dynamic_bitset<Block, Allocator>& dynamic_bitset<Block, Allocator>::range_operat
 }
 
 template <class T>
+typename T::size_type get_common_length(
+    const typename T::size_type len_lhs, const typename T::size_type len_rhs,
+    const typename T::size_type size_lhs, const typename T::size_type size_rhs
+){
+
+    if(len_lhs == T::npos && len_rhs == T::npos){
+        assert(size_lhs == size_rhs);
+        return size_lhs;
+    }
+    else if(len_lhs == T::npos){
+        return len_rhs;
+    }
+    else if(len_rhs == T::npos){
+        return len_lhs;
+    }
+
+    assert(len_lhs == len_rhs);
+    return len_lhs;
+
+}
+
+template <class T>
 dynamic_bitset_span<T>&
 dynamic_bitset_span<T>::range_operation_pair(const dynamic_bitset_span<T>& rhs,
     block_type(*partial_block_operation)(block_type, block_type, size_type, size_type),
     block_type (*full_block_operation)(block_type, block_type))
 {
 
-    size_type len;
-    if(length == T::npos && rhs.length == T::npos)
-        {
-        assert(base.size() == rhs.base.size());
-        len = base.size();
-        }
-    else if(length == T::npos)
-        {
-        len = rhs.length;
-        }
-    else if(rhs.length == T::npos)
-        {
-        len = length;
-        }
-    else
-        {
-        assert(length == rhs.length);
-        len = length;
-    }
+    size_type len = get_common_length<T>(length, rhs.length, base.size(), rhs.base.size());
 
     // Do nothing in case of zero length
     if (!len)
@@ -2421,8 +2425,7 @@ dynamic_bitset_span<T>::range_operation_pair(const dynamic_bitset_span<T>& rhs,
     T& a = base;
     const T& b = rhs.base;
 
-    if(a_first_bit_index == b_first_bit_index)
-        {
+    if(a_first_bit_index == b_first_bit_index){
         //no need to adjust the sub-blocks
         const size_type a_end_first_block = (a_first_block == a_last_block) ?
             a_last_bit_index : base.bits_per_block - 1;
@@ -2438,9 +2441,7 @@ dynamic_bitset_span<T>::range_operation_pair(const dynamic_bitset_span<T>& rhs,
             a.m_bits[a_last_block] = partial_block_operation(a.m_bits[a_last_block],
               b.m_bits[b_last_block], 0, a_last_bit_index);
         }
-    }        
-    else
-        {
+    }else{
 
         if ( a_first_block == a_last_block ) {
             // Filling only a sub-block of a block
@@ -2506,25 +2507,7 @@ bool dynamic_bitset_span<T>::boolean_range_operation_pair(const dynamic_bitset_s
         bool (*full_block_operation)(block_type, block_type) ) const
 {
 
-   size_type len;
-    if(length == T::npos && rhs.length == T::npos)
-        {
-        assert(base.size() == rhs.base.size());
-        len = base.size();
-        }
-    else if(length == T::npos)
-        {
-        len = rhs.length;
-        }
-    else if(rhs.length == T::npos)
-        {
-        len = length;
-        }
-    else
-        {
-        assert(length == rhs.length);
-        len = length;
-    }
+    size_type len = get_common_length<T>(length, rhs.length, base.size(), rhs.base.size());
 
     // Return false in case of zero length
     if (!len)
