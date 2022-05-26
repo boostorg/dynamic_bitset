@@ -2433,64 +2433,52 @@ dynamic_bitset_span<T>::range_operation_pair(const dynamic_bitset_span<T>& rhs,
             a.m_bits[i] = full_block_operation(a.m_bits[i], b.m_bits[i]);
         }
 
-        if(a_first_block != a_last_block)
-            {
+        if (a_first_block != a_last_block) {
             a.m_bits[a_last_block] = partial_block_operation(a.m_bits[a_last_block],
               b.m_bits[b_last_block], 0, a_last_bit_index);
         }
     }else{
-
-        if ( a_first_block == a_last_block ) {
-            // Filling only a sub-block of a block
-
-            block_type assembled_b = b.assemble_block(b_first_block,
-                b_first_bit_index, a_last_bit_index - a_first_bit_index) << a_first_bit_index;
-
-            a.m_bits[a_first_block] = partial_block_operation(a.m_bits[a_first_block],
-                assembled_b, a_first_bit_index, a_last_bit_index);
-        }else{
-            // Regular blocks that will be broken similarly
+    
+        const size_type a_end_first_block = (a_first_block == a_last_block) ?
+            a_last_bit_index : base.bits_per_block - 1;
             
-            // Fill the first block from the 'first' bit index to the end
-            {
-               block_type assembled_b = b.assemble_block(b_first_block,
-                   b_first_bit_index, base.bits_per_block - 1 - a_first_bit_index) << a_first_bit_index;
-               a.m_bits[a_first_block] = partial_block_operation(a.m_bits[a_first_block],
-                   assembled_b, a_first_bit_index, base.bits_per_block - 1);
-            }
+        block_type assembled_b = b.assemble_block(b_first_block,
+                b_first_bit_index, a_end_first_block - a_first_bit_index) << a_first_bit_index;
+        
+        a.m_bits[a_first_block] = partial_block_operation(a.m_bits[a_first_block],
+             assembled_b, a_first_bit_index, a_end_first_block);
+             
+        const size_type b_start_index_first_block = (b_first_bit_index >=
+            a_first_bit_index ? 0 : b.bits_per_block) + b_first_bit_index - a_first_bit_index;
+        //add one to ensure this never wraps around
+        const size_type b_block_adjustment = b_first_block + 1 -
+            (a_first_bit_index > b_first_bit_index ? 1 : 0);
 
-            const size_type b_start_index_first_block = (b_first_bit_index >=
-                a_first_bit_index ? 0 : b.bits_per_block) + b_first_bit_index - a_first_bit_index;
-            //add one to ensure this never wraps around
-            const size_type b_block_adjustment = b_first_block + 1 -
-                (a_first_bit_index > b_first_bit_index ? 1 : 0);
-            
-            for (size_type i = a_first_block + 1; i < a_last_block; ++i) {
-                //main iterator is a. b is adjusted to compute full blocks
-                const size_type b_block = i - a_first_block + b_block_adjustment - 1;
-                block_type assembled_b = b.assemble_block(b_block,
-                    b_start_index_first_block, base.bits_per_block - 1);
+        for (size_type i = a_first_block + 1; i < a_last_block; ++i) {
+            //main iterator is a. b is adjusted to compute full blocks
+            const size_type b_block = i - a_first_block + b_block_adjustment - 1;
+            block_type assembled_b = b.assemble_block(b_block,
+                b_start_index_first_block, base.bits_per_block - 1);
 
-                a.m_bits[i] = full_block_operation(a.m_bits[i], assembled_b);
+            a.m_bits[i] = full_block_operation(a.m_bits[i], assembled_b);
 
-            }
+        }
 
-            // Fill the last block from the start to the 'last' bit index
-            {
-                const size_type b_last_bit_index = base.bit_index(b_pos + len - 1);
-                
-                size_type b_last_block_adjusted = b_last_block -
-                    (b_last_bit_index >= b_start_index_first_block ? 0 : 1);                
-                size_type b_last_block_length = (b_last_bit_index >=
-                    b_start_index_first_block ? 0 : base.bits_per_block) +
-                    b_last_bit_index - b_start_index_first_block;
+        // Fill the last block from the start to the 'last' bit index
+        if (a_first_block != a_last_block) {
+            const size_type b_last_bit_index = base.bit_index(b_pos + len - 1);
 
-                block_type assembled_b = b.assemble_block(b_last_block_adjusted,
-                    b_start_index_first_block, b_last_block_length);
-                
-                a.m_bits[a_last_block] = partial_block_operation(a.m_bits[a_last_block],
-                    assembled_b, 0, a_last_bit_index);
-            }
+            size_type b_last_block_adjusted = b_last_block -
+                (b_last_bit_index >= b_start_index_first_block ? 0 : 1);
+            size_type b_last_block_length = (b_last_bit_index >=
+                b_start_index_first_block ? 0 : base.bits_per_block) +
+                b_last_bit_index - b_start_index_first_block;
+
+            block_type assembled_b = b.assemble_block(b_last_block_adjusted,
+                b_start_index_first_block, b_last_block_length);
+
+            a.m_bits[a_last_block] = partial_block_operation(a.m_bits[a_last_block],
+                assembled_b, 0, a_last_bit_index);
         }
 
     }
