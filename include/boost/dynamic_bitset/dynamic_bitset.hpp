@@ -407,8 +407,7 @@ private:
     Block assemble_block(size_type index_first_block, size_type first_bit_index, size_type length_block) const
     {
         Block assembled_block = (m_bits[index_first_block] & bit_mask(first_bit_index, std::min(first_bit_index + length_block, bits_per_block - 1))) >> first_bit_index;
-        if(first_bit_index + length_block > bits_per_block - 1)
-        {
+        if (first_bit_index + length_block > bits_per_block - 1) {
              assembled_block |= (m_bits[index_first_block + 1] & bit_mask(0, first_bit_index + length_block - bits_per_block)) << (bits_per_block - first_bit_index);
         }
         return assembled_block;        
@@ -2369,14 +2368,12 @@ typename T::size_type get_common_length(
     const typename T::size_type size_lhs, const typename T::size_type size_rhs
 ){
 
-    if(len_lhs == T::npos && len_rhs == T::npos){
+    if (len_lhs == T::npos && len_rhs == T::npos) {
         assert(size_lhs == size_rhs);
         return size_lhs;
-    }
-    else if(len_lhs == T::npos){
+    }else if (len_lhs == T::npos) {
         return len_rhs;
-    }
-    else if(len_rhs == T::npos){
+    }else if (len_rhs == T::npos) {
         return len_lhs;
     }
 
@@ -2425,7 +2422,7 @@ dynamic_bitset_span<T>::range_operation_pair(const dynamic_bitset_span<T>& rhs,
     T& a = base;
     const T& b = rhs.base;
 
-    if(a_first_bit_index == b_first_bit_index){
+    if (a_first_bit_index == b_first_bit_index) {
         //no need to adjust the sub-blocks
         const size_type a_end_first_block = (a_first_block == a_last_block) ?
             a_last_bit_index : base.bits_per_block - 1;
@@ -2540,12 +2537,11 @@ bool dynamic_bitset_span<T>::boolean_range_operation_pair(const dynamic_bitset_s
     const T& a = base;
     const T& b = rhs.base;
 
-    if(a_first_bit_index == b_first_bit_index)
-        {
+    if (a_first_bit_index == b_first_bit_index) {
         //no need to adjust the sub-blocks
         const size_type a_end_first_block = (a_first_block == a_last_block) ?
             a_last_bit_index : a.bits_per_block - 1;
-        if( partial_block_operation(a.m_bits[a_first_block], b.m_bits[b_first_block],
+        if ( partial_block_operation(a.m_bits[a_first_block], b.m_bits[b_first_block],
             a_first_bit_index, a_end_first_block)){
                 return true;
         }
@@ -2556,10 +2552,9 @@ bool dynamic_bitset_span<T>::boolean_range_operation_pair(const dynamic_bitset_s
             }
         }
 
-        if(a_first_block != a_last_block)
-            {
-            if( partial_block_operation(a.m_bits[a_last_block], b.m_bits[b_last_block],
-                0, a_last_bit_index)){
+        if (a_first_block != a_last_block) {
+            if ( partial_block_operation(a.m_bits[a_last_block], b.m_bits[b_last_block],
+                    0, a_last_bit_index)){
                 return true;
             }
         }
@@ -2574,7 +2569,7 @@ bool dynamic_bitset_span<T>::boolean_range_operation_pair(const dynamic_bitset_s
                 a_last_bit_index - a_first_bit_index) << a_first_bit_index;
 
             if ( partial_block_operation(a.m_bits[a_first_block], assembled_b,
-                a_first_bit_index, a_last_bit_index)){
+                a_first_bit_index, a_last_bit_index)) {
                     return true;
             }
         }else{
@@ -2584,8 +2579,8 @@ bool dynamic_bitset_span<T>::boolean_range_operation_pair(const dynamic_bitset_s
             {
                block_type assembled_b = b.assemble_block(b_first_block, b_first_bit_index,
                    base.bits_per_block - 1 - a_first_bit_index) << a_first_bit_index;
-               if( partial_block_operation(a.m_bits[a_first_block], assembled_b,
-                   a_first_bit_index, base.bits_per_block - 1)){
+               if ( partial_block_operation(a.m_bits[a_first_block], assembled_b,
+                   a_first_bit_index, base.bits_per_block - 1)) {
                     return true;
                 }
             }
@@ -2602,7 +2597,7 @@ bool dynamic_bitset_span<T>::boolean_range_operation_pair(const dynamic_bitset_s
                 block_type assembled_b = b.assemble_block(b_block,
                     b_start_index_first_block, base.bits_per_block - 1);
 
-                if(full_block_operation(a.m_bits[i], assembled_b)){
+                if (full_block_operation(a.m_bits[i], assembled_b)) {
                     return true;
                 }
 
@@ -2621,7 +2616,7 @@ bool dynamic_bitset_span<T>::boolean_range_operation_pair(const dynamic_bitset_s
                 block_type assembled_b = b.assemble_block(b_last_block_adjusted,
                     b_start_index_first_block, b_last_block_length);
                 
-                if(partial_block_operation(a.m_bits[a_last_block], assembled_b, 0, a_last_bit_index)){
+                if (partial_block_operation(a.m_bits[a_last_block], assembled_b, 0, a_last_bit_index)) {
                     return true;
                 }
             }
