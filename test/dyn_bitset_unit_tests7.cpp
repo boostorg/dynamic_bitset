@@ -67,6 +67,18 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     }
     
   }
+  {
+    bitset_type a(long_string), b(a);
+    for(size_t i = 0; i < a.size(); i+= 5)
+    {
+        Tests::intersects(a, b, 0, 0, i);
+        a[i].flip();
+        Tests::intersects(a, b, 0, 0, i);
+        a[i].flip();
+    }
+    
+  }
+  
   //=====================================================================
   // Test operator==
   {

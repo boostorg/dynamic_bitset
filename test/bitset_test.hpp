@@ -1077,6 +1077,7 @@ struct bitset_test {
       std::size_t pos_a, std::size_t pos_b, std::size_t len)
   {
     const boost::dynamic_bitset_span<Bitset> span_a = boost::const_dynamic_bitset_span<Bitset>(a, pos_a);
+    const boost::dynamic_bitset_span<Bitset> span_a_len = boost::const_dynamic_bitset_span<Bitset>(a, pos_a, len);
     const boost::dynamic_bitset_span<Bitset> span_b = boost::const_dynamic_bitset_span<Bitset>(b, pos_b, len);
 
     if (span_a == span_b) {
@@ -1091,6 +1092,20 @@ struct bitset_test {
         }
       BOOST_TEST(diff);
     }
+    
+    if (span_a_len == span_b) {
+      for (std::size_t I = 0; I < len; ++I)
+        BOOST_TEST(a[pos_a + I] == b[pos_b + I]);
+    } else {
+      bool diff = false;
+      for (std::size_t I = 0; I < len; ++I)
+        if (a[pos_a + I] != b[pos_b + I]) {
+          diff = true;
+          break;
+        }
+      BOOST_TEST(diff);
+    }
+
   }
 
   static void operator_not_equal(const Bitset& a, const Bitset& b)

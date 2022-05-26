@@ -2398,8 +2398,7 @@ dynamic_bitset_span<T>::range_operation_pair(const dynamic_bitset_span<T>& rhs,
     size_type a_pos = start;
     size_type b_pos = rhs.start;
 
-    assert((a_pos + len <= base.m_num_bits)
-        && (b_pos + len <= rhs.base.m_num_bits));
+    assert((a_pos + len <= base.m_num_bits) && (b_pos + len <= rhs.base.m_num_bits));
 
     // Use an additional asserts in order to detect size_type overflow
     // For example: pos = 10, len = size_type_limit - 2, pos + len = 7
@@ -2484,8 +2483,7 @@ bool dynamic_bitset_span<T>::boolean_range_operation_pair(const dynamic_bitset_s
     size_type a_pos = start;
     size_type b_pos = rhs.start;
 
-    assert((a_pos + len <= base.m_num_bits)
-        && (b_pos + len <= rhs.base.m_num_bits));
+    assert((a_pos + len <= base.m_num_bits) && (b_pos + len <= rhs.base.m_num_bits));
 
     // Use an additional asserts in order to detect size_type overflow
     // For example: pos = 10, len = size_type_limit - 2, pos + len = 7
