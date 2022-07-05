@@ -815,8 +815,7 @@ void dynamic_bitset<Block, Allocator>::
 push_back(bool bit)
 {
   const size_type sz = size();
-  resize(sz + 1);
-  set(sz, bit);
+  resize(sz + 1, bit);
 }
 
 template <typename Block, typename Allocator>
