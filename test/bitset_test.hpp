@@ -15,6 +15,7 @@
 #define BOOST_BITSET_TEST_HPP_GP_20040319
 
 #include <boost/config.hpp>
+#include <iostream>
 #if !defined (BOOST_NO_STD_LOCALE)
 # include <locale>
 #endif
@@ -24,6 +25,7 @@
 #include <string>    // for (basic_string and) getline()
 #include <algorithm> // for std::min
 #include <assert.h>  // <cassert> is sometimes macro-guarded :-(
+#include <numeric>   // std::accumulate
 
 #include <boost/limits.hpp>
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
@@ -1278,6 +1280,139 @@ struct bitset_test {
     BOOST_TEST((lhs - rhs) == (x -= rhs));
   }
 
+  // iterator
+  static void test_iterator(const Bitset &lhs) {
+
+    // friend bool operator==
+    {
+        Bitset b1(lhs);
+        Bitset b2(lhs);
+
+        // different bitset, the same iterator location
+        BOOST_TEST(b1.begin() != b2.begin());
+
+        // different bitset, different iterator location
+        BOOST_TEST(b1.begin() != b2.end());
+
+        // the same bitset, the same iterators location
+        Bitset& ref_b1 = b1;
+        BOOST_TEST(b1.begin() == ref_b1.begin());
+
+        // the same bitset, different iterators location
+        if (b1.size() > 0) {
+            BOOST_TEST(b1.begin() != b1.end());
+            typename Bitset::iterator it1 = b1.begin();
+            typename Bitset::iterator it2 = b1.end();
+            BOOST_TEST(it1 == b1.begin() && it1 != it2);
+        } else {
+            BOOST_TEST(b1.begin() == b1.end());
+        }
+    }
+
+    // test iterator self assignment
+    {
+        // explict self assignment
+        Bitset b(lhs);
+        typename Bitset::iterator it1 = b.begin();
+        typename Bitset::iterator it2 = b.begin();
+        it1 = it1;
+        BOOST_TEST(it1 == it2);
+
+        // implict self assignment
+        it1 = b.begin();
+        it1++;
+        it2 = b.begin();
+        it2++;
+        it1 = it2;
+        typename Bitset::iterator it3 = it2;
+        BOOST_TEST(it1 == it3);
+    }
+
+    // operator++
+    {
+        Bitset b(lhs);
+        typename Bitset::iterator it = b.begin();
+        for (std::size_t i = 0; i < b.size(); ++i) {
+            ++it;
+        }
+        BOOST_TEST(it == b.end());
+
+        it = b.begin();
+        for (std::size_t i = 0; i < b.size(); ++i) {
+            it++;
+        }
+        BOOST_TEST(it == b.end());
+    }
+
+    // test derefernence
+    {
+        // bool operator*() const
+        {
+            Bitset b(lhs);
+            typename Bitset::iterator it = b.begin();
+            for (std::size_t i = 0; i < b.size(); ++i) {
+                BOOST_TEST(*it == b[i]);
+                ++it;
+            }
+        }
+
+        // reference operator*()
+        {
+            {
+                Bitset b(lhs);
+                typename Bitset::iterator it = b.begin();
+                for (std::size_t i = 0; i < b.size(); ++i) {
+                    bool origin_val = *it;
+
+                    /* both below two lines works */
+                    *it = !b[i];
+                    // *it = !*it;
+
+                    BOOST_TEST(*it == !origin_val);
+                    ++it;
+                }
+            }
+            {
+                Bitset b(lhs);
+                typename Bitset::iterator it = b.begin();
+                for (std::size_t i = 0; i < b.size(); ++i) {
+                    bool origin_val = *it;
+
+                    /* both below two lines works */
+                    b[i] = !*it;
+                    // *it = !*it;
+
+                    BOOST_TEST(*it == !origin_val);
+                    ++it;
+                }
+            }
+        }
+}
+
+    {
+        Bitset b(lhs);
+        size_t count = std::accumulate(b.begin(), b.end(), 0);
+        BOOST_TEST(count == b.count());
+    }
+
+    // test bad case
+    {
+        Bitset b(lhs);
+        typename Bitset::iterator it = b.end();
+        try {
+            *it;
+            // It shouldn't reach here
+            // because of an expection earlier
+            BOOST_TEST(false);
+        } catch (const std::out_of_range& ex) {
+          // expected reached here
+            BOOST_TEST(!!ex.what());
+        } catch (...) {
+            // the wrong exception thrown
+            BOOST_TEST(false);
+        }
+    }
+  }
 //------------------------------------------------------------------------------
 //                               I/O TESTS
    // The following tests assume the results of extraction (i.e.: contents,

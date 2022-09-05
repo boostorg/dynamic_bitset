@@ -364,6 +364,73 @@ public:
 #endif
 
 public:
+    class iterator {
+    private:
+        dynamic_bitset& bs;
+        size_type m_len;
+        size_type m_pos;
+
+    public:
+        typedef bool value_type;
+        iterator(dynamic_bitset& dbs, size_type pos = 0): bs(dbs), m_len(dbs.size()), m_pos(pos) {}
+        iterator(const iterator& other): bs(other.bs), m_len(other.m_len), m_pos(other.m_pos) {}
+
+        iterator &operator=(const iterator &rhs) {
+            // copy
+            iterator temp(rhs);
+            // swap
+            swaper_for_self_assign(*this, temp);
+            return *this;
+        }
+
+        iterator& operator++() {
+            m_pos++;
+            return *this;
+        }
+
+        iterator operator++(int) {
+            iterator temp(*this);
+            operator++();
+            return temp;
+        }
+
+        iterator& operator--() {
+            m_pos--;
+            return *this;
+        }
+
+        iterator operator--(int) {
+            iterator temp(*this);
+            operator--();
+            return temp;
+        }
+
+        reference operator*() {
+            if (m_pos >= m_len) {
+                BOOST_THROW_EXCEPTION(std::out_of_range("boost::dynamic_bitset::iterator::operator*() out_of_range"));
+            }
+            return bs[m_pos];
+        }
+
+        friend bool operator==(const iterator& x, const iterator& y) {
+            return x.m_pos == y.m_pos && x.m_len == y.m_len && (&(x.bs) == &(y.bs));
+        }
+
+        friend bool operator!=(const iterator& x, const iterator& y) {
+            return !(x == y);
+        }
+
+        friend void swaper_for_self_assign(iterator& x, iterator& y) {
+            std::swap(x.bs, y.bs);
+            std::swap(x.m_len, y.m_len);
+            std::swap(x.m_pos, y.m_pos);
+        }
+    };
+
+    iterator begin() { return iterator(*this); }
+    iterator end() { return iterator(*this, size()); }
+
+public:
     // forward declaration for optional zero-copy serialization support
     class serialize_impl;
     friend class serialize_impl;

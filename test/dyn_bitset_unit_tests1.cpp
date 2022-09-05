@@ -529,6 +529,20 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
           bit_vec[i] = long_string[n - 1 - i] == '0' ? 0 : 1;
       Tests::at(b, bit_vec);
   }
+  //=====================================================================
+  // Test iterator
+  {
+      boost::dynamic_bitset<Block> b;
+      Tests::test_iterator(b);
+  }
+  {
+      boost::dynamic_bitset<Block> b(std::string("1"));
+      Tests::test_iterator(b);
+  }
+  {
+      boost::dynamic_bitset<Block> b(long_string);
+      Tests::test_iterator(b);
+  }
 #if !defined(BOOST_NO_CXX11_ALLOCATOR)
   {
      typedef boost::dynamic_bitset<Block,
