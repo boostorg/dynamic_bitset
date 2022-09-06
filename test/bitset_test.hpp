@@ -1346,7 +1346,7 @@ struct bitset_test {
 
     // test derefernence
     {
-        // bool operator*() const
+        // *iter == b[i]
         {
             Bitset b(lhs);
             typename Bitset::iterator it = b.begin();
@@ -1356,46 +1356,40 @@ struct bitset_test {
             }
         }
 
-        // reference operator*()
+        // *iter = x
         {
-            {
-                Bitset b(lhs);
-                typename Bitset::iterator it = b.begin();
-                for (std::size_t i = 0; i < b.size(); ++i) {
-                    bool origin_val = *it;
+            Bitset b(lhs);
+            typename Bitset::iterator it = b.begin();
+            for (std::size_t i = 0; i < b.size(); ++i) {
+                bool origin_val = *it;
 
-                    /* both below two lines works */
-                    *it = !b[i];
-                    // *it = !*it;
+                /* both below two lines works */
+                *it = !b[i];
+                // *it = !*it;
 
-                    BOOST_TEST(*it == !origin_val);
-                    ++it;
-                }
-            }
-            {
-                Bitset b(lhs);
-                typename Bitset::iterator it = b.begin();
-                for (std::size_t i = 0; i < b.size(); ++i) {
-                    bool origin_val = *it;
-
-                    /* both below two lines works */
-                    b[i] = !*it;
-                    // *it = !*it;
-
-                    BOOST_TEST(*it == !origin_val);
-                    ++it;
-                }
+                BOOST_TEST(*it == !origin_val);
+                ++it;
             }
         }
-}
 
-    {
-        Bitset b(lhs);
-        size_t count = std::accumulate(b.begin(), b.end(), 0);
-        BOOST_TEST(count == b.count());
+        // b[i] = *iter
+        {
+            Bitset b(lhs);
+            typename Bitset::iterator it = b.begin();
+            for (std::size_t i = 0; i < b.size(); ++i) {
+                bool origin_val = *it;
+
+                /* both below two lines works */
+                b[i] = !*it;
+                // *it = !*it;
+
+                BOOST_TEST(*it == !origin_val);
+                ++it;
+            }
+        }
     }
 
-    // test bad case
+    // test iterator bad case
     {
         Bitset b(lhs);
         typename Bitset::iterator it = b.end();
@@ -1411,6 +1405,44 @@ struct bitset_test {
             // the wrong exception thrown
             BOOST_TEST(false);
         }
+    }
+
+    // reverse_iterator test
+    {
+        Bitset b(lhs);
+        typename Bitset::reverse_iterator rit = b.rbegin();
+
+        for (int i = b.size() - 1; i >= 0; i--) {
+            BOOST_TEST(*rit == b[i]);
+            ++rit;
+        }
+        BOOST_TEST(rit == b.rend());
+    }
+
+    // test reverse_iterator bad case
+    {
+        Bitset b(lhs);
+        typename Bitset::reverse_iterator rit = b.rend();
+        try {
+            *rit;
+            // It shouldn't reach here
+            // because of an expection earlier
+            BOOST_TEST(false);
+        } catch (const std::out_of_range& ex) {
+          // expected reached here
+            BOOST_TEST(!!ex.what());
+        } catch (...) {
+            // the wrong exception thrown
+            BOOST_TEST(false);
+        }
+    }
+
+    // STL algo
+    {
+        Bitset b(lhs);
+        typename Bitset::size_type count = std::accumulate(b.begin(), b.end(), 0);
+        typename Bitset::size_type real_count = b.count();
+        BOOST_TEST(count == real_count);
     }
   }
 //------------------------------------------------------------------------------

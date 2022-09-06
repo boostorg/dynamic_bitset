@@ -28,6 +28,7 @@
 #include <climits>      // for CHAR_BIT
 
 #include "boost/dynamic_bitset/config.hpp"
+#include <boost/iterator/reverse_iterator.hpp>
 
 #ifndef BOOST_NO_STD_LOCALE
 #  include <locale>
@@ -371,7 +372,12 @@ public:
         size_type m_pos;
 
     public:
-        typedef bool value_type;
+        typedef void                                  pointer;
+        typedef typename dynamic_bitset::reference    reference;
+        typedef bool                                  value_type;
+        typedef dynamic_bitset::size_type             difference_type;
+        typedef std::bidirectional_iterator_tag       iterator_category;
+
         iterator(dynamic_bitset& dbs, size_type pos = 0): bs(dbs), m_len(dbs.size()), m_pos(pos) {}
         iterator(const iterator& other): bs(other.bs), m_len(other.m_len), m_pos(other.m_pos) {}
 
@@ -405,7 +411,7 @@ public:
             return temp;
         }
 
-        reference operator*() {
+        reference operator*() const {
             if (m_pos >= m_len) {
                 BOOST_THROW_EXCEPTION(std::out_of_range("boost::dynamic_bitset::iterator::operator*() out_of_range"));
             }
@@ -427,8 +433,17 @@ public:
         }
     };
 
+    typedef boost::reverse_iterator<iterator> reverse_iterator;
+
     iterator begin() { return iterator(*this); }
+    iterator begin() const { return iterator(*this); }
     iterator end() { return iterator(*this, size()); }
+    iterator end() const { return iterator(*this, size()); }
+
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rbegin() const { return reverse_iterator(end()); }
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    reverse_iterator rend() const { return reverse_iterator(begin()); }
 
 public:
     // forward declaration for optional zero-copy serialization support
