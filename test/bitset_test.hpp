@@ -1344,6 +1344,39 @@ struct bitset_test {
         BOOST_TEST(it == b.end());
     }
 
+    // operator--
+    {
+        Bitset b(lhs);
+        typename Bitset::iterator it = b.end();
+        for (std::size_t i = 0; i < b.size(); ++i) {
+            --it;
+        }
+        BOOST_TEST(it == b.begin());
+
+        it = b.end();
+        for (std::size_t i = 0; i < b.size(); ++i) {
+            it--;
+        }
+        BOOST_TEST(it == b.begin());
+    }
+
+    // operator+=
+    {
+        Bitset b(lhs);
+        typename Bitset::iterator it1 = b.begin();
+        it1 += b.size();
+        BOOST_TEST(it1 == b.end());
+    }
+
+    // operator+
+    {
+        Bitset b(lhs);
+        typename Bitset::iterator it1 = b.begin() + b.size();
+        BOOST_TEST(it1 == b.end());
+        typename Bitset::iterator it2 = b.size() + b.begin();
+        BOOST_TEST(it2 == b.end());
+    }
+
     // test derefernence
     {
         // *iter == b[i]
