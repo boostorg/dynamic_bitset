@@ -28,6 +28,7 @@
 #include <climits>      // for CHAR_BIT
 
 #include "boost/dynamic_bitset/config.hpp"
+#include "boost/dynamic_bitset/dynamic_bitset_iterator.hpp"
 #include <boost/iterator/reverse_iterator.hpp>
 
 #ifndef BOOST_NO_STD_LOCALE
@@ -365,53 +366,7 @@ public:
 #endif
 
 public:
-    class iterator {
-    private:
-        dynamic_bitset& m_bs;
-        size_type m_len;
-        size_type m_pos;
-
-        void swap(iterator& other);
-
-    public:
-        typedef void                                  pointer;
-        typedef typename dynamic_bitset::reference    reference;
-        typedef bool                                  value_type;
-        typedef dynamic_bitset::size_type             difference_type;
-        typedef std::random_access_iterator_tag       iterator_category;
-
-        iterator(dynamic_bitset& dbs, size_type pos = 0): m_bs(dbs), m_len(dbs.size()), m_pos(pos) {}
-        iterator(const iterator& other): m_bs(other.m_bs), m_len(other.m_len), m_pos(other.m_pos) {}
-
-        iterator& operator=(const iterator &rhs);
-
-        iterator& operator++();
-        iterator operator++(int);
-
-        iterator& operator--();
-        iterator operator--(int);
-
-        iterator operator+(difference_type n) const;
-        iterator& operator+=(difference_type n);
-
-        iterator operator-(difference_type n) const;
-        iterator& operator-=(difference_type n);
-
-        reference operator*() const;
-
-        friend bool operator==(const iterator& x, const iterator& y) {
-            return x.m_pos == y.m_pos && x.m_len == y.m_len && (&(x.m_bs) == &(y.m_bs));
-        }
-
-        friend bool operator!=(const iterator& x, const iterator& y) {
-            return !(x == y);
-        }
-
-        friend iterator operator+(difference_type n, const iterator& rhs) {
-            return rhs + n;
-        }
-    };
-
+    typedef dbs_iterator<dynamic_bitset<Block, Allocator> > iterator;
     typedef boost::reverse_iterator<iterator> reverse_iterator;
 
     iterator begin() { return iterator(*this); }
@@ -2200,105 +2155,6 @@ bool dynamic_bitset<Block, Allocator>::m_check_invariants() const
 
     return true;
 
-}
-
-template <typename Block, typename Allocator>
-void dynamic_bitset<Block, Allocator>::iterator::swap(typename dynamic_bitset<Block, Allocator>::iterator &other)
-{
-    std::swap(m_bs, other.m_bs);
-    std::swap(m_len, other.m_len);
-    std::swap(m_pos, other.m_pos);
-}
-
-template <typename Block, typename Allocator>
-typename dynamic_bitset<Block, Allocator>::iterator&
-dynamic_bitset<Block, Allocator>::iterator::operator=(const dynamic_bitset<Block, Allocator>::iterator &rhs)
-{
-    dynamic_bitset<Block, Allocator>::iterator temp(rhs);
-    swap(temp);
-    return *this;
-}
-
-template <typename Block, typename Allocator>
-typename dynamic_bitset<Block, Allocator>::iterator &
-dynamic_bitset<Block, Allocator>::iterator::operator++()
-{
-    m_pos++;
-    return *this;
-}
-
-template <typename Block, typename Allocator>
-typename dynamic_bitset<Block, Allocator>::iterator
-dynamic_bitset<Block, Allocator>::iterator::operator++(int)
-{
-    dynamic_bitset<Block, Allocator>::iterator temp(*this);
-    operator++();
-    return temp;
-}
-
-template <typename Block, typename Allocator>
-typename dynamic_bitset<Block, Allocator>::iterator&
-dynamic_bitset<Block, Allocator>::iterator::operator--()
-{
-    m_pos--;
-    return *this;
-}
-
-template <typename Block, typename Allocator>
-typename dynamic_bitset<Block, Allocator>::iterator
-dynamic_bitset<Block, Allocator>::iterator::operator--(int)
-{
-    dynamic_bitset<Block, Allocator>::iterator temp(*this);
-    operator--();
-    return temp;
-}
-
-template <typename Block, typename Allocator>
-typename dynamic_bitset<Block, Allocator>::iterator
-dynamic_bitset<Block, Allocator>::iterator::operator+(
-    dynamic_bitset<Block, Allocator>::iterator::difference_type n) const
-{
-    dynamic_bitset<Block, Allocator>::iterator temp(*this);
-    temp += n;
-    return temp;
-}
-
-template <typename Block, typename Allocator>
-typename dynamic_bitset<Block, Allocator>::iterator&
-dynamic_bitset<Block, Allocator>::iterator::operator+=(
-    dynamic_bitset<Block, Allocator>::iterator::difference_type n)
-{
-    m_pos += n;
-    return *this;
-}
-
-template <typename Block, typename Allocator>
-typename dynamic_bitset<Block, Allocator>::iterator
-dynamic_bitset<Block, Allocator>::iterator::operator-(
-    dynamic_bitset<Block, Allocator>::iterator::difference_type n) const
-{
-    dynamic_bitset<Block, Allocator>::iterator temp(*this);
-    temp -= n;
-    return temp;
-}
-
-template <typename Block, typename Allocator>
-typename dynamic_bitset<Block, Allocator>::iterator&
-dynamic_bitset<Block, Allocator>::iterator::operator-=(
-    dynamic_bitset<Block, Allocator>::iterator::difference_type n)
-{
-    *this += -n;
-    return *this;
-}
-
-template <typename Block, typename Allocator>
-typename dynamic_bitset<Block, Allocator>::reference
-dynamic_bitset<Block, Allocator>::iterator::operator*() const
-{
-    if (m_pos >= m_len) {
-        BOOST_THROW_EXCEPTION(std::out_of_range("boost::dynamic_bitset::iterator::operator*() out_of_range"));
-    }
-    return m_bs[m_pos];
 }
 
 } // namespace boost

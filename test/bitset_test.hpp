@@ -15,7 +15,7 @@
 #define BOOST_BITSET_TEST_HPP_GP_20040319
 
 #include <boost/config.hpp>
-#include <iostream>
+#include <cstddef>
 #if !defined (BOOST_NO_STD_LOCALE)
 # include <locale>
 #endif
@@ -1366,6 +1366,16 @@ struct bitset_test {
         typename Bitset::iterator it1 = b.begin();
         it1 += b.size();
         BOOST_TEST(it1 == b.end());
+
+        for(std::size_t i = 0; i < b.size(); ++i) {
+          typename Bitset::iterator it = b.begin();
+          it += i;
+          BOOST_TEST(*it == b[i]);
+        }
+
+        typename Bitset::iterator it2 = b.end();
+        it2 += -b.size();
+        BOOST_TEST(it2 == b.begin());
     }
 
     // operator+
@@ -1373,8 +1383,129 @@ struct bitset_test {
         Bitset b(lhs);
         typename Bitset::iterator it1 = b.begin() + b.size();
         BOOST_TEST(it1 == b.end());
+
         typename Bitset::iterator it2 = b.size() + b.begin();
         BOOST_TEST(it2 == b.end());
+
+        const typename Bitset::iterator it3 = b.begin();
+        for (std::size_t i = 0; i < b.size(); ++i) {
+          BOOST_TEST(*(i + it3) == b[i]);
+        }
+
+        typename Bitset::iterator it4 = -b.size() + b.end();
+        BOOST_TEST(it4 == b.begin());
+    }
+
+    // operator-=
+    {
+      Bitset b(lhs);
+      typename Bitset::iterator it1 = b.end();
+      it1 -= b.size();
+      BOOST_TEST(it1 == b.begin());
+
+      for (std::size_t i = 1; i <= b.size(); ++i) {
+        typename Bitset::iterator it = b.end();
+        it -= i;
+        BOOST_TEST(*it == b[b.size() - i]);
+      }
+
+      typename Bitset::iterator it2 = b.begin();
+      it2 -= -b.size();
+      BOOST_TEST(it2 == b.end());
+    }
+
+    // operator-
+    {
+      Bitset b(lhs);
+      typename Bitset::iterator it1 = b.end() - b.size();
+      BOOST_TEST(it1 == b.begin());
+
+      const typename Bitset::iterator it2 = b.end();
+      for (std::size_t i = 1; i <= b.size(); ++i) {
+        BOOST_TEST(*(it2 - i) == b[b.size() - i]);
+      }
+
+      typename Bitset::iterator it3 = b.begin() - (-b.size());
+      BOOST_TEST(it3 == b.end());
+    }
+
+    // operator- between two iterators
+    {
+      Bitset b(lhs);
+      typename Bitset::iterator it1 = b.begin();
+      typename Bitset::iterator it2 = b.end();
+      BOOST_TEST(it2 - it1 == b.size());
+      BOOST_TEST(it1 - it2 == -b.size());
+      BOOST_TEST(it1 - it1 == 0);
+
+      std::size_t i = 0;
+      for (typename Bitset::iterator it = b.begin(); it != b.end(); it++) {
+        BOOST_TEST(it - b.begin() == i++);
+      }
+    }
+
+    // operator<
+    {
+      Bitset b(lhs);
+      typename Bitset::iterator it1 = b.begin();
+      typename Bitset::iterator it2 = b.end();
+
+      BOOST_TEST(!(it1 < it1));
+
+      if(b.size() > 0) {
+        BOOST_TEST(it1 < it2);
+      } else {
+        BOOST_TEST(!(it2 < it1));
+      }
+
+      if(b.size() > 1) {
+        const typename Bitset::iterator it = b.begin();
+        for(std::size_t i = 1; i < b.size(); i++) {
+            BOOST_TEST(it < it + i);
+        }
+      }
+    }
+
+    // operator<=
+    {
+      Bitset b(lhs);
+      typename Bitset::iterator it1 = b.begin();
+      typename Bitset::iterator it2 = b.end();
+      BOOST_TEST(it1 <= it2);
+      BOOST_TEST(it1 <= it1);
+      BOOST_TEST(it2 <= it2);
+    }
+
+    // operator>
+    {
+      Bitset b(lhs);
+      typename Bitset::iterator it1 = b.begin();
+      typename Bitset::iterator it2 = b.end();
+
+      BOOST_TEST(!(it1 > it1));
+
+      if(b.size() > 0) {
+        BOOST_TEST(it2 > it1);
+      } else {
+        BOOST_TEST(!(it2 > it1));
+      }
+
+      if(b.size() > 1) {
+        const typename Bitset::iterator it = b.begin();
+        for(std::size_t i = 1; i < b.size(); i++) {
+            BOOST_TEST(it + 1 >  it);
+        }
+      }
+    }
+
+    // operator>=
+    {
+      Bitset b(lhs);
+      typename Bitset::iterator it1 = b.begin();
+      typename Bitset::iterator it2 = b.end();
+      BOOST_TEST(it2 >= it1);
+      BOOST_TEST(it1 >= it1);
+      BOOST_TEST(it2 >= it2);
     }
 
     // test derefernence
@@ -1422,24 +1553,6 @@ struct bitset_test {
         }
     }
 
-    // test iterator bad case
-    {
-        Bitset b(lhs);
-        typename Bitset::iterator it = b.end();
-        try {
-            *it;
-            // It shouldn't reach here
-            // because of an expection earlier
-            BOOST_TEST(false);
-        } catch (const std::out_of_range& ex) {
-          // expected reached here
-            BOOST_TEST(!!ex.what());
-        } catch (...) {
-            // the wrong exception thrown
-            BOOST_TEST(false);
-        }
-    }
-
     // reverse_iterator test
     {
         Bitset b(lhs);
@@ -1452,7 +1565,25 @@ struct bitset_test {
         BOOST_TEST(rit == b.rend());
     }
 
-    // test reverse_iterator bad case
+    // test iterator derefernence bad case
+    {
+      Bitset b(lhs);
+      typename Bitset::iterator it = b.end();
+      try {
+        *it;
+        // It shouldn't reach here
+        // because of an expection earlier
+        BOOST_TEST(false);
+      } catch (const std::out_of_range &ex) {
+        // expected reached here
+        BOOST_TEST(!!ex.what());
+      } catch (...) {
+        // the wrong exception thrown
+        BOOST_TEST(false);
+      }
+    }
+
+    // test reverse_iterator derefernence bad case
     {
         Bitset b(lhs);
         typename Bitset::reverse_iterator rit = b.rend();
@@ -1470,12 +1601,86 @@ struct bitset_test {
         }
     }
 
-    // STL algo
+    // test bad case of operator- between two iterators
     {
-        Bitset b(lhs);
-        typename Bitset::size_type count = std::accumulate(b.begin(), b.end(), 0);
-        typename Bitset::size_type real_count = b.count();
-        BOOST_TEST(count == real_count);
+      Bitset b1(lhs), b2(lhs);
+      typename Bitset::iterator it1 = b1.begin();
+      typename Bitset::iterator it2 = b2.end();
+      try {
+        std::ptrdiff_t _ = it2 - it1;
+        // It shouldn't reach here
+        // because of an expection earlier
+        BOOST_TEST(false);
+      } catch (const std::logic_error &ex) {
+        // expected reached here
+        BOOST_TEST(!!ex.what());
+      } catch (...) {
+        // the wrong exception thrown
+        BOOST_TEST(false);
+      }
+    }
+
+    // test bad case of operator<, operator>, operator<=, operator>=
+    {
+      Bitset b1(lhs), b2(lhs);
+      typename Bitset::iterator it1 = b1.begin();
+      typename Bitset::iterator it2 = b2.end();
+
+      // operator<
+      try {
+        bool _ = it2 < it1;
+        // It shouldn't reach here
+        // because of an expection earlier
+        BOOST_TEST(false);
+      } catch (const std::logic_error &ex) {
+        // expected reached here
+        BOOST_TEST(!!ex.what());
+      } catch (...) {
+        // the wrong exception thrown
+        BOOST_TEST(false);
+      }
+
+      // operator>
+      try {
+        bool _ = it2 > it1;
+        // It shouldn't reach here
+        // because of an expection earlier
+        BOOST_TEST(false);
+      } catch (const std::logic_error &ex) {
+        // expected reached here
+        BOOST_TEST(!!ex.what());
+      } catch (...) {
+        // the wrong exception thrown
+        BOOST_TEST(false);
+      }
+
+      // operator<=
+      try {
+        bool _ = it2 <= it1;
+        // It shouldn't reach here
+        // because of an expection earlier
+        BOOST_TEST(false);
+      } catch (const std::logic_error &ex) {
+        // expected reached here
+        BOOST_TEST(!!ex.what());
+      } catch (...) {
+        // the wrong exception thrown
+        BOOST_TEST(false);
+      }
+
+      // operator>=
+      try {
+        bool _ = it2 >= it1;
+        // It shouldn't reach here
+        // because of an expection earlier
+        BOOST_TEST(false);
+      } catch (const std::logic_error &ex) {
+        // expected reached here
+        BOOST_TEST(!!ex.what());
+      } catch (...) {
+        // the wrong exception thrown
+        BOOST_TEST(false);
+      }
     }
   }
 //------------------------------------------------------------------------------
