@@ -25,7 +25,7 @@ public:
   typedef std::ptrdiff_t difference_type;
   typedef std::random_access_iterator_tag iterator_category;
 
-  explicit dbs_iterator(Container_t& dbs, size_type pos = 0)
+  dbs_iterator(Container_t& dbs, size_type pos = 0)
       : m_bs(dbs), m_len(dbs.size()), m_pos(pos) {}
 
   dbs_iterator(const dbs_iterator& other)
@@ -84,6 +84,36 @@ public:
 
 #endif
 };
+
+
+template <typename Container_t> class const_dbs_iterator : public dbs_iterator<Container_t> {
+private:
+  typedef typename Container_t::size_type size_type;
+
+public:
+  typedef void pointer;
+  typedef typename Container_t::reference reference;
+  typedef typename Container_t::const_reference value_type;
+  typedef std::ptrdiff_t difference_type;
+  typedef std::random_access_iterator_tag iterator_category;
+
+  const_dbs_iterator(Container_t& dbs, size_type pos = 0)
+      : dbs_iterator<Container_t>(dbs, pos) {}
+
+  const_dbs_iterator(const const_dbs_iterator& other)
+      : dbs_iterator<Container_t>(other) {}
+
+  value_type operator*() const;
+};
+
+template <typename Container_t>
+typename const_dbs_iterator<Container_t>::value_type
+const_dbs_iterator<Container_t>::operator*() const {
+  typename const_dbs_iterator<Container_t>::value_type var =
+      dbs_iterator<Container_t>::operator*();
+  return var;
+}
+
 
 template <typename Container_t>
 void dbs_iterator<Container_t>::swap(dbs_iterator<Container_t>& other)

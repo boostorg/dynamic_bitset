@@ -368,12 +368,17 @@ public:
 public:
     typedef dbs_iterator<dynamic_bitset<Block, Allocator> > iterator;
     typedef boost::reverse_iterator<iterator> reverse_iterator;
+    typedef const_dbs_iterator<dynamic_bitset<Block, Allocator> > const_iterator;
 
     iterator begin() { return iterator(*this); }
     const iterator begin() const { return iterator(*this); }
+    const_iterator cbegin() { return const_iterator(*this); }
+    const const_iterator cbegin() const { return const_iterator(*this); }
 
     iterator end() { return iterator(*this, size()); }
     const iterator end() const { return iterator(*this, size()); }
+    const_iterator cend() { return const_iterator(*this, size()); }
+    const const_iterator cend() const { return const_iterator(*this, size()); }
 
     reverse_iterator rbegin() { return reverse_iterator(end()); }
     const reverse_iterator rbegin() const { return reverse_iterator(end()); }

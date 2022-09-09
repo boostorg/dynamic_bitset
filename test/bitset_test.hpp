@@ -1551,6 +1551,14 @@ struct bitset_test {
                 ++it;
             }
         }
+
+        {
+          Bitset b(lhs);
+          for(typename Bitset::iterator it = b.begin(); it != b.end(); it++) {
+            *it = false;
+            BOOST_TEST(*it == false);
+          }
+        }
     }
 
     // reverse_iterator test
@@ -1610,7 +1618,7 @@ struct bitset_test {
         std::ptrdiff_t _ = it2 - it1;
         // It shouldn't reach here
         // because of an expection earlier
-        BOOST_TEST(false);
+        BOOST_TEST(false && _);
       } catch (const std::logic_error &ex) {
         // expected reached here
         BOOST_TEST(!!ex.what());
@@ -1631,7 +1639,7 @@ struct bitset_test {
         bool _ = it2 < it1;
         // It shouldn't reach here
         // because of an expection earlier
-        BOOST_TEST(false);
+        BOOST_TEST(false && _);
       } catch (const std::logic_error &ex) {
         // expected reached here
         BOOST_TEST(!!ex.what());
@@ -1645,7 +1653,7 @@ struct bitset_test {
         bool _ = it2 > it1;
         // It shouldn't reach here
         // because of an expection earlier
-        BOOST_TEST(false);
+        BOOST_TEST(false && _);
       } catch (const std::logic_error &ex) {
         // expected reached here
         BOOST_TEST(!!ex.what());
@@ -1659,7 +1667,7 @@ struct bitset_test {
         bool _ = it2 <= it1;
         // It shouldn't reach here
         // because of an expection earlier
-        BOOST_TEST(false);
+        BOOST_TEST(false && _);
       } catch (const std::logic_error &ex) {
         // expected reached here
         BOOST_TEST(!!ex.what());
@@ -1673,7 +1681,7 @@ struct bitset_test {
         bool _ = it2 >= it1;
         // It shouldn't reach here
         // because of an expection earlier
-        BOOST_TEST(false);
+        BOOST_TEST(false && _);
       } catch (const std::logic_error &ex) {
         // expected reached here
         BOOST_TEST(!!ex.what());
@@ -1681,6 +1689,19 @@ struct bitset_test {
         // the wrong exception thrown
         BOOST_TEST(false);
       }
+    }
+
+    // const iterator
+    {
+      Bitset b(lhs);
+      typename Bitset::const_iterator cit = b.cbegin();
+      // *cit = false;
+
+      for(std::size_t i = 0; i < b.size(); ++i) {
+        BOOST_TEST(*cit == b[i]);
+        ++cit;
+      }
+      BOOST_TEST(cit == b.cend());
     }
   }
 //------------------------------------------------------------------------------
