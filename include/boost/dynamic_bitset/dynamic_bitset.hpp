@@ -369,6 +369,7 @@ public:
     typedef dbs_iterator<dynamic_bitset<Block, Allocator> > iterator;
     typedef boost::reverse_iterator<iterator> reverse_iterator;
     typedef const_dbs_iterator<dynamic_bitset<Block, Allocator> > const_iterator;
+    typedef boost::reverse_iterator<const_iterator> const_reverse_iterator;
 
     iterator begin() { return iterator(*this); }
     const iterator begin() const { return iterator(*this); }
@@ -382,9 +383,13 @@ public:
 
     reverse_iterator rbegin() { return reverse_iterator(end()); }
     const reverse_iterator rbegin() const { return reverse_iterator(end()); }
+    const_reverse_iterator crbegin() { return const_reverse_iterator(cend()); }
+    const const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
 
     reverse_iterator rend() { return reverse_iterator(begin()); }
     const reverse_iterator rend() const { return reverse_iterator(begin()); }
+    const_reverse_iterator crend() { return const_reverse_iterator(cbegin()); }
+    const const_reverse_iterator crend() const { return const_reverse_iterator(cbegin()); }
 
 public:
     // forward declaration for optional zero-copy serialization support

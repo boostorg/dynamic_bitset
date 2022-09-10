@@ -1696,12 +1696,47 @@ struct bitset_test {
       Bitset b(lhs);
       typename Bitset::const_iterator cit = b.cbegin();
       // *cit = false;
-
       for(std::size_t i = 0; i < b.size(); ++i) {
+        bool var = *cit;
+        BOOST_TEST(var == b[i]);
         BOOST_TEST(*cit == b[i]);
         ++cit;
       }
       BOOST_TEST(cit == b.cend());
+
+      BOOST_TEST(b.cbegin() == b.begin());
+      BOOST_TEST(b.cend() == b.end());
+    }
+
+    // const reverse iterator test
+    {
+        Bitset b(lhs);
+        typename Bitset::reverse_iterator crit = b.rbegin();
+
+        for (int i = b.size() - 1; i >= 0; i--) {
+            BOOST_TEST(*crit == b[i]);
+            ++crit;
+        }
+        BOOST_TEST(crit == b.crend());
+        BOOST_TEST(crit == b.rend());
+    }
+
+    // test const iterator derefernence bad case
+    {
+      Bitset b(lhs);
+      typename Bitset::const_iterator cit = b.cend();
+      try {
+        *cit;
+        // It shouldn't reach here
+        // because of an expection earlier
+        BOOST_TEST(false);
+      } catch (const std::out_of_range &ex) {
+        // expected reached here
+        BOOST_TEST(!!ex.what());
+      } catch (...) {
+        // the wrong exception thrown
+        BOOST_TEST(false);
+      }
     }
   }
 //------------------------------------------------------------------------------

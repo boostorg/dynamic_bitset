@@ -100,7 +100,7 @@ public:
   const_dbs_iterator(Container_t& dbs, size_type pos = 0)
       : dbs_iterator<Container_t>(dbs, pos) {}
 
-  const_dbs_iterator(const const_dbs_iterator& other)
+  const_dbs_iterator(const dbs_iterator<Container_t>& other)
       : dbs_iterator<Container_t>(other) {}
 
   value_type operator*() const;
