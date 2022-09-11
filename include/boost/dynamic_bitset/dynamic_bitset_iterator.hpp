@@ -164,7 +164,7 @@ dbs_iterator<Container_t> dbs_iterator<Container_t>::operator--(int)
 
 template <typename Container_t>
 dbs_iterator<Container_t> dbs_iterator<Container_t>::operator+(
-    dbs_iterator<Container_t>::difference_type n) const
+    typename dbs_iterator<Container_t>::difference_type n) const
 {
   dbs_iterator<Container_t> temp(*this);
   temp += n;
@@ -173,7 +173,7 @@ dbs_iterator<Container_t> dbs_iterator<Container_t>::operator+(
 
 template <typename Container_t>
 dbs_iterator<Container_t>& dbs_iterator<Container_t>::operator+=(
-    dbs_iterator<Container_t>::difference_type n) 
+    typename dbs_iterator<Container_t>::difference_type n) 
 {
   m_pos += n;
   return *this;
@@ -181,7 +181,7 @@ dbs_iterator<Container_t>& dbs_iterator<Container_t>::operator+=(
 
 template <typename Container_t>
 dbs_iterator<Container_t> dbs_iterator<Container_t>::operator-(
-    dbs_iterator<Container_t>::difference_type n) const
+    typename dbs_iterator<Container_t>::difference_type n) const
 {
   dbs_iterator<Container_t> temp(*this);
   temp -= n;
@@ -190,7 +190,7 @@ dbs_iterator<Container_t> dbs_iterator<Container_t>::operator-(
 
 template <typename Container_t>
 dbs_iterator<Container_t>& dbs_iterator<Container_t>::operator-=(
-    dbs_iterator<Container_t>::difference_type n)
+    typename dbs_iterator<Container_t>::difference_type n)
 {
   *this += -n;
   return *this;

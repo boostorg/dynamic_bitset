@@ -15,7 +15,6 @@
 #define BOOST_BITSET_TEST_HPP_GP_20040319
 
 #include <boost/config.hpp>
-#include <cstddef>
 #if !defined (BOOST_NO_STD_LOCALE)
 # include <locale>
 #endif
@@ -25,7 +24,7 @@
 #include <string>    // for (basic_string and) getline()
 #include <algorithm> // for std::min
 #include <assert.h>  // <cassert> is sometimes macro-guarded :-(
-#include <numeric>   // std::accumulate
+#include <cstddef>   // std::ptrdiff_t 
 
 #include <boost/limits.hpp>
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
@@ -1516,6 +1515,7 @@ struct bitset_test {
             typename Bitset::iterator it = b.begin();
             for (std::size_t i = 0; i < b.size(); ++i) {
                 BOOST_TEST(*it == b[i]);
+                BOOST_TEST((*it).flip() == b[i]);
                 ++it;
             }
         }
