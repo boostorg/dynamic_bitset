@@ -240,6 +240,29 @@ public:
     size_type <a href="#find_first">find_first</a>() const;
     size_type <a href="#find_next">find_next</a>(size_type pos) const;
 
+    iterator <a href="#begin">begin</a>();
+    const iterator <a href="#begin">begin</a>() const;
+
+    const_iterator <a href="#cbegin">cbegin</a>();
+    const const_iterator <a href="#cbegin">cbegin</a>() const;
+
+    iterator <a href="#end">end</a>();
+    const iterator <a href="#end">end</a>() const;
+
+    const_iterator <a href="#cend">cend</a>();
+    const const_iterator <a href="#cend">cend</a>() const;
+    
+    reverse_iterator <a href="#rbegin">rbegin</a>();
+    const reverse_iterator <a href="#rbegin">rbegin</a>() const;
+
+    const_reverse_iterator <a href="#crbegin">crbegin</a>();
+    const const_reverse_iterator <a href="#crbegin">crbegin</a>() const;
+    
+    reverse_iterator <a href="#rend">rend</a>();
+    const reverse_iterator <a href="#rend">rend</a>() const;
+
+    const_reverse_iterator <a href="#crend">crend</a>();
+    const const_reverse_iterator <a href="#rend">rend</a>() const;
 };
 
 
@@ -552,6 +575,26 @@ The same type as <tt>Block</tt>.
 <a id="allocator_type">dynamic_bitset::allocator_type;</a>
 </pre>
 The same type as <tt>Allocator</tt>.
+
+<pre>
+<a id="iterator">dynamic_bitset::iterator</a>
+</pre>
+Return a random access iterator to reference.
+
+<pre>
+<a id="reverse_iterator">dynamic_bitset::reverse_iterator</a>
+</pre>
+Return boost::reverse_iterator&lt;iterator&gt;.
+
+<pre>
+<a id="const_iterator">dynamic_bitset::const_iterator</a>
+</pre>
+Return a random access iterator to const_reference.
+
+<pre>
+<a id="const_reverse_iterator">dynamic_bitset::const_reverse_iterator</a>
+</pre>
+Return boost::reverse_iterator&lt;const_iterator&gt;.
 
 
 <hr />
@@ -1381,6 +1424,67 @@ size_type <a id="find_next">find_next</a>(size_type pos) const;
 <b>Returns:</b> the lowest index <tt>i</tt> greater than
 <tt>pos</tt> such as bit <tt>i</tt> is set, or <tt>npos</tt> if
 no such index exists.
+
+<hr />
+<pre>
+iterator <a id="begin">begin</a>();
+</pre>
+
+<b>Returns:</b> an iterator pointing to the first element in the bitset. If 
+the bitset is empty, the returned iterator value shall not be dereferenced.
+
+<hr />
+<pre>
+iterator <a id="cbegin">cbegin</a>();
+</pre>
+
+<b>Returns:</b> the same as <a id="begin">begin</a>(), but read only on this bitset
+
+<hr />
+<pre>
+iterator <a id="end">end</a>();
+</pre>
+
+<b>Returns:</b> an iterator pointing to the last element in the bitset. 
+The returned iterator value shall not be dereferenced.
+
+<hr />
+<pre>
+iterator <a id="cend">cend</a>();
+</pre>
+
+<b>Returns:</b> the same as <a id="end">end</a>(), but read only on this bitset
+
+<hr />
+<pre>
+iterator <a id="rbegin">rbegin</a>();
+</pre>
+
+<b>Returns:</b> an reversed iterator pointing to the last element in the bitset.
+The returned reversed iterator value shall not be dereferenced.
+
+<hr />
+<pre>
+iterator <a id="rend">rend</a>();
+</pre>
+
+<b>Returns:</b> an reversed iterator pointing to the first element in the bitset.
+The returned reversed iterator value shall not be dereferenced.
+
+<hr />
+<pre>
+iterator <a id="crbegin">crbegin</a>();
+</pre>
+
+<b>Returns:</b> the same as <a id="rbegin">rbegin</a>(), but read only on this bitset
+
+<hr />
+<pre>
+iterator <a id="crend">crend</a>();
+</pre>
+
+<b>Returns:</b> the same as <a id="rend">rend</a>(), but read only on this bitset
+
 
 <hr />
 <pre>
