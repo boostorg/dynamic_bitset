@@ -9,7 +9,8 @@
 
 exe timing_tests 
     : timing_tests.cpp 
-      ../../timer/build//boost_timer
+      /boost/timer//boost_timer
+      /boost/detail//boost_detail
     ;
 
 exe example1

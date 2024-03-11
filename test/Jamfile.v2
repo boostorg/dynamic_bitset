@@ -9,13 +9,16 @@
 import os ;
 
 # import rules for testing conditional on config file variables
-import ../../config/checks/config : requires ;
+import config : requires ;
 
 test-suite dynamic_bitset :
 
-    [ run dyn_bitset_unit_tests1.cpp : : : <library>/boost/system//boost_system ]
-    [ run dyn_bitset_unit_tests2.cpp : : : <library>/boost/system//boost_system ]
-    [ run dyn_bitset_unit_tests3.cpp : : : <library>/boost/system//boost_system ]
+    [ run dyn_bitset_unit_tests1.cpp : : : <library>/boost/filesystem//boost_filesystem
+                                           <library>/boost/system//boost_system ]
+    [ run dyn_bitset_unit_tests2.cpp : : : <library>/boost/filesystem//boost_filesystem
+                                           <library>/boost/system//boost_system ]
+    [ run dyn_bitset_unit_tests3.cpp : : : <library>/boost/filesystem//boost_filesystem
+                                           <library>/boost/system//boost_system ]
     [ run dyn_bitset_unit_tests4.cpp : : : <library>/boost/filesystem//boost_filesystem
                                            <library>/boost/system//boost_system ]
     [ run test_ambiguous_set.cpp ]
@@ -36,6 +39,7 @@ if ! [ os.environ UBSAN_OPTIONS ]
 
     [ run dyn_bitset_unit_tests5.cpp
        : : : <define>_SCL_SECURE_NO_WARNINGS=1
+             <library>/boost/filesystem//boost_filesystem
              <library>/boost/serialization//boost_serialization
              <library>/boost/system//boost_system ]
     ;
