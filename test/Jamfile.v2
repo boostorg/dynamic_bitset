@@ -7,6 +7,7 @@
 #
 
 import os ;
+import testing ;
 
 # import rules for testing conditional on config file variables
 import config : requires ;
@@ -25,7 +26,7 @@ test-suite dynamic_bitset :
     [ run test_lowest_bit.cpp ]
 
     [ run test_boost_hash.cpp ]
-    [ run test_std_hash.cpp          : : : [ requires cxx11_hdr_unordered_set ] ] 
+    [ run test_std_hash.cpp          : : : [ requires cxx11_hdr_unordered_set ] ]
 
     [ compile-fail test_std_hash.cpp : [ requires cxx11_hdr_unordered_set ]
                                        <define>BOOST_DYNAMIC_BITSET_NO_STD_HASH
