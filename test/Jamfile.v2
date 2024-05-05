@@ -10,6 +10,7 @@ import os ;
 import testing ;
 
 # import rules for testing conditional on config file variables
+import-search /boost/config/checks ;
 import config : requires ;
 
 test-suite dynamic_bitset :
