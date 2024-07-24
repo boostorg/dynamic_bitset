@@ -5,23 +5,26 @@
 
 require-b2 5.2 ;
 
+constant boost_dependencies :
+    /boost/assert//boost_assert
+    /boost/config//boost_config
+    /boost/container_hash//boost_container_hash
+    /boost/core//boost_core
+    /boost/integer//boost_integer
+    /boost/move//boost_move
+    /boost/static_assert//boost_static_assert
+    /boost/throw_exception//boost_throw_exception ;
+
 project /boost/dynamic_bitset
     : common-requirements
-        <library>/boost/assert//boost_assert
-        <library>/boost/config//boost_config
-        <library>/boost/container_hash//boost_container_hash
-        <library>/boost/core//boost_core
-        <library>/boost/integer//boost_integer
-        <library>/boost/move//boost_move
-        <library>/boost/static_assert//boost_static_assert
-        <library>/boost/throw_exception//boost_throw_exception
         <include>include
     ;
 
 explicit
-    [ alias boost_dynamic_bitset ]
+    [ alias boost_dynamic_bitset : : : : <library>$(boost_dependencies) ]
     [ alias all : boost_dynamic_bitset example test ]
     ;
 
 call-if : boost-library dynamic_bitset
     ;
+
