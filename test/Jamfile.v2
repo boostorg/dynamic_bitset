@@ -13,6 +13,8 @@ import testing ;
 import-search /boost/config/checks ;
 import config : requires ;
 
+project : requirements <library>/boost/dynamic_bitset//boost_dynamic_bitset ;
+
 test-suite dynamic_bitset :
 
     [ run dyn_bitset_unit_tests1.cpp : : : <library>/boost/filesystem//boost_filesystem
