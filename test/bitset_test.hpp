@@ -967,25 +967,25 @@ struct bitset_test {
     BOOST_TEST(b.intersects(a) == have_intersection);
   }
 
-  static void find_first(const Bitset& b)
+  static void find_first(const Bitset& b, typename Bitset::size_type offset = 0)
   {
-      // find first non-null bit, if any
-      typename Bitset::size_type i = 0;
-      while (i < b.size() && b[i] == 0)
-          ++i;
+    // find first non-null bit from offset onwards, if any
+    typename Bitset::size_type i = offset;
+    while (i < b.size() && b[i] == 0)
+        ++i;
 
-      if (i == b.size())
-        BOOST_TEST(b.find_first() == Bitset::npos); // not found;
-      else {
-        BOOST_TEST(b.find_first() == i);
-        BOOST_TEST(b.test(i) == true);
-      }
-
+    if (i >= b.size())
+      BOOST_TEST(b.find_first(offset) == Bitset::npos); // not found;
+    else {
+      BOOST_TEST(b.find_first(offset) == i);
+      BOOST_TEST(b.test(i) == true);
+    }
   }
 
-  static void find_next(const Bitset& b, typename Bitset::size_type prev)
+  static void find_pos(const Bitset& b, typename Bitset::size_type pos)
   {
-    BOOST_TEST(next_bit_on(b, prev) == b.find_next(prev));
+    find_first(b, pos);
+    find_first(b, pos + 1);
   }
 
   static void operator_equal(const Bitset& a, const Bitset& b)
@@ -1061,27 +1061,6 @@ struct bitset_test {
           }
           return (a.size() < b.size());
         }
-  }
-
-  static typename Bitset::size_type next_bit_on(const Bitset& b, typename Bitset::size_type prev)
-  {
-      // helper function for find_next()
-      //
-
-      if (b.none() == true || prev == Bitset::npos)
-          return Bitset::npos;
-
-      ++prev;
-
-      if (prev >= b.size())
-          return Bitset::npos;
-
-      typename Bitset::size_type i = prev;
-      while (i < b.size() && b[i] == 0)
-          ++i;
-
-      return i==b.size() ? Bitset::npos : i;
-
   }
 
   static void operator_less_than(const Bitset& a, const Bitset& b)

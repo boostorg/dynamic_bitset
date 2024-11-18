@@ -325,6 +325,7 @@ public:
 
     // lookup
     size_type find_first() const;
+    size_type find_first(size_type offset) const;
     size_type find_next(size_type pos) const;
 
 
@@ -1326,7 +1327,7 @@ to_ulong() const
 
   // Check for overflows. This may be a performance burden on very
   // large bitsets but is required by the specification, sorry
-  if (find_next(ulong_width - 1) != npos)
+  if (find_first(ulong_width) != npos)
     BOOST_THROW_EXCEPTION(std::overflow_error("boost::dynamic_bitset::to_ulong overflow"));
 
 
@@ -1486,29 +1487,31 @@ dynamic_bitset<Block, Allocator>::find_first() const
     return m_do_find_from(0);
 }
 
-
 template <typename Block, typename Allocator>
 typename dynamic_bitset<Block, Allocator>::size_type
-dynamic_bitset<Block, Allocator>::find_next(size_type pos) const
+dynamic_bitset<Block, Allocator>::find_first(size_type offset) const
 {
-
     const size_type sz = size();
-    if (pos >= (sz-1) || sz == 0)
-        return npos;
+    if (offset >= sz) return npos;
 
-    ++pos;
-
-    const size_type blk = block_index(pos);
-    const block_width_type ind = bit_index(pos);
+    const size_type blk = block_index(offset);
+    const block_width_type ind = bit_index(offset);
 
     // shift bits upto one immediately after current
     const Block fore = m_bits[blk] >> ind;
 
     return fore?
-        pos + static_cast<size_type>(detail::lowest_bit(fore))
+        offset + static_cast<size_type>(detail::lowest_bit(fore))
         :
         m_do_find_from(blk + 1);
+}
 
+
+template <typename Block, typename Allocator>
+typename dynamic_bitset<Block, Allocator>::size_type
+dynamic_bitset<Block, Allocator>::find_next(size_type pos) const
+{
+    return find_first(pos + 1);
 }
 
 
