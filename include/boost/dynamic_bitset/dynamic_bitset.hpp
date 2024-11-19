@@ -1511,6 +1511,7 @@ template <typename Block, typename Allocator>
 typename dynamic_bitset<Block, Allocator>::size_type
 dynamic_bitset<Block, Allocator>::find_next(size_type pos) const
 {
+    if (pos == npos) return npos;
     return find_first(pos + 1);
 }
 

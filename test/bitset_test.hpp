@@ -985,7 +985,7 @@ struct bitset_test {
   static void find_pos(const Bitset& b, typename Bitset::size_type pos)
   {
     find_first(b, pos);
-    find_first(b, pos + 1);
+    BOOST_TEST(next_bit_on(b, pos) == b.find_next(pos));
   }
 
   static void operator_equal(const Bitset& a, const Bitset& b)
@@ -1061,6 +1061,27 @@ struct bitset_test {
           }
           return (a.size() < b.size());
         }
+  }
+
+  static typename Bitset::size_type next_bit_on(const Bitset& b, typename Bitset::size_type prev)
+  {
+      // helper function for find_next()
+      //
+
+      if (b.none() == true || prev == Bitset::npos)
+          return Bitset::npos;
+
+      ++prev;
+
+      if (prev >= b.size())
+          return Bitset::npos;
+
+      typename Bitset::size_type i = prev;
+      while (i < b.size() && b[i] == 0)
+          ++i;
+
+      return i==b.size() ? Bitset::npos : i;
+
   }
 
   static void operator_less_than(const Bitset& a, const Bitset& b)
