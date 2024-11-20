@@ -325,7 +325,7 @@ public:
 
     // lookup
     size_type find_first() const;
-    size_type find_first(size_type offset) const;
+    size_type find_first(size_type pos) const;
     size_type find_next(size_type pos) const;
 
 
@@ -1489,19 +1489,19 @@ dynamic_bitset<Block, Allocator>::find_first() const
 
 template <typename Block, typename Allocator>
 typename dynamic_bitset<Block, Allocator>::size_type
-dynamic_bitset<Block, Allocator>::find_first(size_type offset) const
+dynamic_bitset<Block, Allocator>::find_first(size_type pos) const
 {
     const size_type sz = size();
-    if (offset >= sz) return npos;
+    if (pos >= sz) return npos;
 
-    const size_type blk = block_index(offset);
-    const block_width_type ind = bit_index(offset);
+    const size_type blk = block_index(pos);
+    const block_width_type ind = bit_index(pos);
 
     // shift bits upto one immediately after current
     const Block fore = m_bits[blk] >> ind;
 
     return fore?
-        offset + static_cast<size_type>(detail::lowest_bit(fore))
+        pos + static_cast<size_type>(detail::lowest_bit(fore))
         :
         m_do_find_from(blk + 1);
 }
