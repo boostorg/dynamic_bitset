@@ -84,7 +84,6 @@ jobs:
           - { name: Clang w/ sanitizers, sanitize: yes,
               compiler: clang-12,  cxxstd: '11,14,17,20',    os: ubuntu-20.04,  stdlib: 'libc++', install: 'clang-12 libc++-12-dev libc++abi-12-dev' }
 
-          - { compiler: clang,     cxxstd: '11,14,17,20',    os: macos-12 }
           - { name: MacOS w/ clang and sanitizers,
               compiler: clang,     cxxstd: '11,14,17,20,2b', os: macos-13, sanitize: yes }
           - { compiler: clang,     cxxstd: '11,14,17,20,2b', os: macos-14 }
