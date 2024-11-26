@@ -1,7 +1,7 @@
 # Copyright 2020-2021 Peter Dimov
 # Copyright 2021 Andrey Semashev
 # Copyright 2021 Alexander Grund
-# Copyright 2022 James E. King III
+# Copyright 2022-2024 James E. King III
 #
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
@@ -42,9 +42,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Linux, gcc
-          - { compiler: gcc-5,     cxxstd: '11,14,1z',       os: ubuntu-latest, container: 'ubuntu:18.04' }
-          - { compiler: gcc-6,     cxxstd: '11,14,17',       os: ubuntu-latest, container: 'ubuntu:18.04' }
+          # linux, gcc
           - { compiler: gcc-7,     cxxstd: '11,14,17',       os: ubuntu-20.04 }
           - { compiler: gcc-8,     cxxstd: '11,14,17,2a',    os: ubuntu-20.04 }
           - { compiler: gcc-9,     cxxstd: '11,14,17,2a',    os: ubuntu-20.04 }
@@ -54,18 +52,11 @@ jobs:
           - { compiler: gcc-13,    cxxstd: '11,14,17,20,2b', os: ubuntu-22.04 }
           - { compiler: gcc-14,    cxxstd: '11,14,17,20,2b', os: ubuntu-24.04 }
           - { name: GCC w/ sanitizers, sanitize: yes,
-              compiler: gcc-12,    cxxstd: '11,14,17,20',    os: ubuntu-22.04 }
+              compiler: gcc-13,    cxxstd: '11,14,17,20',    os: ubuntu-22.04 }
           - { name: Collect coverage, coverage: yes,
-              compiler: gcc-8,     cxxstd: '11',             os: ubuntu-20.04, install: 'g++-8-multilib', address-model: '32,64' }
+              compiler: gcc-12,    cxxstd: '11',             os: ubuntu-22.04, install: 'g++-12-multilib', address-model: '32,64' }
 
-          # Linux, clang
-          - { compiler: clang-3.9, cxxstd: '11,14',          os: ubuntu-latest, container: 'ubuntu:18.04' }
-          - { compiler: clang-4.0, cxxstd: '11,14',          os: ubuntu-latest, container: 'ubuntu:18.04' }
-          - { compiler: clang-5.0, cxxstd: '11,14,1z',       os: ubuntu-latest, container: 'ubuntu:18.04' }
-          - { compiler: clang-6.0, cxxstd: '11,14,17',       os: ubuntu-latest, container: 'ubuntu:18.04' }
-          - { compiler: clang-7,   cxxstd: '11,14,17',       os: ubuntu-latest, container: 'ubuntu:18.04' }
-          # Note: clang-8 does not fully support C++20, so it is not compatible with some libstdc++ versions in this mode
-          - { compiler: clang-8,   cxxstd: '11,14,17,2a',    os: ubuntu-latest, container: 'ubuntu:18.04', install: 'clang-8 g++-7', gcc_toolchain: 7 }
+          # linux, clang
           - { compiler: clang-9,   cxxstd: '11,14,17,2a',    os: ubuntu-20.04 }
           - { compiler: clang-10,  cxxstd: '11,14,17,20',    os: ubuntu-20.04 }
           - { compiler: clang-11,  cxxstd: '11,14,17,20',    os: ubuntu-20.04 }
@@ -78,21 +69,20 @@ jobs:
           - { compiler: clang-17,  cxxstd: '11,14,17,20,23', os: ubuntu-24.04 }
           - { compiler: clang-18,  cxxstd: '11,17,20,23,2c', os: ubuntu-24.04 }
 
-          # libc++
-          - { compiler: clang-6.0, cxxstd: '11,14',          os: ubuntu-latest, container: 'ubuntu:18.04', stdlib: libc++, install: 'clang-6.0 libc++-dev libc++abi-dev' }
-          - { compiler: clang-12,  cxxstd: '11,14,17,20',    os: ubuntu-20.04,  stdlib: 'libc++', install: 'clang-12 libc++-12-dev libc++abi-12-dev' }
+          # linux, libc++
           - { name: Clang w/ sanitizers, sanitize: yes,
-              compiler: clang-12,  cxxstd: '11,14,17,20',    os: ubuntu-20.04,  stdlib: 'libc++', install: 'clang-12 libc++-12-dev libc++abi-12-dev' }
+              compiler: clang-12,  cxxstd: '11,14,17,20',    os: ubuntu-20.04, stdlib: 'libc++', install: 'clang-12 libc++-12-dev libc++abi-12-dev' }
 
           - { name: MacOS w/ clang and sanitizers,
               compiler: clang,     cxxstd: '11,14,17,20,2b', os: macos-13, sanitize: yes }
           - { compiler: clang,     cxxstd: '11,14,17,20,2b', os: macos-14 }
+          - { compiler: clang,     cxxstd: '11,14,17,20,2b', os: macos-15 }
 
           # Coverity Scan
           # requires two github secrets in repo to activate; see ci/github/coverity.sh
           # does not run on pull requests, only on pushes into develop and master
           - { name: Coverity, coverity: yes,
-              compiler: clang-10,  cxxstd: '17',             os: ubuntu-20.04, ccache: no }
+              compiler: clang-12,  cxxstd: '17',             os: ubuntu-20.04, ccache: no }
 
           # multiarch (bigendian testing) - does not support coverage yet
           - { name: Big-endian, multiarch: yes,
@@ -100,7 +90,6 @@ jobs:
 
     timeout-minutes: 120
     runs-on: ${{matrix.os}}
-    container: ${{matrix.container}}
     env: {B2_USE_CCACHE: 1}
 
     steps:
