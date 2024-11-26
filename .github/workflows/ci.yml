@@ -402,8 +402,6 @@ jobs:
             ctest --output-on-failure --build-config Debug
 
   CMake:
-    # these are broken right now
-    if: false
     defaults:
       run:
         shell: bash
