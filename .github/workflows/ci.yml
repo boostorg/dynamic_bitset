@@ -29,7 +29,7 @@ env:
   B2_CI_VERSION: 1
   B2_VARIANT: debug,release
   B2_LINK: shared,static
-  LCOV_BRANCH_COVERAGE: 0
+  LCOV_BRANCH_COVERAGE: 1
   CODECOV_NAME: Github Actions
 
 jobs:
