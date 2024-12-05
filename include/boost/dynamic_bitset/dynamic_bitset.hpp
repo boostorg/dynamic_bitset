@@ -730,7 +730,7 @@ dynamic_bitset(dynamic_bitset<Block, Allocator>&& b)
   : m_bits(boost::move(b.m_bits)), m_num_bits(boost::move(b.m_num_bits))
 {
     // Required so that assert(m_check_invariants()); works.
-    assert((b.m_bits = buffer_type()).empty());
+    assert((b.m_bits = buffer_type(get_allocator())).empty());
     b.m_num_bits = 0;
 }
 
@@ -743,7 +743,7 @@ operator=(dynamic_bitset<Block, Allocator>&& b)
     m_bits = boost::move(b.m_bits);
     m_num_bits = boost::move(b.m_num_bits);
     // Required so that assert(m_check_invariants()); works.
-    assert((b.m_bits = buffer_type()).empty());
+    assert((b.m_bits = buffer_type(get_allocator())).empty());
     b.m_num_bits = 0;
     return *this;
 }
