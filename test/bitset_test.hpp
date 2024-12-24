@@ -500,9 +500,9 @@ struct bitset_test {
   // bitwise and assignment
 
   // PRE: b.size() == rhs.size()
-  static void and_assignment(const Bitset& b, const Bitset& rhs)
+  static void and_assignment(const Bitset& original_lhs, const Bitset& rhs)
   {
-    Bitset lhs(b);
+    Bitset lhs(original_lhs);
     Bitset prev(lhs);
     lhs &= rhs;
     // Clears each bit in lhs for which the corresponding bit in rhs is
@@ -513,11 +513,24 @@ struct bitset_test {
       else
         BOOST_TEST(lhs[I] == prev[I]);
   }
+  static void and_assignment(const Bitset& original_lhs, const Bitset& rhs, std::size_t pos_lhs, std::size_t pos_rhs, std::size_t len)
+  {
+    Bitset lhs(original_lhs);
+    Bitset prev(lhs);
+    boost::dynamic_bitset_span<Bitset>(lhs, pos_lhs) &= boost::const_dynamic_bitset_span<Bitset>(rhs, pos_rhs, len);
+    // Clears each bit in lhs for which the corresponding bit in rhs is
+    // clear, and leaves all other bits unchanged.
+    for (std::size_t I = 0; I < len; ++I)
+      if (rhs[I + pos_rhs] == 0)
+        BOOST_TEST(lhs[I + pos_lhs] == 0);
+      else
+        BOOST_TEST(lhs[I + pos_lhs] == prev[I + pos_lhs]);
+  }
 
   // PRE: b.size() == rhs.size()
-  static void or_assignment(const Bitset& b, const Bitset& rhs)
+  static void or_assignment(const Bitset& original_lhs, const Bitset& rhs)
   {
-    Bitset lhs(b);
+    Bitset lhs(original_lhs);
     Bitset prev(lhs);
     lhs |= rhs;
     // Sets each bit in lhs for which the corresponding bit in rhs is set, and
@@ -528,11 +541,24 @@ struct bitset_test {
       else
         BOOST_TEST(lhs[I] == prev[I]);
   }
+  static void or_assignment(const Bitset& original_lhs, const Bitset& rhs, std::size_t pos_lhs, std::size_t pos_rhs, std::size_t len)
+  {
+    Bitset lhs(original_lhs);
+    Bitset prev(lhs);
+    boost::dynamic_bitset_span<Bitset>(lhs, pos_lhs) |= boost::const_dynamic_bitset_span<Bitset>(rhs, pos_rhs, len);
+    // Clears each bit in lhs for which the corresponding bit in rhs is
+    // clear, and leaves all other bits unchanged.
+    for (std::size_t I = 0; I < len; ++I)
+      if (rhs[I + pos_rhs] == 1)
+        BOOST_TEST(lhs[I + pos_lhs] == 1);
+      else 
+        BOOST_TEST(lhs[I + pos_lhs] == prev[I + pos_lhs]);
+  }
 
   // PRE: b.size() == rhs.size()
-  static void xor_assignment(const Bitset& b, const Bitset& rhs)
+  static void xor_assignment(const Bitset& original_lhs, const Bitset& rhs)
   {
-    Bitset lhs(b);
+    Bitset lhs(original_lhs);
     Bitset prev(lhs);
     lhs ^= rhs;
     // Flips each bit in lhs for which the corresponding bit in rhs is set,
@@ -543,11 +569,24 @@ struct bitset_test {
       else
         BOOST_TEST(lhs[I] == prev[I]);
   }
+  static void xor_assignment(const Bitset& original_lhs, const Bitset& rhs, std::size_t pos_lhs, std::size_t pos_rhs, std::size_t len)
+  {
+    Bitset lhs(original_lhs);
+    Bitset prev(lhs);
+    boost::dynamic_bitset_span<Bitset>(lhs, pos_lhs) ^= boost::const_dynamic_bitset_span<Bitset>(rhs, pos_rhs, len);
+    // Clears each bit in lhs for which the corresponding bit in rhs is
+    // clear, and leaves all other bits unchanged.
+    for (std::size_t I = 0; I < len; ++I)
+      if (rhs[I + pos_rhs] == 1)
+        BOOST_TEST(lhs[I + pos_lhs] == !prev[I + pos_lhs]);
+      else
+        BOOST_TEST(lhs[I + pos_lhs] == prev[I + pos_lhs]);
+  }
 
   // PRE: b.size() == rhs.size()
-  static void sub_assignment(const Bitset& b, const Bitset& rhs)
+  static void sub_assignment(const Bitset& original_lhs, const Bitset& rhs)
   {
-    Bitset lhs(b);
+    Bitset lhs(original_lhs);
     Bitset prev(lhs);
     lhs -= rhs;
     // Resets each bit in lhs for which the corresponding bit in rhs is set,
@@ -557,6 +596,19 @@ struct bitset_test {
         BOOST_TEST(lhs[I] == 0);
       else
         BOOST_TEST(lhs[I] == prev[I]);
+  }
+  static void sub_assignment(const Bitset& original_lhs, const Bitset& rhs, std::size_t pos_lhs, std::size_t pos_rhs, std::size_t len)
+  {
+    Bitset lhs(original_lhs);
+    Bitset prev(lhs);
+    boost::dynamic_bitset_span<Bitset>(lhs, pos_lhs) -= boost::const_dynamic_bitset_span<Bitset>(rhs, pos_rhs, len);
+    // Clears each bit in lhs for which the corresponding bit in rhs is
+    // clear, and leaves all other bits unchanged.
+    for (std::size_t I = 0; I < len; ++I)
+      if (rhs[I + pos_rhs] == 1)
+        BOOST_TEST(lhs[I + pos_lhs] == 0);
+      else
+        BOOST_TEST(lhs[I + pos_lhs] == prev[I + pos_lhs]);
   }
 
   static void shift_left_assignment(const Bitset& b, std::size_t pos)
@@ -966,6 +1018,22 @@ struct bitset_test {
     // also check commutativity
     BOOST_TEST(b.intersects(a) == have_intersection);
   }
+  static void intersects(const Bitset& a, const Bitset& b, std::size_t pos_a, std::size_t pos_b, std::size_t len)
+  {
+    bool have_intersection = false;
+
+    typename Bitset::size_type m = len;
+    for(typename Bitset::size_type i = 0; i < m && !have_intersection; ++i)
+      if(a[pos_a + i] == true && b[pos_b + i] == true)
+        have_intersection = true;
+
+    const boost::dynamic_bitset_span<Bitset> span_a = boost::const_dynamic_bitset_span<Bitset>(a, pos_a);
+    const boost::dynamic_bitset_span<Bitset> span_b = boost::const_dynamic_bitset_span<Bitset>(b, pos_b, len);
+
+    BOOST_TEST(span_a.intersects(span_b) == have_intersection);
+    // also check commutativity
+    BOOST_TEST(span_b.intersects(span_a) == have_intersection);
+  }
 
   static void find_first(const Bitset& b, typename Bitset::size_type offset = 0)
   {
@@ -1005,6 +1073,40 @@ struct bitset_test {
       }
     }
   }
+  static void operator_equal(const Bitset& a, const Bitset& b,
+      std::size_t pos_a, std::size_t pos_b, std::size_t len)
+  {
+    const boost::dynamic_bitset_span<Bitset> span_a = boost::const_dynamic_bitset_span<Bitset>(a, pos_a);
+    const boost::dynamic_bitset_span<Bitset> span_a_len = boost::const_dynamic_bitset_span<Bitset>(a, pos_a, len);
+    const boost::dynamic_bitset_span<Bitset> span_b = boost::const_dynamic_bitset_span<Bitset>(b, pos_b, len);
+
+    if (span_a == span_b) {
+      for (std::size_t I = 0; I < len; ++I)
+        BOOST_TEST(a[pos_a + I] == b[pos_b + I]);
+    } else {
+      bool diff = false;
+      for (std::size_t I = 0; I < len; ++I)
+        if (a[pos_a + I] != b[pos_b + I]) {
+          diff = true;
+          break;
+        }
+      BOOST_TEST(diff);
+    }
+    
+    if (span_a_len == span_b) {
+      for (std::size_t I = 0; I < len; ++I)
+        BOOST_TEST(a[pos_a + I] == b[pos_b + I]);
+    } else {
+      bool diff = false;
+      for (std::size_t I = 0; I < len; ++I)
+        if (a[pos_a + I] != b[pos_b + I]) {
+          diff = true;
+          break;
+        }
+      BOOST_TEST(diff);
+    }
+
+  }
 
   static void operator_not_equal(const Bitset& a, const Bitset& b)
   {
@@ -1021,6 +1123,24 @@ struct bitset_test {
     } else {
       for (std::size_t I = 0; I < a.size(); ++I)
         BOOST_TEST(a[I] == b[I]);
+    }
+  }
+  static void operator_not_equal(const Bitset& a, const Bitset& b, std::size_t pos_a, std::size_t pos_b, std::size_t len)
+  {
+    const boost::dynamic_bitset_span<Bitset> span_a = boost::const_dynamic_bitset_span<Bitset>(a, pos_a);
+    const boost::dynamic_bitset_span<Bitset> span_b = boost::const_dynamic_bitset_span<Bitset>(b, pos_b, len);
+
+    if (span_a != span_b) {
+      bool diff = false;
+      for (std::size_t I = 0; I < len; ++I)
+        if (a[pos_a + I] != b[pos_b + I]) {
+          diff = true;
+          break;
+        }
+      BOOST_TEST(diff);
+    } else {
+      for (std::size_t I = 0; I < len; ++I)
+        BOOST_TEST(a[pos_a + I] == b[pos_b + I]);
     }
   }
 
@@ -1253,6 +1373,16 @@ struct bitset_test {
     Bitset x(lhs);
     BOOST_TEST((lhs | rhs) == (x |= rhs));
   }
+  static
+  void operator_or(const Bitset& lhs, const Bitset& rhs, typename Bitset::size_type pos_lhs, typename Bitset::size_type pos_rhs, typename Bitset::size_type len)
+  {
+    Bitset x(lhs);
+    const boost::dynamic_bitset_span<Bitset> span_rhs = boost::const_dynamic_bitset_span<Bitset>(rhs, pos_rhs, len);
+    const boost::dynamic_bitset_span<Bitset> span_lhs = boost::const_dynamic_bitset_span<Bitset>(lhs, pos_lhs);
+
+    boost::dynamic_bitset_span<Bitset>(x, pos_lhs) |= span_rhs;
+    BOOST_TEST( (span_lhs | span_rhs) == x);
+  }
 
   // operator&
   static
@@ -1260,6 +1390,16 @@ struct bitset_test {
   {
     Bitset x(lhs);
     BOOST_TEST((lhs & rhs) == (x &= rhs));
+  }
+  static
+  void operator_and(const Bitset& lhs, const Bitset& rhs, typename Bitset::size_type pos_lhs, typename Bitset::size_type pos_rhs, typename Bitset::size_type len)
+  {
+    Bitset x(lhs);
+    const boost::dynamic_bitset_span<Bitset> span_rhs = boost::const_dynamic_bitset_span<Bitset>(rhs, pos_rhs, len);
+    const boost::dynamic_bitset_span<Bitset> span_lhs = boost::const_dynamic_bitset_span<Bitset>(lhs, pos_lhs);
+
+    boost::dynamic_bitset_span<Bitset>(x, pos_lhs) &= span_rhs;
+    BOOST_TEST( (span_lhs & span_rhs) == x);
   }
 
   // operator^
@@ -1269,6 +1409,16 @@ struct bitset_test {
     Bitset x(lhs);
     BOOST_TEST((lhs ^ rhs) == (x ^= rhs));
   }
+  static
+  void operator_xor(const Bitset& lhs, const Bitset& rhs, typename Bitset::size_type pos_lhs, typename Bitset::size_type pos_rhs, typename Bitset::size_type len)
+  {
+    Bitset x(lhs);
+    const boost::dynamic_bitset_span<Bitset> span_rhs = boost::const_dynamic_bitset_span<Bitset>(rhs, pos_rhs, len);
+    const boost::dynamic_bitset_span<Bitset> span_lhs = boost::const_dynamic_bitset_span<Bitset>(lhs, pos_lhs);
+
+    boost::dynamic_bitset_span<Bitset>(x, pos_lhs) ^= span_rhs;
+    BOOST_TEST( (span_lhs ^ span_rhs) == x);
+  }
 
   // operator-
   static
@@ -1276,6 +1426,16 @@ struct bitset_test {
   {
     Bitset x(lhs);
     BOOST_TEST((lhs - rhs) == (x -= rhs));
+  }
+  static
+  void operator_sub(const Bitset& lhs, const Bitset& rhs, typename Bitset::size_type pos_lhs, typename Bitset::size_type pos_rhs, typename Bitset::size_type len)
+  {
+    Bitset x(lhs);
+    const boost::dynamic_bitset_span<Bitset> span_rhs = boost::const_dynamic_bitset_span<Bitset>(rhs, pos_rhs, len);
+    const boost::dynamic_bitset_span<Bitset> span_lhs = boost::const_dynamic_bitset_span<Bitset>(lhs, pos_lhs);
+
+    boost::dynamic_bitset_span<Bitset>(x, pos_lhs) -= span_rhs;
+    BOOST_TEST( (span_lhs - span_rhs) == x);
   }
 
 //------------------------------------------------------------------------------
