@@ -28,6 +28,8 @@
 #include <climits>      // for CHAR_BIT
 
 #include "boost/dynamic_bitset/config.hpp"
+#include "boost/dynamic_bitset/dynamic_bitset_iterator.hpp"
+#include <boost/iterator/reverse_iterator.hpp>
 
 #ifndef BOOST_NO_STD_LOCALE
 #  include <locale>
@@ -363,6 +365,32 @@ public:
     template <typename B, typename A>
     friend std::size_t hash_value(const dynamic_bitset<B, A>& a);
 #endif
+
+public:
+    typedef dbs_iterator<dynamic_bitset<Block, Allocator> > iterator;
+    typedef boost::reverse_iterator<iterator> reverse_iterator;
+    typedef const_dbs_iterator<dynamic_bitset<Block, Allocator> > const_iterator;
+    typedef boost::reverse_iterator<const_iterator> const_reverse_iterator;
+
+    iterator begin() { return iterator(*this); }
+    const iterator begin() const { return iterator(*this); }
+    const_iterator cbegin() { return const_iterator(*this); }
+    const const_iterator cbegin() const { return const_iterator(*this); }
+
+    iterator end() { return iterator(*this, size()); }
+    const iterator end() const { return iterator(*this, size()); }
+    const_iterator cend() { return const_iterator(*this, size()); }
+    const const_iterator cend() const { return const_iterator(*this, size()); }
+
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    const reverse_iterator rbegin() const { return reverse_iterator(end()); }
+    const_reverse_iterator crbegin() { return const_reverse_iterator(cend()); }
+    const const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
+
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const reverse_iterator rend() const { return reverse_iterator(begin()); }
+    const_reverse_iterator crend() { return const_reverse_iterator(cbegin()); }
+    const const_reverse_iterator crend() const { return const_reverse_iterator(cbegin()); }
 
 public:
     // forward declaration for optional zero-copy serialization support
