@@ -1561,7 +1561,7 @@ void <a id=
 represents the bits in the position range
 <tt>[0,bits_per_block)</tt> in the bitset, the second block
 written the bits in the range
-<tt>[bits_pre_block,2*bits_per_block)</tt>, and so on. For each
+<tt>[bits_per_block,2*bits_per_block)</tt>, and so on. For each
 block <tt>bval</tt> written, the bit <tt>(bval &gt;&gt; i) &amp;
 1</tt> corresponds to the bit at position <tt>(b * bits_per_block
 + i)</tt> in the bitset.<br />
