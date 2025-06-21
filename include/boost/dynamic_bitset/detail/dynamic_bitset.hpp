@@ -18,7 +18,6 @@
 
 #include "boost/config.hpp"
 #include "boost/core/allocator_access.hpp"
-#include "boost/detail/workaround.hpp"
 #include <cstddef>
 #include <memory>
 
