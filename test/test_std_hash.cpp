@@ -15,7 +15,6 @@
 #include "boost/detail/lightweight_test.hpp"
 #include "boost/dynamic_bitset.hpp"
 
-#include <functional>
 #include <unordered_set>
 
 int main(int, char*[])
