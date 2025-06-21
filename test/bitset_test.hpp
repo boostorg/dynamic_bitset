@@ -1025,12 +1025,12 @@ struct bitset_test {
 
   static bool less_than(const Bitset& a, const Bitset& b)
   {
-  
+
     typedef BOOST_DEDUCED_TYPENAME Bitset::size_type size_type;
-    
+
     size_type asize(a.size());
     size_type bsize(b.size());
-    
+
     if (!bsize)
         {
         return false;
@@ -1041,17 +1041,17 @@ struct bitset_test {
         }
     else
         {
-              
+
         // Compare from most significant to least.
-    
+
         size_type leqsize(std::min BOOST_PREVENT_MACRO_SUBSTITUTION(asize,bsize));
         size_type I;
         for (I = 0; I < leqsize; ++I,--asize,--bsize)
           {
-          
+
           size_type i = asize-1;
           size_type j = bsize-1;
-            
+
           if (a[i] < b[j])
             return true;
           else if (a[i] > b[j])
