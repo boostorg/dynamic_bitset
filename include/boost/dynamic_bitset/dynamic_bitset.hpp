@@ -1504,7 +1504,7 @@ bool operator<(const dynamic_bitset<Block, Allocator>& a,
 //    BOOST_ASSERT(a.size() == b.size());
 
     typedef BOOST_DEDUCED_TYPENAME dynamic_bitset<Block, Allocator>::size_type size_type;
-    
+
     size_type asize(a.size());
     size_type bsize(b.size());
 
@@ -1518,7 +1518,7 @@ bool operator<(const dynamic_bitset<Block, Allocator>& a,
         }
     else if (asize == bsize)
         {
-        for (size_type ii = a.num_blocks(); ii > 0; --ii) 
+        for (size_type ii = a.num_blocks(); ii > 0; --ii)
             {
             size_type i = ii-1;
             if (a.m_bits[i] < b.m_bits[i])
@@ -1530,9 +1530,8 @@ bool operator<(const dynamic_bitset<Block, Allocator>& a,
         }
     else
         {
-        
         size_type leqsize(std::min BOOST_PREVENT_MACRO_SUBSTITUTION(asize,bsize));
-    
+
         for (size_type ii = 0; ii < leqsize; ++ii,--asize,--bsize)
             {
             size_type i = asize-1;

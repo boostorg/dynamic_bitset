@@ -1,6 +1,6 @@
 //
 // Copyright (C) 2018 James E. King III
-// 
+//
 // Permission to copy, use, modify, sell and distribute this software
 // is granted provided this copyright notice appears in all copies.
 // This software is provided "as is" without express or implied

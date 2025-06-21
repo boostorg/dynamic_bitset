@@ -2,7 +2,7 @@
 //              Copyright (c) 2001 Jeremy Siek
 //         Copyright (c) 2003-2006, 2025 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
-//            Copyright (c) 2014 Riccardo Marcangelo 
+//            Copyright (c) 2014 Riccardo Marcangelo
 //
 // Copyright (c) 2014 Glen Joseph Fernandes
 // (glenjofe@gmail.com)
@@ -158,9 +158,9 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     //
     const int sizes[] = {
         0,                     1,                                  3,
-           7*bits_per_block/10, bits_per_block, 13*bits_per_block/10, 3*bits_per_block 
+           7*bits_per_block/10, bits_per_block, 13*bits_per_block/10, 3*bits_per_block
     };
-    
+
     const bool values[] = { false, true };
 
     for (std::size_t s = 0; s < BOOST_BITSET_TEST_COUNT(sizes); ++s) {
@@ -384,7 +384,7 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
     Tests::clear(a);
   }
   //=====================================================================
-  // Test pop back 
+  // Test pop back
   {
     boost::dynamic_bitset<Block> a(std::string("01"));
     Tests::pop_back(a);
