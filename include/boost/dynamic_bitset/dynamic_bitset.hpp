@@ -181,28 +181,6 @@ public:
         dispatch_init(first, last, selector);
     }
 
-    template <typename T>
-    void dispatch_init(T num_bits, unsigned long value,
-                       detail::dynamic_bitset_impl::value_to_type<true>)
-    {
-        init_from_unsigned_long(static_cast<size_type>(num_bits), value);
-    }
-
-    template <typename T>
-    void dispatch_init(T first, T last,
-                       detail::dynamic_bitset_impl::value_to_type<false>)
-    {
-        init_from_block_range(first, last);
-    }
-
-    template <typename BlockIter>
-    void init_from_block_range(BlockIter first, BlockIter last)
-    {
-        assert(m_bits.size() == 0);
-        m_bits.insert(m_bits.end(), first, last);
-        m_num_bits = m_bits.size() * bits_per_block;
-    }
-
     // copy constructor
     dynamic_bitset(const dynamic_bitset& b);
 
@@ -225,33 +203,6 @@ public:
     void pop_back();
     void append(Block block);
 
-    template <typename BlockInputIterator>
-    void m_append(BlockInputIterator first, BlockInputIterator last, std::input_iterator_tag)
-    {
-        std::vector<Block, Allocator> v(first, last);
-        m_append(v.begin(), v.end(), std::random_access_iterator_tag());
-    }
-    template <typename BlockInputIterator>
-    void m_append(BlockInputIterator first, BlockInputIterator last, std::forward_iterator_tag)
-    {
-        assert(first != last);
-        block_width_type r = count_extra_bits();
-        std::size_t d = std::distance(first, last);
-        m_bits.reserve(num_blocks() + d);
-        if (r == 0) {
-            for( ; first != last; ++first)
-                m_bits.push_back(*first); // could use vector<>::insert()
-        }
-        else {
-            m_highest_block() |= (*first << r);
-            do {
-                Block b = *first >> (bits_per_block - r);
-                ++first;
-                m_bits.push_back(b | (first==last? 0 : *first << r));
-            } while (first != last);
-        }
-        m_num_bits += bits_per_block * d;
-    }
     template <typename BlockInputIterator>
     void append(BlockInputIterator first, BlockInputIterator last) // strong guarantee
     {
@@ -417,6 +368,28 @@ private:
         return ~block;
     }
 
+    template <typename T>
+    void dispatch_init(T num_bits, unsigned long value,
+                       detail::dynamic_bitset_impl::value_to_type<true>)
+    {
+        init_from_unsigned_long(static_cast<size_type>(num_bits), value);
+    }
+
+    template <typename T>
+    void dispatch_init(T first, T last,
+                       detail::dynamic_bitset_impl::value_to_type<false>)
+    {
+        init_from_block_range(first, last);
+    }
+
+    template <typename BlockIter>
+    void init_from_block_range(BlockIter first, BlockIter last)
+    {
+        assert(m_bits.size() == 0);
+        m_bits.insert(m_bits.end(), first, last);
+        m_num_bits = m_bits.size() * bits_per_block;
+    }
+
     template <typename CharT, typename Traits, typename Alloc>
     void init_from_string(const std::basic_string<CharT, Traits, Alloc>& s,
         typename std::basic_string<CharT, Traits, Alloc>::size_type pos,
@@ -482,6 +455,35 @@ private:
             *it = static_cast<block_type>(value);
         }
 
+    }
+
+    template <typename BlockInputIterator>
+    void m_append(BlockInputIterator first, BlockInputIterator last, std::input_iterator_tag)
+    {
+        std::vector<Block, Allocator> v(first, last);
+        m_append(v.begin(), v.end(), std::random_access_iterator_tag());
+    }
+
+    template <typename BlockInputIterator>
+    void m_append(BlockInputIterator first, BlockInputIterator last, std::forward_iterator_tag)
+    {
+        assert(first != last);
+        block_width_type r = count_extra_bits();
+        std::size_t d = std::distance(first, last);
+        m_bits.reserve(num_blocks() + d);
+        if (r == 0) {
+            for( ; first != last; ++first)
+                m_bits.push_back(*first); // could use vector<>::insert()
+        }
+        else {
+            m_highest_block() |= (*first << r);
+            do {
+                Block b = *first >> (bits_per_block - r);
+                ++first;
+                m_bits.push_back(b | (first==last? 0 : *first << r));
+            } while (first != last);
+        }
+        m_num_bits += bits_per_block * d;
     }
 
     bool m_unchecked_test(size_type pos) const;
