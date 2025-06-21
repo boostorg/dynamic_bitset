@@ -33,13 +33,8 @@
 #  include <locale>
 #endif
 
-#if defined(BOOST_OLD_IOSTREAMS)
-#  include <iostream.h>
-#  include <ctype.h> // for isspace
-#else
-#  include <istream>
-#  include <ostream>
-#endif
+#include <istream>
+#include <ostream>
 
 #include "boost/dynamic_bitset_fwd.hpp"
 #include "boost/dynamic_bitset/detail/dynamic_bitset.hpp"
@@ -601,14 +596,6 @@ bool operator>=(const dynamic_bitset<Block, Allocator>& a,
                 const dynamic_bitset<Block, Allocator>& b);
 
 // stream operators
-#ifdef BOOST_OLD_IOSTREAMS
-template <typename Block, typename Allocator>
-std::ostream& operator<<(std::ostream& os,
-                         const dynamic_bitset<Block, Allocator>& b);
-
-template <typename Block, typename Allocator>
-std::istream& operator>>(std::istream& is, dynamic_bitset<Block,Allocator>& b);
-#else
 template <typename CharT, typename Traits, typename Block, typename Allocator>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& os,
@@ -618,7 +605,6 @@ template <typename CharT, typename Traits, typename Block, typename Allocator>
 std::basic_istream<CharT, Traits>&
 operator>>(std::basic_istream<CharT, Traits>& is,
            dynamic_bitset<Block, Allocator>& b);
-#endif
 
 // bitset operations
 template <typename Block, typename Allocator>
@@ -1664,76 +1650,6 @@ inline std::size_t hash_value(const dynamic_bitset<Block, Allocator>& a)
 //-----------------------------------------------------------------------------
 // stream operations
 
-#ifdef BOOST_OLD_IOSTREAMS
-template < typename Block, typename Alloc>
-std::ostream&
-operator<<(std::ostream& os, const dynamic_bitset<Block, Alloc>& b)
-{
-    // NOTE: since this is aimed at "classic" iostreams, exception
-    // masks on the stream are not supported. The library that
-    // ships with gcc 2.95 has an exceptions() member function but
-    // nothing is actually implemented; not even the class ios::failure.
-
-    using namespace std;
-
-    const ios::iostate ok = ios::goodbit;
-    ios::iostate err = ok;
-
-    if (os.opfx()) {
-
-        //try
-        typedef typename dynamic_bitset<Block, Alloc>::size_type bitsetsize_type;
-
-        const bitsetsize_type sz = b.size();
-        std::streambuf * buf = os.rdbuf();
-        size_t npad = os.width() <= 0  // careful: os.width() is signed (and can be < 0)
-            || (bitsetsize_type) os.width() <= sz? 0 : os.width() - sz;
-
-        const char fill_char = os.fill();
-        const ios::fmtflags adjustfield = os.flags() & ios::adjustfield;
-
-        // if needed fill at left; pad is decresed along the way
-        if (adjustfield != ios::left) {
-            for (; 0 < npad; --npad)
-                if (fill_char != buf->sputc(fill_char)) {
-                    err |= ios::failbit;
-                    break;
-                }
-        }
-
-        if (err == ok) {
-            // output the bitset
-            for (bitsetsize_type i = b.size(); 0 < i; --i) {
-                const char dig = b.test(i-1)? '1' : '0';
-                if (EOF == buf->sputc(dig)) {
-                    err |= ios::failbit;
-                    break;
-                }
-            }
-        }
-
-        if (err == ok) {
-            // if needed fill at right
-            for (; 0 < npad; --npad) {
-                if (fill_char != buf->sputc(fill_char)) {
-                    err |= ios::failbit;
-                    break;
-                }
-            }
-        }
-
-        os.osfx();
-        os.width(0);
-
-    } // if opfx
-
-    if(err != ok)
-        os.setstate(err); // assume this does NOT throw
-    return os;
-
-}
-#else
-
 template <typename Ch, typename Tr, typename Block, typename Alloc>
 std::basic_ostream<Ch, Tr>&
 operator<<(std::basic_ostream<Ch, Tr>& os,
@@ -1814,80 +1730,6 @@ operator<<(std::basic_ostream<Ch, Tr>& os,
     return os;
 
 }
-#endif
-
-
-#ifdef BOOST_OLD_IOSTREAMS
-
-    // A sentry-like class that calls isfx in its destructor.
-    // "Necessary" because bit_appender::do_append may throw.
-    class pseudo_sentry {
-        std::istream & m_r;
-        const bool m_ok;
-    public:
-        explicit pseudo_sentry(std::istream & r) : m_r(r), m_ok(r.ipfx(0)) { }
-        ~pseudo_sentry() { m_r.isfx(); }
-        operator bool() const { return m_ok; }
-    };
-
-template <typename Block, typename Alloc>
-std::istream&
-operator>>(std::istream& is, dynamic_bitset<Block, Alloc>& b)
-{
-
-// Extractor for classic IO streams (libstdc++ < 3.0)
-// ----------------------------------------------------//
-//  It's assumed that the stream buffer functions, and
-//  the stream's setstate() _cannot_ throw.
-
-
-    typedef dynamic_bitset<Block, Alloc> bitset_type;
-    typedef typename bitset_type::size_type size_type;
-
-    std::ios::iostate err = std::ios::goodbit;
-    pseudo_sentry cerberos(is); // skips whitespaces
-    if(cerberos) {
-
-        b.clear();
-
-        const std::streamsize w = is.width();
-        const size_type limit = w > 0 && static_cast<size_type>(w) < b.max_size()
-                                                         ? static_cast<size_type>(w) : b.max_size();
-        typename bitset_type::bit_appender appender(b);
-        std::streambuf * buf = is.rdbuf();
-        for(int c = buf->sgetc(); appender.get_count() < limit; c = buf->snextc() ) {
-
-            if (c == EOF) {
-                err |= std::ios::eofbit;
-                break;
-            }
-            else if (char(c) != '0' && char(c) != '1')
-                break; // non digit character
-
-            else {
-                BOOST_TRY {
-                    appender.do_append(char(c) == '1');
-                }
-                BOOST_CATCH(...) {
-                    is.setstate(std::ios::failbit); // assume this can't throw
-                    BOOST_RETHROW;
-                }
-                BOOST_CATCH_END
-            }
-
-        } // for
-    }
-
-    is.width(0);
-    if (b.size() == 0)
-        err |= std::ios::failbit;
-    if (err != std::ios::goodbit)
-        is.setstate (err); // may throw
-
-    return is;
-}
-
-#else // BOOST_OLD_IOSTREAMS
 
 template <typename Ch, typename Tr, typename Block, typename Alloc>
 std::basic_istream<Ch, Tr>&
@@ -1966,7 +1808,6 @@ operator>>(std::basic_istream<Ch, Tr>& is, dynamic_bitset<Block, Alloc>& b)
 }
 
 
-#endif
 
 
 //-----------------------------------------------------------------------------

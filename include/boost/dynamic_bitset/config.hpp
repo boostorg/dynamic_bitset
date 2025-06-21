@@ -15,11 +15,6 @@
 #include "boost/config.hpp"
 #include "boost/detail/workaround.hpp"
 
-// support for pre 3.0 libstdc++ - thanks Phil Edwards!
-#if defined (__STL_CONFIG_H) && !defined (__STL_USE_NEW_IOSTREAMS)
-# define BOOST_OLD_IOSTREAMS
-#endif
-
 // no-op function to workaround gcc bug c++/8419
 //
 namespace boost { namespace detail {

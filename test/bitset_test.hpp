@@ -87,7 +87,7 @@ private:
   boost::filesystem::path m_path;
 };
 
-#if defined BOOST_OLD_IOSTREAMS || defined BOOST_NO_STD_LOCALE
+#if defined BOOST_NO_STD_LOCALE
 template <typename Stream>
 bool is_one_or_zero(const Stream & /*s*/, char c)
 {
@@ -117,7 +117,7 @@ bool is_white_space(const Stream & s, Ch c)
   using namespace std;
   return isspace(c, s.getloc());
 }
-#endif // defined BOOST_OLD_IOSTREAMS
+#endif
 
 
 template <typename Stream>
@@ -1304,17 +1304,11 @@ struct bitset_test {
                               const char * file_name
                               )
   {
-#if defined BOOST_OLD_IOSTREAMS
-    typedef char char_type;
-    typedef std::string string_type;
-    typedef ifstream corresponding_input_stream_type;
-#else
     typedef typename Stream::char_type char_type;
     typedef std::basic_string<char_type> string_type;
     typedef std::basic_ifstream<char_type> corresponding_input_stream_type;
 
     std::ios::iostate except = s.exceptions();
-#endif
 
     typedef typename Bitset::size_type size_type;
     std::streamsize w = s.width();
@@ -1326,18 +1320,12 @@ struct bitset_test {
     try {
       s << b;
     }
-#if defined BOOST_OLD_IOSTREAMS
-    catch(...) {
-      BOOST_TEST(false);
-    }
-#else
     catch (const std::ios_base::failure &) {
         BOOST_TEST((except & s.rdstate()) != 0);
         did_throw = true;
     } catch (...) {
         did_throw = true;
     }
-#endif
 
     BOOST_TEST(did_throw || !stream_was_good || (s.width() == 0));
 
@@ -1392,10 +1380,6 @@ struct bitset_test {
 
     bool did_throw = false;
 
-#if defined BOOST_OLD_IOSTREAMS
-    bool has_stream_exceptions = false;
-    is >> b;
-#else
     const std::ios::iostate except = is.exceptions();
     bool has_stream_exceptions = true;
     try {
@@ -1407,7 +1391,6 @@ struct bitset_test {
 
     // postconditions
     BOOST_TEST(except == is.exceptions()); // paranoid
-#endif
     //------------------------------------------------------------------
 
     // postconditions
