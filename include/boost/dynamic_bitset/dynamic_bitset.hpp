@@ -70,8 +70,6 @@ public:
     BOOST_STATIC_CONSTANT(size_type, npos = static_cast<size_type>(-1));
 
 
-public:
-
     // A proxy class to simulate lvalues of bit type.
     //
     class reference
@@ -352,7 +350,7 @@ public:
     template <typename B, typename A>
     friend std::size_t hash_value(const dynamic_bitset<B, A>& a);
 
-public:
+
     // forward declaration for optional zero-copy serialization support
     class serialize_impl;
     friend class serialize_impl;
@@ -485,10 +483,6 @@ private:
         }
 
     }
-
-
-
-private:
 
     bool m_unchecked_test(size_type pos) const;
     static size_type calc_num_blocks(size_type num_bits);
