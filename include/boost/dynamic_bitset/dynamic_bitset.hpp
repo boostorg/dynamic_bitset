@@ -277,11 +277,6 @@ public:
     friend bool operator<(const dynamic_bitset<B, A>& a,
                           const dynamic_bitset<B, A>& b);
 
-    template <typename B, typename A>
-    friend bool oplessthan(const dynamic_bitset<B, A>& a,
-                          const dynamic_bitset<B, A>& b);
-
-
     template <typename B, typename A, typename BlockOutputIterator>
     friend void to_block_range(const dynamic_bitset<B, A>& b,
                                BlockOutputIterator result);
@@ -1548,52 +1543,6 @@ bool operator<(const dynamic_bitset<Block, Allocator>& a,
                 return false;
             }
         return (a.size() < b.size());
-        }
-}
-
-template <typename Block, typename Allocator>
-bool oplessthan(const dynamic_bitset<Block, Allocator>& a,
-               const dynamic_bitset<Block, Allocator>& b)
-{
-//    BOOST_ASSERT(a.size() == b.size());
-
-    typedef BOOST_DEDUCED_TYPENAME dynamic_bitset<Block, Allocator>::size_type size_type;
-    
-    size_type asize(a.num_blocks());
-    size_type bsize(b.num_blocks());
-    BOOST_ASSERT(asize == 3);
-    BOOST_ASSERT(bsize == 4);
-
-    if (!bsize)
-        {
-        return false;
-        }
-    else if (!asize)
-        {
-        return true;
-        }
-    else
-        {
-        
-        size_type leqsize(std::min BOOST_PREVENT_MACRO_SUBSTITUTION(asize,bsize));
-        BOOST_ASSERT(leqsize == 3);
-    
-        //if (a.size() == 0)
-        //  return false;
-    
-        // Since we are storing the most significant bit
-        // at pos == size() - 1, we need to do the comparisons in reverse.
-        //
-        for (size_type ii = 0; ii < leqsize; ++ii,--asize,--bsize)
-            {
-            size_type i = asize-1;
-            size_type j = bsize-1;
-            if (a.m_bits[i] < b.m_bits[j])
-                return true;
-            else if (a.m_bits[i] > b.m_bits[j])
-                return false;
-            }
-        return (a.num_blocks() < b.num_blocks());
         }
 }
 
