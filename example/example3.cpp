@@ -23,8 +23,8 @@
 
 #include "boost/dynamic_bitset.hpp"
 
-#include <ostream>
 #include <iostream>
+#include <ostream>
 
 int main()
 {

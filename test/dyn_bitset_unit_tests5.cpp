@@ -1,6 +1,6 @@
 // -----------------------------------------------------------
 //              Copyright (c) 2001 Jeremy Siek
-//           Copyright (c) 2003-2006 Gennaro Prota
+//         Copyright (c) 2003-2006, 2025 Gennaro Prota
 //
 // Copyright (c) 2015 Seth Heeren
 //
@@ -10,14 +10,20 @@
 //
 // -----------------------------------------------------------
 
+#include "bitset_test.hpp"
+#include "boost/archive/binary_iarchive.hpp"
+#include "boost/archive/binary_oarchive.hpp"
+#include "boost/archive/xml_iarchive.hpp"
+#include "boost/archive/xml_oarchive.hpp"
 #include "boost/config.hpp"
+#include "boost/config/workaround.hpp"
+#include "boost/dynamic_bitset/serialization.hpp"
+#include "boost/serialization/vector.hpp"
+
 #if !defined (BOOST_NO_STRINGSTREAM)
 # include <sstream>
 #endif
 
-#include "bitset_test.hpp"
-#include <boost/dynamic_bitset/serialization.hpp>
-#include <boost/config/workaround.hpp>
 
 
 // Codewarrior 8.3 for Win fails without this.
@@ -30,13 +36,6 @@
 #if defined BOOST_NO_STD_WSTRING || defined BOOST_NO_STD_LOCALE
 # define BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
 #endif
-
-#include <boost/serialization/vector.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-#include <sstream>
 
 namespace {
     template <typename Block>

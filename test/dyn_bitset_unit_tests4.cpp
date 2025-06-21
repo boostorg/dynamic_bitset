@@ -1,6 +1,6 @@
 // -----------------------------------------------------------
 //              Copyright (c) 2001 Jeremy Siek
-//           Copyright (c) 2003-2006 Gennaro Prota
+//         Copyright (c) 2003-2006, 2025 Gennaro Prota
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -8,20 +8,20 @@
 //
 // -----------------------------------------------------------
 
-#include <fstream>
-#include <string>
-#include <cstddef>   // for std::size_t
-#include <stdexcept> // for std::logic_error
-#include <assert.h>
+#include "bitset_test.hpp"
+#include "boost/config.hpp"
+#include "boost/config/workaround.hpp"
+#include "boost/dynamic_bitset/dynamic_bitset.hpp"
 
-#include <boost/config.hpp>
+#include <assert.h>
+#include <cstddef>
+#include <fstream>
+#include <stdexcept>
+#include <string>
+
 #if !defined (BOOST_NO_STRINGSTREAM)
 # include <sstream>
 #endif
-
-#include "bitset_test.hpp"
-#include <boost/dynamic_bitset/dynamic_bitset.hpp>
-#include <boost/config/workaround.hpp>
 
 
 // Codewarrior 8.3 for Win fails without this.

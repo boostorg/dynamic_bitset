@@ -1,6 +1,6 @@
 // -----------------------------------------------------------
 //              Copyright (c) 2001 Jeremy Siek
-//           Copyright (c) 2003-2006 Gennaro Prota
+//         Copyright (c) 2003-2006, 2025 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
 //          Copyright (c) 2014 Riccardo Marcangelo
 //
@@ -10,11 +10,11 @@
 //
 // -----------------------------------------------------------
 
-#include <assert.h>
 #include "bitset_test.hpp"
-#include <boost/dynamic_bitset/dynamic_bitset.hpp>
-#include <boost/limits.hpp>
-#include <boost/config.hpp>
+#include "boost/config.hpp"
+#include "boost/dynamic_bitset/dynamic_bitset.hpp"
+#include "boost/limits.hpp"
+#include <assert.h>
 
 template <typename Block>
 void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )

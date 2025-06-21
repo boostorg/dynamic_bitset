@@ -1,6 +1,6 @@
 // -----------------------------------------------------------
 //              Copyright (c) 2001 Jeremy Siek
-//           Copyright (c) 2003-2006 Gennaro Prota
+//         Copyright (c) 2003-2006, 2025 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
 //             Copyright (c) 2018 Evgeny Shulgin
 //
@@ -11,8 +11,8 @@
 // -----------------------------------------------------------
 
 #include "bitset_test.hpp"
-#include <boost/dynamic_bitset/dynamic_bitset.hpp>
-#include <boost/config.hpp>
+#include "boost/config.hpp"
+#include "boost/dynamic_bitset/dynamic_bitset.hpp"
 
 
 template <typename Block>

@@ -11,8 +11,8 @@
 #ifndef BOOST_DYNAMIC_BITSET_SERIALIZATION_HPP
 #define BOOST_DYNAMIC_BITSET_SERIALIZATION_HPP
 
+#include "boost/core/nvp.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
-#include <boost/core/nvp.hpp>
 
 namespace boost {
 

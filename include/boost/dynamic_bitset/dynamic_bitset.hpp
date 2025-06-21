@@ -1,7 +1,7 @@
 // -----------------------------------------------------------
 //
 //   Copyright (c) 2001-2002 Chuck Allison and Jeremy Siek
-//        Copyright (c) 2003-2006, 2008 Gennaro Prota
+//      Copyright (c) 2003-2006, 2008, 2025 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
 //
 // Copyright (c) 2014 Glen Joseph Fernandes
@@ -19,34 +19,31 @@
 #ifndef BOOST_DYNAMIC_BITSET_DYNAMIC_BITSET_HPP
 #define BOOST_DYNAMIC_BITSET_DYNAMIC_BITSET_HPP
 
-#include <assert.h>
-#include <string>
-#include <stdexcept>
-#include <algorithm>
-#include <iterator>     // used to implement append(Iter, Iter)
-#include <vector>
-#include <climits>      // for CHAR_BIT
-
+#include "boost/core/addressof.hpp"
+#include "boost/core/no_exceptions_support.hpp"
 #include "boost/dynamic_bitset/config.hpp"
+#include "boost/dynamic_bitset/detail/dynamic_bitset.hpp"
+#include "boost/dynamic_bitset/detail/lowest_bit.hpp"
+#include "boost/dynamic_bitset_fwd.hpp"
+#include "boost/functional/hash/hash.hpp"
+#include "boost/limits.hpp"
+#include "boost/move/move.hpp"
+#include "boost/static_assert.hpp"
+#include "boost/throw_exception.hpp"
+
+#include <algorithm>
+#include <assert.h>
+#include <climits>
+#include <istream>
+#include <iterator>
+#include <ostream>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 #ifndef BOOST_NO_STD_LOCALE
 #  include <locale>
 #endif
-
-#include <istream>
-#include <ostream>
-
-#include "boost/dynamic_bitset_fwd.hpp"
-#include "boost/dynamic_bitset/detail/dynamic_bitset.hpp"
-#include "boost/dynamic_bitset/detail/lowest_bit.hpp"
-#include "boost/move/move.hpp"
-#include "boost/limits.hpp"
-#include "boost/static_assert.hpp"
-#include "boost/core/addressof.hpp"
-#include "boost/core/no_exceptions_support.hpp"
-#include "boost/throw_exception.hpp"
-#include "boost/functional/hash/hash.hpp"
-
 
 namespace boost {
 
