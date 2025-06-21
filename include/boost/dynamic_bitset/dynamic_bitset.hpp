@@ -319,8 +319,6 @@ public:
     size_type find_first(size_type pos) const;
     size_type find_next(size_type pos) const;
 
-
-#if !defined BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
     // lexicographical comparison
     template <typename B, typename A>
     friend bool operator==(const dynamic_bitset<B, A>& a,
@@ -353,7 +351,6 @@ public:
 
     template <typename B, typename A>
     friend std::size_t hash_value(const dynamic_bitset<B, A>& a);
-#endif
 
 public:
     // forward declaration for optional zero-copy serialization support
@@ -491,7 +488,7 @@ private:
 
 
 
-BOOST_DYNAMIC_BITSET_PRIVATE:
+private:
 
     bool m_unchecked_test(size_type pos) const;
     static size_type calc_num_blocks(size_type num_bits);
