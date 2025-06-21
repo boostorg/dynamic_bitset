@@ -145,7 +145,7 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
               file.width(w);
               file.fill(fill_chars[ci]);
               file.exceptions(masks[mi]);
-              Tests::stream_inserter(b, file, stf.path().string().c_str()); 
+              Tests::stream_inserter(b, file, stf.path().string().c_str());
             }
 #endif
           }

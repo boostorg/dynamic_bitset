@@ -21,7 +21,7 @@ namespace boost {
         class dynamic_bitset<Block, Allocator>::serialize_impl
         {
             public:
-                template <typename Ar> 
+                template <typename Ar>
                 static void serialize(Ar& ar, dynamic_bitset<Block, Allocator>& bs, unsigned) {
                     ar & boost::make_nvp("m_num_bits", bs.m_num_bits)
                        & boost::make_nvp("m_bits", bs.m_bits);
