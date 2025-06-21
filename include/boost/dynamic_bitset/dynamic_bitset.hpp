@@ -19,7 +19,6 @@
 #ifndef BOOST_DYNAMIC_BITSET_DYNAMIC_BITSET_HPP
 #define BOOST_DYNAMIC_BITSET_DYNAMIC_BITSET_HPP
 
-#include "boost/core/addressof.hpp"
 #include "boost/core/no_exceptions_support.hpp"
 #include "boost/dynamic_bitset/config.hpp"
 #include "boost/dynamic_bitset/detail/dynamic_bitset.hpp"
@@ -721,7 +720,7 @@ template <typename Block, typename Allocator>
 inline dynamic_bitset<Block, Allocator>& dynamic_bitset<Block, Allocator>::
 operator=(dynamic_bitset<Block, Allocator>&& b)
 {
-    if (boost::addressof(b) == this) { return *this; }
+    if (&b == this) { return *this; }
 
     m_bits = boost::move(b.m_bits);
     m_num_bits = boost::move(b.m_num_bits);
