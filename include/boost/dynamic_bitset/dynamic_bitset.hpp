@@ -1040,14 +1040,7 @@ dynamic_bitset<Block, Allocator>&
 dynamic_bitset<Block, Allocator>::reset(size_type pos)
 {
     assert(pos < m_num_bits);
-#if defined __MWERKS__ && BOOST_WORKAROUND(__MWERKS__, <= 0x3003) // 8.x
-    // CodeWarrior 8 generates incorrect code when the &=~ is compiled,
-    // use the |^ variation instead.. <grafik>
-    m_bits[block_index(pos)] |= bit_mask(pos);
-    m_bits[block_index(pos)] ^= bit_mask(pos);
-#else
     m_bits[block_index(pos)] &= ~bit_mask(pos);
-#endif
     return *this;
 }
 
