@@ -5,7 +5,7 @@
 
 <!--
                      Copyright (c) 2001 Jeremy Siek
-              Copyright (c) 2003-2004, 2008 Gennaro Prota
+           Copyright (c) 2003-2004, 2008, 2025 Gennaro Prota
                     Copyright (c) 2014 Ahmed Charles
                  Copyright (c) 2014 Riccardo Marcangelo
                     Copyright (c) 2018 Evgeny Shulgin
@@ -81,22 +81,20 @@
 <dt><a href="#acknowledgements">Acknowledgements</a></dt>
 </dl>
 <h3><a id="description">Description</a></h3>
-<p>The <tt>dynamic_bitset</tt> class represents a set of bits. It
-provides accesses to the value of individual bits via an
+<p>The <tt>dynamic_bitset</tt> template represents a set of
+bits. It provides access to the value of individual bits via
 <tt>operator[]</tt> and provides all of the bitwise operators
 that one can apply to builtin integers, such as
 <tt>operator&amp;</tt> and <tt>operator&lt;&lt;</tt>. The number
-of bits in the set is specified at runtime via a parameter to the
-constructor of the <tt>dynamic_bitset</tt>.</p>
+of bits in the set can change at runtime.</p>
 
 <p>The <tt>dynamic_bitset</tt> class is nearly identical to the
 <a href=
 "https://boost.org/sgi/stl/bitset.html"><tt>std::bitset</tt></a>
-class. The difference is that the size of the
-<tt>dynamic_bitset</tt> (the number of bits) is specified at
-run-time during the construction of a <tt>dynamic_bitset</tt>
-object, whereas the size of a <tt>std::bitset</tt> is specified
-at compile-time through an integer template parameter.</p>
+class. The difference is that the size of a
+<tt>dynamic_bitset</tt> (the number of bits) can change at runtime,
+whereas the size of a <tt>std::bitset</tt> is specified at compile-time
+through an integer template parameter.</p>
 
 <p>The main problem that <tt>dynamic_bitset</tt> is designed to
 solve is that of representing a subset of a finite set. Each bit
