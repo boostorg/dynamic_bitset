@@ -11,9 +11,9 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/config.hpp>
-#include <boost/dynamic_bitset.hpp>
-#include <boost/core/lightweight_test.hpp>
+#include "boost/config.hpp"
+#include "boost/core/lightweight_test.hpp"
+#include "boost/dynamic_bitset.hpp"
 #include <set>
 
 int main(int, char*[])

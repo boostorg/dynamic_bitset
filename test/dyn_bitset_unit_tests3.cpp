@@ -10,11 +10,11 @@
 //
 // -----------------------------------------------------------
 
-#include <assert.h>
 #include "bitset_test.hpp"
-#include <boost/dynamic_bitset/dynamic_bitset.hpp>
-#include <boost/limits.hpp>
-#include <boost/config.hpp>
+#include "boost/config.hpp"
+#include "boost/dynamic_bitset/dynamic_bitset.hpp"
+#include "boost/limits.hpp"
+#include <assert.h>
 
 template <typename Block>
 void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )

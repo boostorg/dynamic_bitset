@@ -10,9 +10,8 @@
 //  bits(2) = 10
 //  bits(3) = 11
 
-
+#include "boost/dynamic_bitset.hpp"
 #include <iostream>
-#include <boost/dynamic_bitset.hpp>
 
 int main()
 {

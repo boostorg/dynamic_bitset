@@ -14,21 +14,20 @@
 #ifndef BOOST_BITSET_TEST_HPP_GP_20040319
 #define BOOST_BITSET_TEST_HPP_GP_20040319
 
-#include <boost/config.hpp>
+#include "boost/config.hpp"
+#include "boost/core/lightweight_test.hpp"
+#include "boost/dynamic_bitset/dynamic_bitset.hpp"
+#include "boost/filesystem.hpp"
+#include "boost/limits.hpp"
+
+#include <algorithm>
+#include <assert.h>  // <cassert> is sometimes macro-guarded :-(
+#include <string>
+#include <vector>
+
 #if !defined (BOOST_NO_STD_LOCALE)
 # include <locale>
 #endif
-
-#include <vector>
-#include <fstream> // used for operator<<
-#include <string>    // for (basic_string and) getline()
-#include <algorithm> // for std::min
-#include <assert.h>  // <cassert> is sometimes macro-guarded :-(
-
-#include <boost/limits.hpp>
-#include <boost/dynamic_bitset/dynamic_bitset.hpp>
-#include <boost/core/lightweight_test.hpp>
-#include <boost/filesystem.hpp>
 
 template <typename Block>
 inline bool nth_bit(Block num, std::size_t n)

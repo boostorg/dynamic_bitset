@@ -11,8 +11,8 @@
 // -----------------------------------------------------------
 
 #include "bitset_test.hpp"
-#include <boost/dynamic_bitset/dynamic_bitset.hpp>
-#include <boost/config.hpp>
+#include "boost/config.hpp"
+#include "boost/dynamic_bitset/dynamic_bitset.hpp"
 
 
 template <typename Block>

@@ -11,9 +11,9 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <boost/cstdint.hpp>
-#include <boost/dynamic_bitset/detail/lowest_bit.hpp>
-#include <boost/core/lightweight_test.hpp>
+#include "boost/core/lightweight_test.hpp"
+#include "boost/cstdint.hpp"
+#include "boost/dynamic_bitset/detail/lowest_bit.hpp"
 
 int main(int, char*[])
 {

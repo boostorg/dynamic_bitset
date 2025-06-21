@@ -8,20 +8,20 @@
 //
 // -----------------------------------------------------------
 
-#include <fstream>
-#include <string>
-#include <cstddef>   // for std::size_t
-#include <stdexcept> // for std::logic_error
-#include <assert.h>
+#include "bitset_test.hpp"
+#include "boost/config.hpp"
+#include "boost/config/workaround.hpp"
+#include "boost/dynamic_bitset/dynamic_bitset.hpp"
 
-#include <boost/config.hpp>
+#include <assert.h>
+#include <cstddef>
+#include <fstream>
+#include <stdexcept>
+#include <string>
+
 #if !defined (BOOST_NO_STRINGSTREAM)
 # include <sstream>
 #endif
-
-#include "bitset_test.hpp"
-#include <boost/dynamic_bitset/dynamic_bitset.hpp>
-#include <boost/config/workaround.hpp>
 
 
 // Codewarrior 8.3 for Win fails without this.
