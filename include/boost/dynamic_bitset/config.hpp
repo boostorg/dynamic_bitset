@@ -13,7 +13,6 @@
 #define BOOST_DYNAMIC_BITSET_CONFIG_HPP_GP_20040424
 
 #include "boost/config.hpp"
-#include "boost/detail/workaround.hpp"
 
 // no-op function to workaround gcc bug c++/8419
 //
@@ -26,20 +25,6 @@ namespace boost { namespace detail {
          (boost::detail::make_non_const(expr))
 #else
 # define BOOST_DYNAMIC_BITSET_WRAP_CONSTANT(expr) (expr)
-#endif
-
-//
-#if (defined BOOST_BORLANDC && BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564)))  \
-                             || (defined BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
-#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
-#endif
-
-// if we can't use friends then we simply expose private members
-//
-#if defined(BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS)
-#define BOOST_DYNAMIC_BITSET_PRIVATE public
-#else
-#define BOOST_DYNAMIC_BITSET_PRIVATE private
 #endif
 
 // A couple of macros to cope with libraries without locale
