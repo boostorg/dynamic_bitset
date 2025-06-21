@@ -18,7 +18,7 @@
 int main(int, char*[])
 {
     for (boost::int32_t i = 1; i < 32; ++i) {
-	BOOST_TEST_EQ(i, boost::detail::lowest_bit(1u << i));
+        BOOST_TEST_EQ(i, boost::detail::lowest_bit(1u << i));
     }
 
     BOOST_TEST_EQ(2, boost::detail::lowest_bit(123456788));
