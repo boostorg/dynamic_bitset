@@ -25,14 +25,6 @@
 #endif
 
 
-
-// Codewarrior 8.3 for Win fails without this.
-// Thanks Howard Hinnant ;)
-#if defined __MWERKS__ && BOOST_WORKAROUND(__MWERKS__, <= 0x3003) // 8.x
-# pragma parse_func_templ off
-#endif
-
-
 #if defined BOOST_NO_STD_WSTRING || defined BOOST_NO_STD_LOCALE
 # define BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
 #endif
