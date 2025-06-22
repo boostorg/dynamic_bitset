@@ -1356,7 +1356,7 @@ struct bitset_test {
   template <typename Stream, typename String>
   static void stream_extractor(Bitset& b,
                                Stream& is,
-                               String& str
+                               const String& str
                               )
   {
     // save necessary info then do extraction
