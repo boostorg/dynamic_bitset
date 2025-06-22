@@ -793,6 +793,7 @@ template <typename Block, typename Allocator>
 void dynamic_bitset<Block, Allocator>::
 pop_back()
 {
+  BOOST_ASSERT( !empty() );
   const size_type old_num_blocks = num_blocks();
   const size_type required_blocks = calc_num_blocks(m_num_bits - 1);
 
