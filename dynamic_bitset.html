@@ -354,7 +354,10 @@ were chosen for this reason.</p>
 precondition is violated (as is done in <tt>std::bitset</tt>).
 Instead <tt>BOOST_ASSERT</tt> is used. See the guidelines for <a href=
 "http://www.boost.org/community/error_handling.html">Error and Exception Handling</a>
-for the explanation.</p>
+for the explanation. Note that, consistently with this, the documentation of the
+various functions doesn't use the term "precondition" for conditions that cause
+an exception to be emitted (the C++ standard uses the term "requires" in such
+cases).</p>
 
 <h3><a id="header-files">Header files</a></h3>
 
@@ -1224,7 +1227,6 @@ returns <tt>false</tt>.<br />
 reference <a id="at">at</a>(size_type n)
 </pre>
 
-<b>Precondition:</b> <tt>n &lt; this-&gt;size()</tt>.<br />
 <b>Returns:</b> The same as <tt>operator[](n)</tt>.<br />
 <b>Throws:</b> <tt>std::out_of_range</tt> if that <tt>n</tt> is not within the range of the bitset.
 
@@ -1233,7 +1235,6 @@ reference <a id="at">at</a>(size_type n)
 bool <a id="const-at">at</a>(size_type n) const
 </pre>
 
-<b>Precondition:</b> <tt>n &lt; this-&gt;size()</tt>.<br />
 <b>Returns:</b> The same as <tt>operator[](n)</tt>.<br />
 <b>Throws:</b> <tt>std::out_of_range</tt> if that <tt>n</tt> is not within the range of the bitset.
 
