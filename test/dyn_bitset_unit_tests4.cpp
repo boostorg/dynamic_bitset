@@ -24,13 +24,6 @@
 #endif
 
 
-// Codewarrior 8.3 for Win fails without this.
-// Thanks Howard Hinnant ;)
-#if defined __MWERKS__ && BOOST_WORKAROUND(__MWERKS__, <= 0x3003) // 8.x
-# pragma parse_func_templ off
-#endif
-
-
 #if defined BOOST_NO_STD_WSTRING || defined BOOST_NO_STD_LOCALE
 # define BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
 #endif
@@ -186,19 +179,13 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   const std::string spaces = "\t\n "; //"\t\n\v\f ";
 
   const std::string long_string = get_long_string();
-  /*const*/ static std::string strings[] = {
-                  // NOTE: "const" gives the usual problems with Borland
-                  //       (in Tests::stream_extractor instantiation)
+  const static std::string strings[] = {
 
-
-#if !(defined BOOST_BORLANDC     \
-      && BOOST_WORKAROUND(BOOST_RWSTD_VER, BOOST_TESTED_AT(0x20101)))
-                                        // Borland 5.5.1 with RW library crashes
             // empty string
             std::string(""),
             // no bitset
             spaces,
-#endif
+
             // no bitset
             std::string("x"),
             std::string("\t  xyz"),

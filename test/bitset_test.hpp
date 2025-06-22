@@ -33,15 +33,7 @@ template <typename Block>
 inline bool nth_bit(Block num, std::size_t n)
 {
 #ifndef NDEBUG
-#ifdef BOOST_BORLANDC
-  // Borland deduces Block as a const qualified type,
-  // and thus finds numeric_limits<Block> to be zero :(
-  //  (though not directly relevant here, see also
-  //   lib issue 559)
-  int block_width = sizeof(Block) * CHAR_BIT;
-#else
   int block_width = std::numeric_limits<Block>::digits;
-#endif
   assert(n < (std::size_t) block_width);
 #endif
 
@@ -110,11 +102,7 @@ bool is_one_or_zero(const Stream& s, Ch c)
 template <typename Stream, typename Ch>
 bool is_white_space(const Stream & s, Ch c)
 {
-  // NOTE: the using directive is to satisfy Borland 5.6.4
-  //       with its own library (STLport), which doesn't
-  //       like std::isspace(c, loc)
-  using namespace std;
-  return isspace(c, s.getloc());
+  return std::isspace(c, s.getloc());
 }
 #endif
 
