@@ -1,7 +1,7 @@
 // -----------------------------------------------------------
-// lowest_bit.hpp
+//                       lowest_bit()
 //
-//           Position of the lowest bit 'on'
+//          Position of the lowest bit that is set.
 //
 //         Copyright (c) 2003-2004, 2008 Gennaro Prota
 //
@@ -20,20 +20,19 @@
 namespace boost {
 namespace detail {
 
-    template <typename T>
-    int lowest_bit(T x) {
+template <typename T>
+int
+lowest_bit(T x)
+{
+    BOOST_ASSERT(x >= 1);
 
-        BOOST_ASSERT(x >= 1);
-
-        // clear all bits on except the rightmost one,
-        // then calculate the logarithm base 2
-        //
-        return boost::integer_log2<T>( x - ( x & (x-1) ) );
-
-    }
+    // Clear all the bits that are set except the rightmost one,
+    // then calculate the logarithm to base 2.
+    //
+    return boost::integer_log2<T>(x - (x & (x - 1)));
+}
 
 }
 }
-
 
 #endif // include guard
