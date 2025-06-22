@@ -186,7 +186,7 @@ public:
 
     ~dynamic_bitset();
 
-    void swap(dynamic_bitset& b);
+    void swap(dynamic_bitset& b) BOOST_NOEXCEPT;
     dynamic_bitset& operator=(const dynamic_bitset& b);
 
 #ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
@@ -614,7 +614,7 @@ operator-(const dynamic_bitset<Block, Allocator>& b1,
 // namespace scope swap
 template<typename Block, typename Allocator>
 void swap(dynamic_bitset<Block, Allocator>& b1,
-          dynamic_bitset<Block, Allocator>& b2);
+          dynamic_bitset<Block, Allocator>& b2) BOOST_NOEXCEPT;
 
 
 template <typename Block, typename Allocator, typename stringT>
@@ -677,7 +677,7 @@ inline dynamic_bitset<Block, Allocator>::
 
 template <typename Block, typename Allocator>
 inline void dynamic_bitset<Block, Allocator>::
-swap(dynamic_bitset<Block, Allocator>& b) // no throw
+swap(dynamic_bitset<Block, Allocator>& b) BOOST_NOEXCEPT
 {
     std::swap(m_bits, b.m_bits);
     std::swap(m_num_bits, b.m_num_bits);
@@ -1782,7 +1782,7 @@ operator-(const dynamic_bitset<Block, Allocator>& x,
 template<typename Block, typename Allocator>
 inline void
 swap(dynamic_bitset<Block, Allocator>& left,
-     dynamic_bitset<Block, Allocator>& right) // no throw
+     dynamic_bitset<Block, Allocator>& right) BOOST_NOEXCEPT
 {
     left.swap(right);
 }
