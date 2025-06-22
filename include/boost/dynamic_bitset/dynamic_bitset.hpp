@@ -1500,8 +1500,6 @@ template <typename Block, typename Allocator>
 bool operator<(const dynamic_bitset<Block, Allocator>& a,
                const dynamic_bitset<Block, Allocator>& b)
 {
-//    BOOST_ASSERT(a.size() == b.size());
-
     typedef BOOST_DEDUCED_TYPENAME dynamic_bitset<Block, Allocator>::size_type size_type;
 
     size_type asize(a.size());
