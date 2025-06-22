@@ -1392,7 +1392,6 @@ bool dynamic_bitset<Block, Allocator>::
 is_proper_subset_of(const dynamic_bitset<Block, Allocator>& a) const
 {
     BOOST_ASSERT(size() == a.size());
-    BOOST_ASSERT(num_blocks() == a.num_blocks());
 
     bool proper = false;
     for (size_type i = 0; i < num_blocks(); ++i) {
