@@ -64,7 +64,7 @@ namespace {
                 SerializableType<Block> b;
                 ia >> BOOST_SERIALIZATION_NVP(b);
 
-                assert(a.x == b.x);
+                BOOST_TEST(a.x == b.x);
             }
 #else
 #           error "TODO implement file-based test path?"

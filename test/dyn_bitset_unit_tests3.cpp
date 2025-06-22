@@ -501,40 +501,40 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   // check for consistency with ulong behaviour when the sizes are equal
   {
     boost::dynamic_bitset<Block> a(3, 4ul), b(3, 5ul);
-    assert(a < b);
+    BOOST_TEST(a < b);
   }
   {
     boost::dynamic_bitset<Block> a(3, 4ul), b(3, 4ul);
-    assert(!(a < b));
+    BOOST_TEST(!(a < b));
   }
   {
     boost::dynamic_bitset<Block> a(3, 5ul), b(3, 4ul);
-    assert(!(a < b));
+    BOOST_TEST(!(a < b));
   }
   // when the sizes are not equal lexicographic compare does not necessarily correspond to ulong behavior
   {
     boost::dynamic_bitset<Block> a(4, 4ul), b(3, 5ul);
-    assert(a < b);
+    BOOST_TEST(a < b);
   }
   {
     boost::dynamic_bitset<Block> a(3, 4ul), b(4, 5ul);
-    assert(!(a < b));
+    BOOST_TEST(!(a < b));
   }
   {
     boost::dynamic_bitset<Block> a(4, 4ul), b(3, 4ul);
-    assert(a < b);
+    BOOST_TEST(a < b);
   }
   {
     boost::dynamic_bitset<Block> a(3, 4ul), b(4, 4ul);
-    assert(!(a < b));
+    BOOST_TEST(!(a < b));
   }
   {
     boost::dynamic_bitset<Block> a(4, 5ul), b(3, 4ul);
-    assert(a < b);
+    BOOST_TEST(a < b);
   }
   {
     boost::dynamic_bitset<Block> a(3, 5ul), b(4, 4ul);
-    assert(!(a < b));
+    BOOST_TEST(!(a < b));
   }
   //=====================================================================
   // Test operator<=
@@ -567,15 +567,15 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   // check for consistency with ulong behaviour
   {
     boost::dynamic_bitset<Block> a(3, 4ul), b(3, 5ul);
-    assert(a <= b);
+    BOOST_TEST(a <= b);
   }
   {
     boost::dynamic_bitset<Block> a(3, 4ul), b(3, 4ul);
-    assert(a <= b);
+    BOOST_TEST(a <= b);
   }
   {
     boost::dynamic_bitset<Block> a(3, 5ul), b(3, 4ul);
-    assert(!(a <= b));
+    BOOST_TEST(!(a <= b));
   }
   //=====================================================================
   // Test operator>
@@ -608,15 +608,15 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   // check for consistency with ulong behaviour
   {
     boost::dynamic_bitset<Block> a(3, 4ul), b(3, 5ul);
-    assert(!(a > b));
+    BOOST_TEST(!(a > b));
   }
   {
     boost::dynamic_bitset<Block> a(3, 4ul), b(3, 4ul);
-    assert(!(a > b));
+    BOOST_TEST(!(a > b));
   }
   {
     boost::dynamic_bitset<Block> a(3, 5ul), b(3, 4ul);
-    assert(a > b);
+    BOOST_TEST(a > b);
   }
   //=====================================================================
   // Test operator<=
@@ -649,15 +649,15 @@ void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
   // check for consistency with ulong behaviour
   {
     boost::dynamic_bitset<Block> a(3, 4ul), b(3, 5ul);
-    assert(!(a >= b));
+    BOOST_TEST(!(a >= b));
   }
   {
     boost::dynamic_bitset<Block> a(3, 4ul), b(3, 4ul);
-    assert(a >= b);
+    BOOST_TEST(a >= b);
   }
   {
     boost::dynamic_bitset<Block> a(3, 5ul), b(3, 4ul);
-    assert(a >= b);
+    BOOST_TEST(a >= b);
   }
   //=====================================================================
   // Test b.test(pos)
