@@ -20,6 +20,7 @@
 #define BOOST_DYNAMIC_BITSET_DYNAMIC_BITSET_HPP
 
 #include "boost/assert.hpp"
+#include "boost/core/bit.hpp"
 #include "boost/core/no_exceptions_support.hpp"
 #include "boost/dynamic_bitset/config.hpp"
 #include "boost/dynamic_bitset/detail/dynamic_bitset.hpp"
@@ -1174,41 +1175,11 @@ template <typename Block, typename Allocator>
 typename dynamic_bitset<Block, Allocator>::size_type
 dynamic_bitset<Block, Allocator>::count() const BOOST_NOEXCEPT
 {
-    using detail::dynamic_bitset_impl::table_width;
-    using detail::dynamic_bitset_impl::access_by_bytes;
-    using detail::dynamic_bitset_impl::access_by_blocks;
-    using detail::dynamic_bitset_impl::value_to_type;
-
-#if BOOST_WORKAROUND(__GNUC__, == 4) && (__GNUC_MINOR__ == 3) && (__GNUC_PATCHLEVEL__ == 3)
-    // NOTE: Explicit qualification of "bits_per_block"
-    //       breaks compilation on gcc 4.3.3
-    enum { no_padding = bits_per_block == CHAR_BIT * sizeof(Block) };
-#else
-    // NOTE: Explicitly qualifying "bits_per_block" to workaround
-    //       regressions of gcc 3.4.x
-    enum { no_padding =
-        dynamic_bitset<Block, Allocator>::bits_per_block
-        == CHAR_BIT * sizeof(Block) };
-#endif
-
-    enum { enough_table_width = table_width >= CHAR_BIT };
-
-#if ((defined(BOOST_MSVC) && (BOOST_MSVC >= 1600)) || (defined(__clang__) && defined(__c2__)) || (defined(BOOST_INTEL) && defined(_MSC_VER))) && (defined(_M_IX86) || defined(_M_X64))
-    // Windows popcount is effective starting from the unsigned short type
-    enum { uneffective_popcount = sizeof(Block) < sizeof(unsigned short) };
-#elif defined(BOOST_GCC) || defined(__clang__) || (defined(BOOST_INTEL) && defined(__GNUC__))
-    // GCC popcount is effective starting from the unsigned int type
-    enum { uneffective_popcount = sizeof(Block) < sizeof(unsigned int) };
-#else
-    enum { uneffective_popcount = true };
-#endif
-
-    enum { mode = (no_padding && enough_table_width && uneffective_popcount)
-                          ? access_by_bytes
-                          : access_by_blocks };
-
-    return do_count(m_bits.begin(), num_blocks(), Block(0),
-                    static_cast<value_to_type<(bool)mode> *>(0));
+    size_type result = 0;
+    for (block_type block : m_bits) {
+        result += core::popcount(block);
+    }
+    return result;
 }
 
 
