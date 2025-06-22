@@ -887,14 +887,14 @@ dynamic_bitset<Block, Allocator>::operator<<=(size_type n)
     //else
     if (n > 0) {
 
-        size_type    const last = num_blocks() - 1;  // num_blocks() is >= 1
-        size_type    const div  = n / bits_per_block; // div is <= last
-        block_width_type const r = bit_index(n);
+        const size_type    last = num_blocks() - 1;  // num_blocks() is >= 1
+        const size_type    div  = n / bits_per_block; // div is <= last
+        const block_width_type r = bit_index(n);
         block_type * const b    = &m_bits[0];
 
         if (r != 0) {
 
-            block_width_type const rs = bits_per_block - r;
+            const block_width_type rs = bits_per_block - r;
 
             for (size_type i = last-div; i>0; --i) {
                 b[i+div] = (b[i] << r) | (b[i-1] >> rs);
@@ -935,15 +935,15 @@ dynamic_bitset<B, A> & dynamic_bitset<B, A>::operator>>=(size_type n) {
     //else
     if (n>0) {
 
-        size_type  const last  = num_blocks() - 1; // num_blocks() is >= 1
-        size_type  const div   = n / bits_per_block;   // div is <= last
-        block_width_type const r     = bit_index(n);
+        const size_type  last  = num_blocks() - 1; // num_blocks() is >= 1
+        const size_type  div   = n / bits_per_block;   // div is <= last
+        const block_width_type r     = bit_index(n);
         block_type * const b   = &m_bits[0];
 
 
         if (r != 0) {
 
-            block_width_type const ls = bits_per_block - r;
+            const block_width_type ls = bits_per_block - r;
 
             for (size_type i = div; i < last; ++i) {
                 b[i-div] = (b[i] >> r) | (b[i+1]  << ls);
@@ -1109,7 +1109,7 @@ bool dynamic_bitset<Block, Allocator>::test(size_type pos) const
 template <typename Block, typename Allocator>
 bool dynamic_bitset<Block, Allocator>::test_set(size_type pos, bool val)
 {
-    bool const b = test(pos);
+    const bool b = test(pos);
     if (b != val) {
         set(pos, val);
     }
@@ -1124,7 +1124,7 @@ bool dynamic_bitset<Block, Allocator>::all() const
     }
 
     const block_width_type extra_bits = count_extra_bits();
-    block_type const all_ones = detail::dynamic_bitset_impl::max_limit<Block>::value;
+    const block_type all_ones = detail::dynamic_bitset_impl::max_limit<Block>::value;
 
     if (extra_bits == 0) {
         for (size_type i = 0, e = num_blocks(); i < e; ++i) {
