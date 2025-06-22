@@ -146,7 +146,7 @@ public:
     <a href=
 "#move-cons">dynamic_bitset</a>(dynamic_bitset&amp;&amp; b);
 
-    void <a href="#swap">swap</a>(dynamic_bitset&amp; b);
+    void <a href="#swap">swap</a>(dynamic_bitset&amp; b) noexcept;
 
     dynamic_bitset&amp; <a href=
 "#assign">operator=</a>(const dynamic_bitset&amp; b);
@@ -757,7 +757,7 @@ and destroys the bitset object itself.<br />
 
 <hr />
 <pre>
-void <a id="swap">swap</a>(dynamic_bitset&amp; b);
+void <a id="swap">swap</a>(dynamic_bitset&amp; b) noexcept;
 </pre>
 
 <b>Effects:</b> The contents of this bitset and bitset <tt>b</tt>
