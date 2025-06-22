@@ -23,7 +23,7 @@ namespace detail {
     template <typename T>
     int lowest_bit(T x) {
 
-        BOOST_ASSERT(x >= 1); // PRE
+        BOOST_ASSERT(x >= 1);
 
         // clear all bits on except the rightmost one,
         // then calculate the logarithm base 2
