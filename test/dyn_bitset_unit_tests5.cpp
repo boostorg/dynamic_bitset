@@ -20,84 +20,94 @@
 #include "boost/dynamic_bitset/serialization.hpp"
 #include "boost/serialization/vector.hpp"
 
-#if !defined (BOOST_NO_STRINGSTREAM)
-# include <sstream>
+#if ! defined( BOOST_NO_STRINGSTREAM )
+#    include <sstream>
 #endif
 
-
 #if defined BOOST_NO_STD_WSTRING || defined BOOST_NO_STD_LOCALE
-# define BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
+#    define BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
 #endif
 
 namespace {
-    template <typename Block>
-        struct SerializableType {
-            boost::dynamic_bitset<Block> x;
+template< typename Block >
+struct SerializableType
+{
+    boost::dynamic_bitset< Block > x;
 
-          private:
-            friend class boost::serialization::access;
-            template <class Archive> void serialize(Archive &ar, unsigned int) {
-                ar & BOOST_SERIALIZATION_NVP(x);
-            }
-        };
+private:
+    friend class boost::serialization::access;
+    template< class Archive >
+    void
+    serialize( Archive & ar, unsigned int )
+    {
+        ar & BOOST_SERIALIZATION_NVP( x );
+    }
+};
 
-    template <typename Block, typename IArchive, typename OArchive>
-        void test_serialization( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
-        {
-            SerializableType<Block> a;
+template< typename Block, typename IArchive, typename OArchive >
+void
+test_serialization( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
+{
+    SerializableType< Block > a;
 
-            for (int i=0; i<128; ++i)
-                a.x.resize(11*i, i%2);
+    for ( int i = 0; i < 128; ++i )
+        a.x.resize( 11 * i, i % 2 );
 
-#if !defined (BOOST_NO_STRINGSTREAM)
-            std::stringstream ss;
+#if ! defined( BOOST_NO_STRINGSTREAM )
+    std::stringstream ss;
 
-            // test serialization
-            {
-                OArchive oa(ss);
-                oa << BOOST_SERIALIZATION_NVP(a);
-            }
+    // test serialization
+    {
+        OArchive oa( ss );
+        oa << BOOST_SERIALIZATION_NVP( a );
+    }
 
-            // test de-serialization
-            {
-                IArchive ia(ss);
-                SerializableType<Block> b;
-                ia >> BOOST_SERIALIZATION_NVP(b);
+    // test de-serialization
+    {
+        IArchive                  ia( ss );
+        SerializableType< Block > b;
+        ia >> BOOST_SERIALIZATION_NVP( b );
 
-                BOOST_TEST(a.x == b.x);
-            }
+        BOOST_TEST( a.x == b.x );
+    }
 #else
-#           error "TODO implement file-based test path?"
+#    error "TODO implement file-based test path?"
 #endif
-        }
-
-    template <typename Block>
-        void test_binary_archive( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) ) {
-            test_serialization<Block, boost::archive::binary_iarchive, boost::archive::binary_oarchive>();
-        }
-
-    template <typename Block>
-        void test_xml_archive( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) ) {
-            test_serialization<Block, boost::archive::xml_iarchive, boost::archive::xml_oarchive>();
-        }
 }
 
-template <typename Block>
-void run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE(Block) )
+template< typename Block >
+void
+test_binary_archive( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
 {
-    test_binary_archive<Block>();
-    test_xml_archive<Block>();
+    test_serialization< Block, boost::archive::binary_iarchive, boost::archive::binary_oarchive >();
 }
 
-int main()
+template< typename Block >
+void
+test_xml_archive( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
 {
-    run_test_cases<unsigned char>();
-    run_test_cases<unsigned short>();
-    run_test_cases<unsigned int>();
-    run_test_cases<unsigned long>();
-# ifdef BOOST_HAS_LONG_LONG
-    run_test_cases< ::boost::ulong_long_type>();
-# endif
+    test_serialization< Block, boost::archive::xml_iarchive, boost::archive::xml_oarchive >();
+}
+}
+
+template< typename Block >
+void
+run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
+{
+    test_binary_archive< Block >();
+    test_xml_archive< Block >();
+}
+
+int
+main()
+{
+    run_test_cases< unsigned char >();
+    run_test_cases< unsigned short >();
+    run_test_cases< unsigned int >();
+    run_test_cases< unsigned long >();
+#ifdef BOOST_HAS_LONG_LONG
+    run_test_cases< ::boost::ulong_long_type >();
+#endif
 
     return boost::report_errors();
 }
