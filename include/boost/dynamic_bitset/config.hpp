@@ -16,15 +16,22 @@
 
 // no-op function to workaround gcc bug c++/8419
 //
-namespace boost { namespace detail {
-    template <typename T> T make_non_const(T t) { return t; }
-}}
+namespace boost {
+namespace detail {
+template< typename T >
+T
+make_non_const( T t )
+{
+    return t;
+}
+}
+}
 
-#if defined(__GNUC__)
-# define BOOST_DYNAMIC_BITSET_WRAP_CONSTANT(expr) \
-         (boost::detail::make_non_const(expr))
+#if defined( __GNUC__ )
+#    define BOOST_DYNAMIC_BITSET_WRAP_CONSTANT( expr ) \
+        ( boost::detail::make_non_const( expr ) )
 #else
-# define BOOST_DYNAMIC_BITSET_WRAP_CONSTANT(expr) (expr)
+#    define BOOST_DYNAMIC_BITSET_WRAP_CONSTANT( expr ) ( expr )
 #endif
 
 // A couple of macros to cope with libraries without locale
@@ -36,16 +43,16 @@ namespace boost { namespace detail {
 //
 #if defined BOOST_USE_FACET
 
-#define BOOST_DYNAMIC_BITSET_CTYPE_FACET(ch, name, loc)     \
-            const std::ctype<ch> & name =                   \
-            BOOST_USE_FACET(std::ctype<ch>, loc)         /**/
+#    define BOOST_DYNAMIC_BITSET_CTYPE_FACET( ch, name, loc ) \
+        const std::ctype< ch > & name =                       \
+            BOOST_USE_FACET( std::ctype< ch >, loc ) /**/
 
-#define BOOST_DYNAMIC_BITSET_WIDEN_CHAR(fac, c)             \
-           (fac.widen(c))
+#    define BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, c ) \
+        ( fac.widen( c ) )
 #else
 
-#define BOOST_DYNAMIC_BITSET_CTYPE_FACET(ch, name, loc) /**/
-#define BOOST_DYNAMIC_BITSET_WIDEN_CHAR(fac, c)          c
+#    define BOOST_DYNAMIC_BITSET_CTYPE_FACET( ch, name, loc ) /**/
+#    define BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, c )         c
 
 #endif
 

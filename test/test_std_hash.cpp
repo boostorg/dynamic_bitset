@@ -14,25 +14,25 @@
 #include "boost/config.hpp"
 #include "boost/detail/lightweight_test.hpp"
 #include "boost/dynamic_bitset.hpp"
-
 #include <unordered_set>
 
-int main(int, char*[])
+int
+main( int, char *[] )
 {
-    typedef boost::dynamic_bitset<unsigned long> bitset_type;
-    const std::string long_string =
+    typedef boost::dynamic_bitset< unsigned long > bitset_type;
+    const std::string                              long_string =
         "01001110101110110101011010000000000011110101101111111111";
 
-    bitset_type zeroes(long_string.size(), 0);
-    bitset_type stuff (long_string);
-    bitset_type ones  (long_string.size(), 1);
+    bitset_type                       zeroes( long_string.size(), 0 );
+    bitset_type                       stuff( long_string );
+    bitset_type                       ones( long_string.size(), 1 );
 
-    std::unordered_set<bitset_type> bitsets;
-    bitsets.insert(zeroes);
-    bitsets.insert(stuff);
-    bitsets.insert(ones);
+    std::unordered_set< bitset_type > bitsets;
+    bitsets.insert( zeroes );
+    bitsets.insert( stuff );
+    bitsets.insert( ones );
 
-    BOOST_TEST_EQ(bitsets.size(), 3);
+    BOOST_TEST_EQ( bitsets.size(), 3 );
 
     return boost::report_errors();
 }
