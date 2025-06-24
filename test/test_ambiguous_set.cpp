@@ -14,17 +14,18 @@
 #include "boost/core/lightweight_test.hpp"
 #include "boost/dynamic_bitset.hpp"
 
-int main(int, char*[])
+int
+main( int, char *[] )
 {
-    boost::dynamic_bitset<> x(5); // all 0's by default
-    x.set(1, 2);
-    x.set(3, 1, true);
-    x.set(2, 1, false);
-    BOOST_TEST(!x.test(0));
-    BOOST_TEST( x.test(1));
-    BOOST_TEST(!x.test(2));
-    BOOST_TEST( x.test(3));
-    BOOST_TEST(!x.test(4));
+    boost::dynamic_bitset<> x( 5 ); // all 0's by default
+    x.set( 1, 2 );
+    x.set( 3, 1, true );
+    x.set( 2, 1, false );
+    BOOST_TEST( ! x.test( 0 ) );
+    BOOST_TEST( x.test( 1 ) );
+    BOOST_TEST( ! x.test( 2 ) );
+    BOOST_TEST( x.test( 3 ) );
+    BOOST_TEST( ! x.test( 4 ) );
 
     return boost::report_errors();
 }
