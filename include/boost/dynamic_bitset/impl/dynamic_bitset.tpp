@@ -177,16 +177,6 @@ dynamic_bitset< Block, Allocator >::dynamic_bitset(
 }
 
 template< typename Block, typename Allocator >
-template< typename CharT, typename Traits, typename Alloc >
-dynamic_bitset< Block, Allocator >::dynamic_bitset(
-    const std::basic_string< CharT, Traits, Alloc > &             s,
-    typename std::basic_string< CharT, Traits, Alloc >::size_type pos )
-    : m_bits( Allocator() ), m_num_bits( 0 )
-{
-    init_from_string( s, pos, ( std::basic_string< CharT, Traits, Alloc >::npos ), npos );
-}
-
-template< typename Block, typename Allocator >
 template< typename BlockInputIterator >
 dynamic_bitset< Block, Allocator >::dynamic_bitset(
     BlockInputIterator first,
