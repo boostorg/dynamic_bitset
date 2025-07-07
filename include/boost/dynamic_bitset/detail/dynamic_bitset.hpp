@@ -41,6 +41,7 @@ template< bool value >
 struct value_to_type
 {
 };
+
 // Some library implementations simply return a dummy
 // value such as
 //
