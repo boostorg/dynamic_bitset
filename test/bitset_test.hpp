@@ -223,8 +223,7 @@ struct bitset_test
 
         typename std::vector< Block >::const_iterator p = v.begin() + offset;
         for ( size_type n = 0; n < b.num_blocks(); ++n, ++p ) {
-            typename Bitset::block_width_type i = 0;
-            for ( ; i < bits_per_block; ++i ) {
+            for ( int i = 0; i < bits_per_block; ++i ) {
                 size_type bit = n * bits_per_block + i;
                 BOOST_TEST( nth_bit( *p, i ) == ( bit < b.size() ? b[ bit ] : 0 ) );
             }
@@ -241,8 +240,7 @@ struct bitset_test
             Bitset      bset( blocks.begin(), blocks.end() );
             std::size_t n = blocks.size();
             for ( std::size_t b = 0; b < n; ++b ) {
-                typename Bitset::block_width_type i = 0;
-                for ( ; i < bits_per_block; ++i ) {
+                for ( int i = 0; i < bits_per_block; ++i ) {
                     std::size_t bit = b * bits_per_block + i;
                     BOOST_TEST( bset[ bit ] == nth_bit( blocks[ b ], i ) );
                 }
@@ -254,8 +252,7 @@ struct bitset_test
             Bitset                           bset( n * bits_per_block );
             boost::from_block_range( blocks.begin(), blocks.end(), bset );
             for ( std::size_t b = 0; b < n; ++b ) {
-                typename Bitset::block_width_type i = 0;
-                for ( ; i < bits_per_block; ++i ) {
+                for ( int i = 0; i < bits_per_block; ++i ) {
                     std::size_t bit = b * bits_per_block + i;
                     BOOST_TEST( bset[ bit ] == nth_bit( blocks[ b ], i ) );
                 }
@@ -424,7 +421,7 @@ struct bitset_test
         Block  value( 128 );
         b.append( value );
         BOOST_TEST( b.size() == lhs.size() + bits_per_block );
-        for ( typename Bitset::block_width_type i = 0; i < bits_per_block; ++i )
+        for ( int i = 0; i < bits_per_block; ++i )
             BOOST_TEST( b[ lhs.size() + i ] == bool( ( value >> i ) & 1 ) );
     }
 
