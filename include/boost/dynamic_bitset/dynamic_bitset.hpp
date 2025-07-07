@@ -87,13 +87,11 @@ public:
     // -----------------------------------------------------------------------
     typedef std::size_t                     size_type;
 
-    typedef typename buffer_type::size_type block_width_type;
-
     //!     The number of bits the type `Block` uses to represent
     //!     values, excluding any padding bits. Numerically equal to
     //!     `std::numeric_limits< Block >::digits`.
     // -----------------------------------------------------------------------
-    BOOST_STATIC_CONSTANT( block_width_type, bits_per_block = ( std::numeric_limits< Block >::digits ) );
+    BOOST_STATIC_CONSTANT( int, bits_per_block = ( std::numeric_limits< Block >::digits ) );
 
     //!     The maximum value of `size_type`.
     // -----------------------------------------------------------------------
@@ -182,7 +180,7 @@ public:
 
         //!     The one and only non-copy ctor
         // -------------------------------------------------------------------
-        reference( block_type & b, block_width_type pos );
+        reference( block_type & b, int pos );
 
         //!     Left undefined.
         // -------------------------------------------------------------------
@@ -1038,7 +1036,7 @@ public:
     friend class serialize_impl;
 
 private:
-    BOOST_STATIC_CONSTANT( block_width_type, ulong_width = std::numeric_limits< unsigned long >::digits );
+    BOOST_STATIC_CONSTANT( int, ulong_width = std::numeric_limits< unsigned long >::digits );
 
     dynamic_bitset &        range_operation( size_type pos, size_type len, Block ( *partial_block_operation )( Block, size_type, size_type ), Block ( *full_block_operation )( Block ) );
     void                    m_zero_unused_bits();
@@ -1047,9 +1045,9 @@ private:
     static bool             m_not_empty( Block x );
     size_type               m_do_find_from( size_type first_block ) const;
 
-    block_width_type        count_extra_bits() const BOOST_NOEXCEPT;
+    int                     count_extra_bits() const BOOST_NOEXCEPT;
     static size_type        block_index( size_type pos ) BOOST_NOEXCEPT;
-    static block_width_type bit_index( size_type pos ) BOOST_NOEXCEPT;
+    static int              bit_index( size_type pos ) BOOST_NOEXCEPT;
     static Block            bit_mask( size_type pos ) BOOST_NOEXCEPT;
     static Block            bit_mask( size_type first, size_type last ) BOOST_NOEXCEPT;
     static Block            set_block_bits( Block block, size_type first, size_type last, bool val ) BOOST_NOEXCEPT;
@@ -1127,7 +1125,7 @@ private:
 #if ! defined BOOST_NO_INCLASS_MEMBER_INITIALIZATION
 
 template< typename Block, typename Allocator >
-const typename dynamic_bitset< Block, Allocator >::block_width_type
+const int
     dynamic_bitset< Block, Allocator >::bits_per_block;
 
 template< typename Block, typename Allocator >
@@ -1135,7 +1133,7 @@ const typename dynamic_bitset< Block, Allocator >::size_type
     dynamic_bitset< Block, Allocator >::npos;
 
 template< typename Block, typename Allocator >
-const typename dynamic_bitset< Block, Allocator >::block_width_type
+const int
     dynamic_bitset< Block, Allocator >::ulong_width;
 
 #endif
