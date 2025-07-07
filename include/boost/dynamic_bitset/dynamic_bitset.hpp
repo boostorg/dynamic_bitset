@@ -187,6 +187,13 @@ public:
         void operator&();
 
     public:
+        //!     Copy constructor.
+        //!
+        //!     Constructs a `reference` which refers to the same bit as
+        //!     `other`.
+        // -------------------------------------------------------------------
+        reference( const reference & other );
+
         //!     See the class description.
         // -------------------------------------------------------------------
         operator bool() const;
