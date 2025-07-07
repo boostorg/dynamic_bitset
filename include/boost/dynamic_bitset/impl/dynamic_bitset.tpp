@@ -25,6 +25,9 @@ dynamic_bitset< Block, Allocator >::reference::reference( block_type & b, int po
 }
 
 template< typename Block, typename Allocator >
+dynamic_bitset< Block, Allocator >::reference::reference( const reference & other ) = default;
+
+template< typename Block, typename Allocator >
 dynamic_bitset< Block, Allocator >::reference::
 operator bool() const
 {
