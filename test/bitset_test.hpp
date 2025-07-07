@@ -65,6 +65,9 @@ public:
     {
     }
 
+    scoped_temp_file( const scoped_temp_file & )             = delete;
+    scoped_temp_file & operator=( const scoped_temp_file & ) = delete;
+
     ~scoped_temp_file()
     {
         boost::filesystem::remove( m_path );
