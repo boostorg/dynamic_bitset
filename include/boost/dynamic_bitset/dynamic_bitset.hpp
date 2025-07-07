@@ -1026,8 +1026,8 @@ public:
     template< typename CharT, typename Traits, typename B, typename A >
     friend std::basic_istream< CharT, Traits > & operator>>( std::basic_istream< CharT, Traits > & is, dynamic_bitset< B, A > & b );
 
-    template< typename B, typename A, typename stringT >
-    friend void to_string_helper( const dynamic_bitset< B, A > & b, stringT & s, bool dump_all );
+    template< typename B, typename A, typename StringT >
+    friend void to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all );
 
     template< typename B, typename A >
     friend std::size_t hash_value( const dynamic_bitset< B, A > & a );
@@ -1372,9 +1372,9 @@ void swap( dynamic_bitset< Block, Allocator > & a, dynamic_bitset< Block, Alloca
 //!     were familiar with explicit template parameters, and some C++ compilers
 //!     did not handle them properly.
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator, typename stringT >
+template< typename Block, typename Allocator, typename StringT >
 void
-to_string( const dynamic_bitset< Block, Allocator > & b, stringT & s );
+to_string( const dynamic_bitset< Block, Allocator > & b, StringT & s );
 
 //!     Writes the bits of the bitset into the iterator `result`, a
 //!     block at a time.

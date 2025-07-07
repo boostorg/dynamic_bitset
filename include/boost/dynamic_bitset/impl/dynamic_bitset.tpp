@@ -767,18 +767,18 @@ dynamic_bitset< Block, Allocator >::
 // can be done here. Thanks to James Kanze for making me (Gennaro)
 // realize this important separation of concerns issue, as well as many
 // things about i18n.
-template< typename Block, typename Allocator, typename stringT >
+template< typename Block, typename Allocator, typename StringT >
 inline void
-to_string( const dynamic_bitset< Block, Allocator > & b, stringT & s )
+to_string( const dynamic_bitset< Block, Allocator > & b, StringT & s )
 {
     to_string_helper( b, s, false );
 }
 
 // Differently from to_string this function dumps out every bit of the
 // internal representation (may be useful for debugging purposes)
-template< typename B, typename A, typename stringT >
+template< typename B, typename A, typename StringT >
 inline void
-dump_to_string( const dynamic_bitset< B, A > & b, stringT & s )
+dump_to_string( const dynamic_bitset< B, A > & b, StringT & s )
 {
     to_string_helper( b, s, true /* =dump_all*/ );
 }
@@ -1028,12 +1028,12 @@ operator>=( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< 
     return ! ( a < b );
 }
 
-template< typename B, typename A, typename stringT >
+template< typename B, typename A, typename StringT >
 void
-to_string_helper( const dynamic_bitset< B, A > & b, stringT & s, bool dump_all )
+to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all )
 {
-    typedef typename stringT::traits_type Tr;
-    typedef typename stringT::value_type  Ch;
+    typedef typename StringT::traits_type Tr;
+    typedef typename StringT::value_type  Ch;
 
     BOOST_DYNAMIC_BITSET_CTYPE_FACET( Ch, fac, std::locale() );
     const Ch                                           zero = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' );
