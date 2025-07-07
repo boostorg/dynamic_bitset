@@ -1097,14 +1097,15 @@ private:
     friend class bit_appender;
     class bit_appender
     {
-        // helper for stream >>
-        // Supplies to the lack of an efficient append at the less
+        // Helper for stream >>.
+        //
+        // Makes up for the lack of an efficient append at the least
         // significant end: bits are actually appended "at left" but
-        // rearranged in the destructor. From the perspective of
-        // client code everything works *as if* dynamic_bitset<> had
-        // an append_at_right() function (eventually throwing the same
-        // exceptions as push_back) except that the function is in fact
-        // called bit_appender::do_append().
+        // rearranged in the destructor. From the perspective of client
+        // code, everything works *as if* dynamic_bitset had an
+        // append_at_right() function (possibly throwing the same
+        // exceptions as push_back()) except that the function is in
+        // fact called bit_appender::do_append().
         //
         dynamic_bitset & bs;
         size_type        n;
