@@ -1145,8 +1145,9 @@ operator<<( std::basic_ostream< Ch, Tr > & os, const dynamic_bitset< Block, Allo
             }
             BOOST_CATCH_END
 
-            if ( rethrow )
-                BOOST_RETHROW;
+            if ( rethrow ) {
+                BOOST_RETHROW
+            }
         }
         BOOST_CATCH_END
     }
@@ -1217,8 +1218,9 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
             }
             BOOST_CATCH_END
 
-            if ( rethrow )
-                BOOST_RETHROW;
+            if ( rethrow ) {
+                BOOST_RETHROW
+            }
         }
         BOOST_CATCH_END
     }
