@@ -26,15 +26,6 @@ namespace boost {
 namespace detail {
 namespace dynamic_bitset_impl {
 
-template< class T >
-struct max_limit
-{
-    BOOST_STATIC_CONSTEXPR T value = static_cast< T >( -1 );
-};
-
-template< class T >
-BOOST_CONSTEXPR_OR_CONST T max_limit< T >::value;
-
 template< typename T, int amount, int width /* = default */ >
 struct shifter
 {
