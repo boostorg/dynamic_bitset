@@ -278,7 +278,7 @@ dynamic_bitset< Block, Allocator >::
     const size_type  old_num_blocks  = num_blocks();
     const size_type  required_blocks = calc_num_blocks( num_bits );
 
-    const block_type v               = value ? detail::dynamic_bitset_impl::max_limit< Block >::value : Block( 0 );
+    const block_type v               = value ? Block( -1 ) : Block( 0 );
 
     if ( required_blocks != old_num_blocks ) {
         m_bits.resize( required_blocks, v ); // s.g. (copy)
@@ -551,7 +551,7 @@ template< typename Block, typename Allocator >
 dynamic_bitset< Block, Allocator > &
 dynamic_bitset< Block, Allocator >::set()
 {
-    std::fill( m_bits.begin(), m_bits.end(), detail::dynamic_bitset_impl::max_limit< Block >::value );
+    std::fill( m_bits.begin(), m_bits.end(), Block( -1 ) );
     m_zero_unused_bits();
     return *this;
 }
@@ -654,7 +654,7 @@ dynamic_bitset< Block, Allocator >::all() const
     }
 
     const int              extra_bits = count_extra_bits();
-    const block_type       all_ones   = detail::dynamic_bitset_impl::max_limit< Block >::value;
+    const block_type       all_ones   = Block( -1 );
 
     if ( extra_bits == 0 ) {
         for ( size_type i = 0, e = num_blocks(); i < e; ++i ) {
@@ -1390,7 +1390,7 @@ dynamic_bitset< Block, Allocator >::m_check_invariants() const
 {
     const int extra_bits = count_extra_bits();
     if ( extra_bits > 0 ) {
-        const block_type mask = detail::dynamic_bitset_impl::max_limit< Block >::value << extra_bits;
+        const block_type mask = Block( -1 ) << extra_bits;
         if ( ( m_highest_block() & mask ) != 0 )
             return false;
     }
@@ -1440,7 +1440,7 @@ Block
 dynamic_bitset< Block, Allocator >::bit_mask( size_type first, size_type last ) BOOST_NOEXCEPT
 {
     Block res = ( last == bits_per_block - 1 )
-                  ? detail::dynamic_bitset_impl::max_limit< Block >::value
+                  ? Block( -1 )
                   : ( ( Block( 1 ) << ( last + 1 ) ) - 1 );
     res ^= ( Block( 1 ) << first ) - 1;
     return res;
@@ -1475,7 +1475,7 @@ template< typename Block, typename Allocator >
 Block
 dynamic_bitset< Block, Allocator >::set_block_full( Block ) BOOST_NOEXCEPT
 {
-    return detail::dynamic_bitset_impl::max_limit< Block >::value;
+    return Block( -1 );
 }
 
 template< typename Block, typename Allocator >
