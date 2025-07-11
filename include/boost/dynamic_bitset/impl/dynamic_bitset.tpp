@@ -1169,6 +1169,7 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
     const streamsize                         w     = is.width();
     const size_type                          limit = 0 < w && static_cast< size_type >( w ) < b.max_size() ? static_cast< size_type >( w ) : b.max_size();
 
+    bool                                     exceptions_are_from_vector = false;
     ios_base::iostate                        err   = ios_base::goodbit;
     typename basic_istream< Ch, Tr >::sentry cerberos( is ); // skips whitespaces
     if ( cerberos ) {
@@ -1194,7 +1195,9 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
                     if ( ! is_one && ! Tr::eq( to_c, zero ) )
                         break; // non digit character
 
+                    exceptions_are_from_vector = true;
                     appender.do_append( is_one );
+                    exceptions_are_from_vector = false;
                 }
 
             } // for
@@ -1206,6 +1209,9 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
             // bits_stored bits have been extracted and stored, and
             // either no further character is extractable or we can't
             // append to the underlying vector (out of memory)
+            if ( exceptions_are_from_vector ) {
+                BOOST_RETHROW
+            }
 
             bool rethrow = false; // see std 27.6.1.1/4
             BOOST_TRY
