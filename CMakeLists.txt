@@ -13,17 +13,19 @@ add_library(Boost::dynamic_bitset ALIAS boost_dynamic_bitset)
 
 target_include_directories(boost_dynamic_bitset INTERFACE include)
 
-target_link_libraries(boost_dynamic_bitset
-  INTERFACE
-    Boost::assert
-    Boost::config
-    Boost::container_hash
-    Boost::core
-    Boost::integer
-    Boost::move
-    Boost::static_assert
-    Boost::throw_exception
-)
+if (NOT DYNAMIC_BITSET_MRDOCS_BUILD)
+    target_link_libraries(boost_dynamic_bitset
+      INTERFACE
+        Boost::assert
+        Boost::config
+        Boost::container_hash
+        Boost::core
+        Boost::integer
+        Boost::move
+        Boost::static_assert
+        Boost::throw_exception
+    )
+endif()
 
 if(BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/CMakeLists.txt")
 
@@ -43,8 +45,10 @@ if (DYNAMIC_BITSET_MRDOCS_BUILD)
     add_library(dynamic_bitset_mrdocs_target ${TEMP_CPP_FILE})
 
     # Set any other target properties here.
-    target_include_directories(dynamic_bitset_mrdocs_target PRIVATE ${INCLUDE_DIR})
+    target_include_directories(dynamic_bitset_mrdocs_target PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
     target_link_libraries(dynamic_bitset_mrdocs_target PRIVATE boost_dynamic_bitset)
+    file(GLOB BOOST_MODULE_PATHS "$ENV{BOOST_SRC_DIR}/libs/*/include")
+    target_include_directories(dynamic_bitset_mrdocs_target PRIVATE ${BOOST_MODULE_PATHS})
 
     # Don't create any other targets.
     return()
