@@ -3,6 +3,7 @@
 # Copyright 2021 Andrey Semashev
 # Copyright 2021-2024 Alexander Grund
 # Copyright 2022-2025 James E. King III
+# Copyright 2023 Alan de Freitas
 #
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
@@ -39,3 +40,68 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       COVERITY_SCAN_NOTIFICATION_EMAIL: ${{ secrets.COVERITY_SCAN_NOTIFICATION_EMAIL }}
       COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+
+  antora:
+    name: Antora docs
+    strategy:
+      matrix:
+        include:
+          - { name: Windows, os: windows-latest }
+          - { name: Ubuntu, os: ubuntu-latest }
+          - { name: macOS, os: macos-latest }
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install packages
+        uses: alandefreitas/cpp-actions/package-install@v1.8.8
+        with:
+          apt-get: git cmake
+
+      - name: Clone Boost.DynamicBitset
+        uses: actions/checkout@v4
+
+      - name: Clone Boost
+        uses: alandefreitas/cpp-actions/boost-clone@v1.8.8
+        id: boost-clone
+        with:
+          branch: ${{ (github.ref_name == 'master' && github.ref_name) || 'develop' }}
+          boost-dir: ../boost-source
+          scan-modules-dir: .
+          scan-modules-ignore: dynamic_bitset
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup Ninja
+        if: runner.os == 'Windows'
+        uses: seanmiddleditch/gha-setup-ninja@v5
+
+      - name: Build Antora docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global --add safe.directory "$(pwd)"
+
+          cd ..
+          BOOST_SRC_DIR="$(pwd)/boost-source"
+          export BOOST_SRC_DIR
+
+          cd dynamic_bitset
+          cd doc
+          bash ./build_docs.sh
+
+          # Antora returns zero even if it fails, so we check if the site directory exists.
+          if [ ! -d "build/site" ]
+          then
+              echo "Antora build failed"
+              exit 1
+          fi
+
+      - name: Create Antora docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: antora-docs-${{ matrix.name }}
+          path: doc/build/site
