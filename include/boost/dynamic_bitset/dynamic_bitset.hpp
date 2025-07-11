@@ -182,11 +182,11 @@ public:
         // -------------------------------------------------------------------
         reference( block_type & b, int pos );
 
-        //!     Left undefined.
-        // -------------------------------------------------------------------
-        void operator&();
-
     public:
+        //!     Deleted address-of operator.
+        // -------------------------------------------------------------------
+        void operator&() = delete;
+
         //!     Copy constructor.
         //!
         //!     Constructs a `reference` which refers to the same bit as
