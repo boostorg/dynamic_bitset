@@ -36,6 +36,9 @@ jobs:
   call-boost-ci:
     name: Run Boost.CI
     uses: boostorg/boost-ci/.github/workflows/reusable.yml@master
+    with:
+      # These compilers fail.
+      exclude_compiler: 'clang-3.5,clang-3.6,clang-3.7,clang-3.8,gcc-4.8,gcc-4.9'
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       COVERITY_SCAN_NOTIFICATION_EMAIL: ${{ secrets.COVERITY_SCAN_NOTIFICATION_EMAIL }}
