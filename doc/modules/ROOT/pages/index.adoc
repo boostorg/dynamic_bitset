@@ -14,10 +14,14 @@
 
 Boost.DynamicBitset is a portable library that provides a set of bits.
 
-The set (`boost::dynamic_bitset`) provides access to the value of individual
-bits via `operator[]` and provides all of the bitwise operators that one can
-apply to builtin integers, such as `operator&` and `operator<<`. The number of
-bits can change at runtime.
+The set
+(xref:reference:boost/dynamic_bitset.adoc#boost-dynamic_bitset[dynamic_bitset])
+provides access to the value of individual bits via
+xref:reference:boost/dynamic_bitset/operator_subs-08.adoc[operator[\]] and
+provides all of the bitwise operators that one can apply to builtin integers,
+such as xref:reference:boost/operator_bitand.adoc[operator&] and
+xref:reference:boost/dynamic_bitset/operator_lshift.adoc[operator<<]. The number
+of bits can change at runtime.
 
 `dynamic_bitset` is nearly identical to `std::bitset`. The difference is that
 the size of a `dynamic_bitset` (the number of bits) can change at runtime,
