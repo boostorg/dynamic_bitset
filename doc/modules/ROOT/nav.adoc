@@ -7,4 +7,4 @@
 // ===========================================================================
 
 * xref:index.adoc[]
-* xref:reference.adoc[Reference]
+* xref:reference:boost/dynamic_bitset.adoc[Reference]
