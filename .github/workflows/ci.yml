@@ -27,6 +27,7 @@ on:
       - feature/**
       - fix/**
       - pr/**
+      - experiments/**
     paths-ignore:
       - LICENSE
       - meta/**
