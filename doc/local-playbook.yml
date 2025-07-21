@@ -39,6 +39,7 @@ antora:
         using-namespaces:
           - 'boost::'
     - require: '@cppalliance/antora-cpp-reference-extension'
+      version: 'develop'
       dependencies:
         - name: 'boost'
           repo: 'https://github.com/boostorg/boost.git'
