@@ -1387,7 +1387,7 @@ to_string( const dynamic_bitset< Block, Allocator > & b, StringT & s );
 //!     The first block written represents the bits in the position
 //!     range `[0, bits_per_block)` in the bitset, the second block
 //!     written the bits in the range `[bits_per_block,
-//!     2*bits_per_block)`, and so on. For each block `bval` written,
+//!     2 * bits_per_block)`, and so on. For each block `bval` written,
 //!     the bit `( bval >> i ) & 1` corresponds to the bit at position
 //!     `b * bits_per_block + i` in the bitset.
 //!
