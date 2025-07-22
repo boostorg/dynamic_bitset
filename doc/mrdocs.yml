@@ -15,6 +15,7 @@ exclude-symbols:
   - 'boost::detail'
   - 'boost::detail::**'
   - 'boost::to_string_helper'
+  - 'boost::dynamic_bitset::bit_appender'
   - 'std'
   - 'std::**'
   #     Why does MrDocs pick up ::size_t?
