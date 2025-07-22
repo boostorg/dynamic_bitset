@@ -91,7 +91,7 @@ public:
     //!     values, excluding any padding bits. Numerically equal to
     //!     `std::numeric_limits< Block >::digits`.
     // -----------------------------------------------------------------------
-    BOOST_STATIC_CONSTANT( int, bits_per_block = ( std::numeric_limits< Block >::digits ) );
+    BOOST_STATIC_CONSTANT( int, bits_per_block = std::numeric_limits< Block >::digits );
 
     //!     The maximum value of `size_type`.
     // -----------------------------------------------------------------------
