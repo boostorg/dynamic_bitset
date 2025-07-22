@@ -460,8 +460,9 @@ public:
     // -----------------------------------------------------------------------
     allocator_type get_allocator() const;
 
-    //!     Changes the number of bits of the bitset to `num_bits`. If
-    //!     `num_bits >= size()` then the bits in the range `[0,
+    //!     Changes the number of bits of the bitset to `num_bits`.
+    //!
+    //!     If `num_bits >= size()` then the bits in the range `[0,
     //!     size())` remain the same, and the bits in `[size(),
     //!     num_bits]` are all set to `value`. If `num_bits < size()`
     //!     then the bits in the range `[0, num_bits)` stay the same
@@ -593,6 +594,7 @@ public:
     dynamic_bitset & operator-=( const dynamic_bitset & b );
 
     //!     Shifts the bits in this bitset to the left by `n` positions.
+    //!
     //!     For each bit in the bitset, the bit at position `pos` takes
     //!     on the previous value of the bit at position `pos - n`, or
     //!     zero if no such bit exists.
@@ -605,10 +607,12 @@ public:
     // -----------------------------------------------------------------------
     dynamic_bitset & operator<<=( size_type n );
 
-    //!     Shifts the bitset in this bitset to the right by `n`
-    //!     positions. For each bit in the bitset, the bit at position
-    //!     `pos` takes on the previous value of the bit at position
-    //!     `pos + n`, or zero if no such bit exists.
+    //!     Shifts the bits in this bitset to the right by `n`
+    //!     positions.
+    //!
+    //!     For each bit in the bitset, the bit at position `pos` takes
+    //!     on the previous value of the bit at position `pos + n`, or
+    //!     zero if no such bit exists.
     //!
     //!     \return
     //!     `*this`.
@@ -916,8 +920,9 @@ public:
     size_type        capacity() const BOOST_NOEXCEPT;
 
     //!     Informs the bitset of a planned change in size, so that it
-    //!     can manage the storage allocation accordingly. After
-    //!     `reserve()`, `capacity()` is greater or equal to the
+    //!     can manage the storage allocation accordingly.
+    //!
+    //!     After `reserve()`, `capacity()` is greater or equal to the
     //!     argument of `reserve()` if reallocation happens; and equal
     //!     to the previous value of `capacity()` otherwise.
     //!     Reallocation happens at this point if and only if the
@@ -1360,9 +1365,10 @@ operator-( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< B
 template< typename Block, typename Allocator >
 void swap( dynamic_bitset< Block, Allocator > & a, dynamic_bitset< Block, Allocator > & b ) BOOST_NOEXCEPT;
 
-//!     Copies a representation of `b` into the string `s`. Character
-//!     position `i` in the string corresponds to bit position `b.size()
-//!     - 1 - i`.
+//!     Copies a representation of `b` into the string `s`.
+//!
+//!     Character position `i` in the string corresponds to bit position
+//!     `b.size() - 1 - i`.
 //!
 //!     \par Throws
 //!     An allocation error from `s` if memory is exhausted.
@@ -1387,7 +1393,7 @@ to_string( const dynamic_bitset< Block, Allocator > & b, StringT & s );
 //!     The first block written represents the bits in the position
 //!     range `[0, bits_per_block)` in the bitset, the second block
 //!     written the bits in the range `[bits_per_block,
-//!     2*bits_per_block)`, and so on. For each block `bval` written,
+//!     2 * bits_per_block)`, and so on. For each block `bval` written,
 //!     the bit `( bval >> i ) & 1` corresponds to the bit at position
 //!     `b * bits_per_block + i` in the bitset.
 //!
