@@ -607,7 +607,7 @@ public:
     // -----------------------------------------------------------------------
     dynamic_bitset & operator<<=( size_type n );
 
-    //!     Shifts the bitset in this bitset to the right by `n`
+    //!     Shifts the bits in this bitset to the right by `n`
     //!     positions.
     //!
     //!     For each bit in the bitset, the bit at position `pos` takes
