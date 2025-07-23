@@ -19,30 +19,14 @@
 #ifndef BOOST_DYNAMIC_BITSET_DYNAMIC_BITSET_HPP
 #define BOOST_DYNAMIC_BITSET_DYNAMIC_BITSET_HPP
 
-#include "boost/assert.hpp"
-#include "boost/core/bit.hpp"
-#include "boost/core/no_exceptions_support.hpp"
 #include "boost/dynamic_bitset/config.hpp"
 #include "boost/dynamic_bitset/detail/dynamic_bitset.hpp"
-#include "boost/dynamic_bitset/detail/lowest_bit.hpp"
 #include "boost/dynamic_bitset_fwd.hpp"
-#include "boost/functional/hash/hash.hpp"
 #include "boost/limits.hpp"
-#include "boost/move/move.hpp"
 #include "boost/static_assert.hpp"
-#include "boost/throw_exception.hpp"
-#include <algorithm>
-#include <climits>
-#include <istream>
-#include <iterator>
-#include <ostream>
-#include <stdexcept>
+#include <iosfwd>
 #include <string>
 #include <vector>
-
-#ifndef BOOST_NO_STD_LOCALE
-#    include <locale>
-#endif
 
 namespace boost {
 
