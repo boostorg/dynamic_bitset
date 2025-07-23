@@ -1177,7 +1177,7 @@ operator<<( std::basic_ostream< Ch, Tr > & os, const dynamic_bitset< Block, Allo
             bool rethrow = false;
             BOOST_TRY
             {
-                os.setstate( ios_base::failbit );
+                os.setstate( ios_base::badbit );
             }
             BOOST_CATCH( ... )
             {
