@@ -29,7 +29,7 @@
 #endif
 
 template< typename Block >
-inline bool
+bool
 nth_bit( Block num, std::size_t n )
 {
 #ifndef NDEBUG
