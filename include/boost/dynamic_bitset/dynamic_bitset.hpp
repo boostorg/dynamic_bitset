@@ -1049,12 +1049,12 @@ private:
     static Block            set_block_bits( Block block, size_type first, size_type last, bool val ) BOOST_NOEXCEPT;
 
     // Functions for operations on ranges
-    inline static Block     set_block_partial( Block block, size_type first, size_type last ) BOOST_NOEXCEPT;
-    inline static Block     set_block_full( Block ) BOOST_NOEXCEPT;
-    inline static Block     reset_block_partial( Block block, size_type first, size_type last ) BOOST_NOEXCEPT;
-    inline static Block     reset_block_full( Block ) BOOST_NOEXCEPT;
-    inline static Block     flip_block_partial( Block block, size_type first, size_type last ) BOOST_NOEXCEPT;
-    inline static Block     flip_block_full( Block block ) BOOST_NOEXCEPT;
+    static Block            set_block_partial( Block block, size_type first, size_type last ) BOOST_NOEXCEPT;
+    static Block            set_block_full( Block ) BOOST_NOEXCEPT;
+    static Block            reset_block_partial( Block block, size_type first, size_type last ) BOOST_NOEXCEPT;
+    static Block            reset_block_full( Block ) BOOST_NOEXCEPT;
+    static Block            flip_block_partial( Block block, size_type first, size_type last ) BOOST_NOEXCEPT;
+    static Block            flip_block_full( Block block ) BOOST_NOEXCEPT;
 
     template< typename T >
     void dispatch_init( T num_bits, unsigned long value, detail::dynamic_bitset_impl::value_to_type< true > );
@@ -1113,7 +1113,7 @@ private:
     public:
         bit_appender( dynamic_bitset & r );
         ~bit_appender();
-        inline void do_append( bool value );
+        void do_append( bool value );
         size_type   get_count() const;
     };
 };
@@ -1402,7 +1402,7 @@ to_block_range( const dynamic_bitset< Block, Allocator > & b, BlockOutputIterato
 //!     `b.num_blocks()`.
 // -----------------------------------------------------------------------
 template< typename BlockIterator, typename Block, typename Allocator >
-inline void
+void
 from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< Block, Allocator > & result );
 
 }
