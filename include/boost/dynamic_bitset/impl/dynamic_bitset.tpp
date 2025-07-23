@@ -427,8 +427,9 @@ template< typename Block, typename Allocator >
 dynamic_bitset< Block, Allocator > &
 dynamic_bitset< Block, Allocator >::operator<<=( size_type n )
 {
-    if ( n >= m_num_bits )
+    if ( n >= m_num_bits ) {
         return reset();
+    }
     // else
     if ( n > 0 ) {
         const size_type        last = num_blocks() - 1;   // num_blocks() is >= 1
@@ -527,10 +528,12 @@ template< typename Block, typename Allocator >
 dynamic_bitset< Block, Allocator > &
 dynamic_bitset< Block, Allocator >::set( size_type pos, size_type len, bool val )
 {
-    if ( val )
+    if ( val ) {
         return range_operation( pos, len, set_block_partial, set_block_full );
-    else
+    }
+    else {
         return range_operation( pos, len, reset_block_partial, reset_block_full );
+    }
 }
 
 template< typename Block, typename Allocator >
@@ -539,10 +542,12 @@ dynamic_bitset< Block, Allocator >::set( size_type pos, bool val )
 {
     BOOST_ASSERT( pos < m_num_bits );
 
-    if ( val )
+    if ( val ) {
         m_bits[ block_index( pos ) ] |= bit_mask( pos );
-    else
+    }
+    else {
         reset( pos );
+    }
 
     return *this;
 }
@@ -610,8 +615,9 @@ template< typename Block, typename Allocator >
 typename dynamic_bitset< Block, Allocator >::reference
 dynamic_bitset< Block, Allocator >::at( size_type pos )
 {
-    if ( pos >= m_num_bits )
+    if ( pos >= m_num_bits ) {
         BOOST_THROW_EXCEPTION( std::out_of_range( "boost::dynamic_bitset::at out_of_range" ) );
+    }
 
     return ( *this )[ pos ];
 }
@@ -620,8 +626,9 @@ template< typename Block, typename Allocator >
 bool
 dynamic_bitset< Block, Allocator >::at( size_type pos ) const
 {
-    if ( pos >= m_num_bits )
+    if ( pos >= m_num_bits ) {
         BOOST_THROW_EXCEPTION( std::out_of_range( "boost::dynamic_bitset::at out_of_range" ) );
+    }
 
     return ( *this )[ pos ];
 }
@@ -681,8 +688,9 @@ bool
 dynamic_bitset< Block, Allocator >::any() const
 {
     for ( size_type i = 0; i < num_blocks(); ++i )
-        if ( m_bits[ i ] )
+        if ( m_bits[ i ] ) {
             return true;
+        }
     return false;
 }
 
@@ -738,13 +746,15 @@ unsigned long
 dynamic_bitset< Block, Allocator >::
     to_ulong() const
 {
-    if ( m_num_bits == 0 )
+    if ( m_num_bits == 0 ) {
         return 0; // convention
+    }
 
     // Check for overflows. This may be a performance burden on very large
     // bitsets but is required by the specification, sorry.
-    if ( find_first( ulong_width ) != npos )
+    if ( find_first( ulong_width ) != npos ) {
         BOOST_THROW_EXCEPTION( std::overflow_error( "boost::dynamic_bitset::to_ulong overflow" ) );
+    }
 
     // Ok, from now on we can be sure there's no "on" bit beyond the
     // "allowed" positions.
@@ -864,8 +874,9 @@ dynamic_bitset< Block, Allocator >::
 {
     BOOST_ASSERT( size() == a.size() );
     for ( size_type i = 0; i < num_blocks(); ++i )
-        if ( m_bits[ i ] & ~a.m_bits[ i ] )
+        if ( m_bits[ i ] & ~a.m_bits[ i ] ) {
             return false;
+        }
     return true;
 }
 
@@ -881,10 +892,12 @@ dynamic_bitset< Block, Allocator >::
         const Block & bt = m_bits[ i ];
         const Block & ba = a.m_bits[ i ];
 
-        if ( bt & ~ba )
+        if ( bt & ~ba ) {
             return false; // not a subset at all
-        if ( ba & ~bt )
+        }
+        if ( ba & ~bt ) {
             proper = true;
+        }
     }
     return proper;
 }
@@ -898,8 +911,9 @@ dynamic_bitset< Block, Allocator >::intersects( const dynamic_bitset & b ) const
                                 : b.num_blocks();
 
     for ( size_type i = 0; i < common_blocks; ++i ) {
-        if ( m_bits[ i ] & b.m_bits[ i ] )
+        if ( m_bits[ i ] & b.m_bits[ i ] ) {
             return true;
+        }
     }
     return false;
 }
@@ -915,8 +929,9 @@ dynamic_bitset< Block, Allocator >::m_do_find_from( size_type first_block ) cons
 {
     size_type i = std::distance( m_bits.begin(), std::find_if( m_bits.begin() + first_block, m_bits.end(), m_not_empty ) );
 
-    if ( i >= num_blocks() )
+    if ( i >= num_blocks() ) {
         return npos; // not found
+    }
 
     return i * bits_per_block + static_cast< size_type >( detail::lowest_bit( m_bits[ i ] ) );
 }
@@ -933,8 +948,9 @@ typename dynamic_bitset< Block, Allocator >::size_type
 dynamic_bitset< Block, Allocator >::find_first( size_type pos ) const
 {
     const size_type sz = size();
-    if ( pos >= sz )
+    if ( pos >= sz ) {
         return npos;
+    }
 
     const size_type        blk  = block_index( pos );
     const int              ind  = bit_index( pos );
@@ -950,8 +966,9 @@ template< typename Block, typename Allocator >
 typename dynamic_bitset< Block, Allocator >::size_type
 dynamic_bitset< Block, Allocator >::find_next( size_type pos ) const
 {
-    if ( pos == npos )
+    if ( pos == npos ) {
         return npos;
+    }
     return find_first( pos + 1 );
 }
 
@@ -989,10 +1006,12 @@ operator<( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< B
     } else if ( asize == bsize ) {
         for ( size_type ii = a.num_blocks(); ii > 0; --ii ) {
             size_type i = ii - 1;
-            if ( a.m_bits[ i ] < b.m_bits[ i ] )
+            if ( a.m_bits[ i ] < b.m_bits[ i ] ) {
                 return true;
-            else if ( a.m_bits[ i ] > b.m_bits[ i ] )
+            }
+            else if ( a.m_bits[ i ] > b.m_bits[ i ] ) {
                 return false;
+            }
         }
         return false;
     } else {
@@ -1001,10 +1020,12 @@ operator<( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< B
         for ( size_type ii = 0; ii < leqsize; ++ii, --asize, --bsize ) {
             size_type i = asize - 1;
             size_type j = bsize - 1;
-            if ( a[ i ] < b[ j ] )
+            if ( a[ i ] < b[ j ] ) {
                 return true;
-            else if ( a[ i ] > b[ j ] )
+            }
+            else if ( a[ i ] > b[ j ] ) {
                 return false;
+            }
         }
         return ( a.size() < b.size() );
     }
@@ -1051,8 +1072,9 @@ to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all )
     s.assign( len, zero );
 
     for ( size_type i = 0; i < len; ++i ) {
-        if ( b.m_unchecked_test( i ) )
+        if ( b.m_unchecked_test( i ) ) {
             Tr::assign( s[ len - 1 - i ], one );
+        }
     }
 }
 
@@ -1152,8 +1174,9 @@ operator<<( std::basic_ostream< Ch, Tr > & os, const dynamic_bitset< Block, Allo
         BOOST_CATCH_END
     }
 
-    if ( err != ok )
+    if ( err != ok ) {
         os.setstate( err ); // may throw exception
+    }
     return os;
 }
 
@@ -1192,8 +1215,9 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
                     const Ch   to_c   = Tr::to_char_type( c );
                     const bool is_one = Tr::eq( to_c, one );
 
-                    if ( ! is_one && ! Tr::eq( to_c, zero ) )
+                    if ( ! is_one && ! Tr::eq( to_c, zero ) ) {
                         break; // non digit character
+                    }
 
                     exceptions_are_from_vector = true;
                     appender.do_append( is_one );
@@ -1232,10 +1256,12 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
     }
 
     is.width( 0 );
-    if ( b.size() == 0 /*|| !cerberos*/ )
+    if ( b.size() == 0 /*|| !cerberos*/ ) {
         err |= ios_base::failbit;
-    if ( err != ios_base::goodbit )
+    }
+    if ( err != ios_base::goodbit ) {
         is.setstate( err ); // may throw
+    }
 
     return is;
 }
@@ -1327,8 +1353,9 @@ dynamic_bitset< Block, Allocator >::range_operation(
     BOOST_ASSERT( pos + len <= m_num_bits );
 
     // Do nothing in case of zero length
-    if ( ! len )
+    if ( ! len ) {
         return *this;
+    }
 
     // Use an additional asserts in order to detect size_type overflow
     // For example: pos = 10, len = size_type_limit - 2, pos + len = 7
@@ -1387,8 +1414,9 @@ dynamic_bitset< Block, Allocator >::m_zero_unused_bits()
     // if != 0, this is the number of bits used in the last block.
     const int extra_bits = count_extra_bits();
 
-    if ( extra_bits != 0 )
+    if ( extra_bits != 0 ) {
         m_highest_block() &= ( Block( 1 ) << extra_bits ) - 1;
+    }
 }
 
 // check class invariants
@@ -1399,11 +1427,13 @@ dynamic_bitset< Block, Allocator >::m_check_invariants() const
     const int extra_bits = count_extra_bits();
     if ( extra_bits > 0 ) {
         const block_type mask = Block( -1 ) << extra_bits;
-        if ( ( m_highest_block() & mask ) != 0 )
+        if ( ( m_highest_block() & mask ) != 0 ) {
             return false;
+        }
     }
-    if ( m_bits.size() > m_bits.capacity() || num_blocks() != calc_num_blocks( size() ) )
+    if ( m_bits.size() > m_bits.capacity() || num_blocks() != calc_num_blocks( size() ) ) {
         return false;
+    }
 
     return true;
 }
@@ -1462,10 +1492,12 @@ dynamic_bitset< Block, Allocator >::set_block_bits(
     size_type last,
     bool      val ) BOOST_NOEXCEPT
 {
-    if ( val )
+    if ( val ) {
         return block | bit_mask( first, last );
-    else
+    }
+    else {
         return block & static_cast< Block >( ~bit_mask( first, last ) );
+    }
 }
 
 // Functions for operations on ranges
@@ -1581,8 +1613,9 @@ dynamic_bitset< Block, Allocator >::init_from_string(
 
         BOOST_ASSERT( Tr::eq( c, one ) || Tr::eq( c, BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' ) ) );
 
-        if ( Tr::eq( c, one ) )
+        if ( Tr::eq( c, one ) ) {
             set( i );
+        }
     }
 }
 
@@ -1666,8 +1699,9 @@ dynamic_bitset< Block, Allocator >::bit_appender::~bit_appender()
     //
     std::reverse( bs.m_bits.begin(), bs.m_bits.end() );
     const int offs = bit_index( n );
-    if ( offs )
+    if ( offs ) {
         bs >>= ( bits_per_block - offs );
+    }
     bs.resize( n ); // doesn't enlarge, so can't throw
     BOOST_ASSERT( bs.m_check_invariants() );
 }
