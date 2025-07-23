@@ -51,7 +51,7 @@ struct value_to_type
 // meaningful info.
 //
 template< typename T >
-inline typename T::size_type
+typename T::size_type
 vector_max_size_workaround( const T & v )
     BOOST_NOEXCEPT
 {
