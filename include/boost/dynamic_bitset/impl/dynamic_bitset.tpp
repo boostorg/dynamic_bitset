@@ -1173,7 +1173,7 @@ operator<<( std::basic_ostream< Ch, Tr > & os, const dynamic_bitset< Block, Allo
             os.width( 0 );
         }
         BOOST_CATCH( ... )
-        { // see std 27.6.1.1/4
+        {
             bool rethrow = false;
             BOOST_TRY
             {
@@ -1255,7 +1255,7 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
                 BOOST_RETHROW
             }
 
-            bool rethrow = false; // see std 27.6.1.1/4
+            bool rethrow = false;
             BOOST_TRY
             {
                 is.setstate( ios_base::badbit );
