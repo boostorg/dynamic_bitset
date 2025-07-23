@@ -16,6 +16,24 @@
 //
 // -----------------------------------------------------------
 
+#include "boost/assert.hpp"
+#include "boost/core/bit.hpp"
+#include "boost/core/no_exceptions_support.hpp"
+#include "boost/dynamic_bitset/detail/lowest_bit.hpp"
+#include "boost/functional/hash/hash.hpp"
+#include "boost/move/move.hpp"
+#include "boost/throw_exception.hpp"
+#include <algorithm>
+#include <climits>
+#include <istream>
+#include <iterator>
+#include <ostream>
+#include <stdexcept>
+
+#ifndef BOOST_NO_STD_LOCALE
+#    include <locale>
+#endif
+
 namespace boost {
 
 template< typename Block, typename Allocator >
