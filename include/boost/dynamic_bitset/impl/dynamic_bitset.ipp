@@ -398,8 +398,9 @@ dynamic_bitset< Block, Allocator > &
 dynamic_bitset< Block, Allocator >::operator&=( const dynamic_bitset & rhs )
 {
     BOOST_ASSERT( size() == rhs.size() );
-    for ( size_type i = 0; i < num_blocks(); ++i )
+    for ( size_type i = 0; i < num_blocks(); ++i ) {
         m_bits[ i ] &= rhs.m_bits[ i ];
+    }
     return *this;
 }
 
@@ -408,8 +409,9 @@ dynamic_bitset< Block, Allocator > &
 dynamic_bitset< Block, Allocator >::operator|=( const dynamic_bitset & rhs )
 {
     BOOST_ASSERT( size() == rhs.size() );
-    for ( size_type i = 0; i < num_blocks(); ++i )
+    for ( size_type i = 0; i < num_blocks(); ++i ) {
         m_bits[ i ] |= rhs.m_bits[ i ];
+    }
     // m_zero_unused_bits();
     return *this;
 }
@@ -419,8 +421,9 @@ dynamic_bitset< Block, Allocator > &
 dynamic_bitset< Block, Allocator >::operator^=( const dynamic_bitset & rhs )
 {
     BOOST_ASSERT( size() == rhs.size() );
-    for ( size_type i = 0; i < this->num_blocks(); ++i )
+    for ( size_type i = 0; i < this->num_blocks(); ++i ) {
         m_bits[ i ] ^= rhs.m_bits[ i ];
+    }
     // m_zero_unused_bits();
     return *this;
 }
@@ -430,8 +433,9 @@ dynamic_bitset< Block, Allocator > &
 dynamic_bitset< Block, Allocator >::operator-=( const dynamic_bitset & rhs )
 {
     BOOST_ASSERT( size() == rhs.size() );
-    for ( size_type i = 0; i < num_blocks(); ++i )
+    for ( size_type i = 0; i < num_blocks(); ++i ) {
         m_bits[ i ] &= ~rhs.m_bits[ i ];
+    }
     // m_zero_unused_bits();
     return *this;
 }
@@ -623,8 +627,9 @@ template< typename Block, typename Allocator >
 dynamic_bitset< Block, Allocator > &
 dynamic_bitset< Block, Allocator >::flip()
 {
-    for ( size_type i = 0; i < num_blocks(); ++i )
+    for ( size_type i = 0; i < num_blocks(); ++i ) {
         m_bits[ i ] = ~m_bits[ i ];
+    }
     m_zero_unused_bits();
     return *this;
 }
@@ -705,10 +710,11 @@ template< typename Block, typename Allocator >
 bool
 dynamic_bitset< Block, Allocator >::any() const
 {
-    for ( size_type i = 0; i < num_blocks(); ++i )
+    for ( size_type i = 0; i < num_blocks(); ++i ) {
         if ( m_bits[ i ] ) {
             return true;
         }
+    }
     return false;
 }
 
@@ -891,10 +897,11 @@ dynamic_bitset< Block, Allocator >::
     is_subset_of( const dynamic_bitset< Block, Allocator > & a ) const
 {
     BOOST_ASSERT( size() == a.size() );
-    for ( size_type i = 0; i < num_blocks(); ++i )
+    for ( size_type i = 0; i < num_blocks(); ++i ) {
         if ( m_bits[ i ] & ~a.m_bits[ i ] ) {
             return false;
         }
+    }
     return true;
 }
 
@@ -1141,11 +1148,12 @@ operator<<( std::basic_ostream< Ch, Tr > & os, const dynamic_bitset< Block, Allo
 
             // if needed fill at left; pad is decreased along the way
             if ( adjustfield != ios_base::left ) {
-                for ( ; 0 < npad; --npad )
+                for ( ; 0 < npad; --npad ) {
                     if ( Tr::eq_int_type( Tr::eof(), buf->sputc( fill_char ) ) ) {
                         err |= ios_base::failbit;
                         break;
                     }
+                }
             }
 
             if ( err == ok ) {
@@ -1688,8 +1696,9 @@ dynamic_bitset< Block, Allocator >::m_append( BlockInputIterator first, BlockInp
     std::size_t      d = std::distance( first, last );
     m_bits.reserve( num_blocks() + d );
     if ( r == 0 ) {
-        for ( ; first != last; ++first )
+        for ( ; first != last; ++first ) {
             m_bits.push_back( *first ); // could use vector<>::insert()
+        }
     } else {
         m_highest_block() |= ( *first << r );
         do {
