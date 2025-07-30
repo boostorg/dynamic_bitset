@@ -1768,8 +1768,3 @@ struct hash< boost::dynamic_bitset< Block, Allocator > >
 };
 }
 #endif
-
-// Local Variables:
-// mode: c++
-// End:
-// vim: set ft=cpp:

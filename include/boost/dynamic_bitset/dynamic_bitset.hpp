@@ -1407,5 +1407,5 @@ from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< Block
 
 }
 
-#include "boost/dynamic_bitset/impl/dynamic_bitset.tpp"
+#include "boost/dynamic_bitset/impl/dynamic_bitset.ipp"
 #endif // include guard
