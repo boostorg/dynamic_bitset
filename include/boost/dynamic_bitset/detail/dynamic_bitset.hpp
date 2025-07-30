@@ -112,9 +112,9 @@ BOOST_dynamic_bitset_is_numeric( wchar_t );
 #endif
 
 BOOST_dynamic_bitset_is_numeric( signed char );
-BOOST_dynamic_bitset_is_numeric( short int );
+BOOST_dynamic_bitset_is_numeric( short );
 BOOST_dynamic_bitset_is_numeric( int );
-BOOST_dynamic_bitset_is_numeric( long int );
+BOOST_dynamic_bitset_is_numeric( long );
 
 BOOST_dynamic_bitset_is_numeric( unsigned char );
 BOOST_dynamic_bitset_is_numeric( unsigned short );
