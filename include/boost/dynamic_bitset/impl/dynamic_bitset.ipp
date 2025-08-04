@@ -231,7 +231,7 @@ dynamic_bitset< Block, Allocator >::~dynamic_bitset()
 template< typename Block, typename Allocator >
 void
 dynamic_bitset< Block, Allocator >::
-    swap( dynamic_bitset< Block, Allocator > & b ) BOOST_NOEXCEPT
+    swap( dynamic_bitset< Block, Allocator > & b ) BOOST_DYNAMIC_BITSET_SWAP_NOEXCEPT
 {
     std::swap( m_bits, b.m_bits );
     std::swap( m_num_bits, b.m_num_bits );
@@ -251,7 +251,7 @@ operator=( const dynamic_bitset< Block, Allocator > & b )
 
 template< typename Block, typename Allocator >
 dynamic_bitset< Block, Allocator >::
-    dynamic_bitset( dynamic_bitset< Block, Allocator > && b )
+    dynamic_bitset( dynamic_bitset< Block, Allocator > && b ) BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( noexcept )
     : m_bits( boost::move( b.m_bits ) ), m_num_bits( boost::move( b.m_num_bits ) )
 {
     // Required so that BOOST_ASSERT(m_check_invariants()); works.
@@ -262,7 +262,7 @@ dynamic_bitset< Block, Allocator >::
 template< typename Block, typename Allocator >
 dynamic_bitset< Block, Allocator > &
 dynamic_bitset< Block, Allocator >::
-operator=( dynamic_bitset< Block, Allocator > && b )
+operator=( dynamic_bitset< Block, Allocator > && b ) BOOST_DYNAMIC_BITSET_MOVE_ASSIGN_NOEXCEPT
 {
     if ( &b == this ) {
         return *this;
@@ -1332,7 +1332,8 @@ operator-( const dynamic_bitset< Block, Allocator > & x, const dynamic_bitset< B
 
 template< typename Block, typename Allocator >
 void
-swap( dynamic_bitset< Block, Allocator > & left, dynamic_bitset< Block, Allocator > & right ) BOOST_NOEXCEPT
+swap( dynamic_bitset< Block, Allocator > & left, dynamic_bitset< Block, Allocator > & right )
+    BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( noexcept( noexcept( left.swap( right ) ) ) )
 {
     left.swap( right );
 }

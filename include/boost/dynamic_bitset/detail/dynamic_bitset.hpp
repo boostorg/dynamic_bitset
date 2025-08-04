@@ -138,4 +138,21 @@ BOOST_dynamic_bitset_is_numeric( ::boost::ulong_long_type );
 
 } // namespace boost
 
+
+#if ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201703L ) || __cplusplus >= 201703L
+#define BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( x )    x
+#else
+#define BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( x )    /**/
+#endif
+
+#define BOOST_DYNAMIC_BITSET_MOVE_ASSIGN_NOEXCEPT                                                               \
+            BOOST_DYNAMIC_BITSET_CPP17_OR_LATER(                                                                \
+                    noexcept( std::allocator_traits< Allocator >::propagate_on_container_move_assignment::value \
+                    || std::allocator_traits< Allocator >::is_always_equal::value ) ) /**/
+
+#define BOOST_DYNAMIC_BITSET_SWAP_NOEXCEPT                                                                      \
+            BOOST_DYNAMIC_BITSET_CPP17_OR_LATER(                                                                \
+                    noexcept( std::allocator_traits< Allocator >::propagate_on_container_swap::value            \
+                    || std::allocator_traits< Allocator >::is_always_equal::value ) ) /**/
+
 #endif // include guard
