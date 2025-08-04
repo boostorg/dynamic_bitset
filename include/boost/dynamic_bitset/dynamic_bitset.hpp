@@ -407,10 +407,10 @@ public:
 
     //!     Swaps the contents of this bitset and bitset `b`.
     //!
-    //!     \par Throws
-    //!     Nothing.
+    //!     This member has a `noexcept` specification if and only if
+    //!     DynamicBitset is compiled as C++17 or later.
     // -----------------------------------------------------------------------
-    void             swap( dynamic_bitset & b ) BOOST_NOEXCEPT;
+    void             swap( dynamic_bitset & b ) BOOST_DYNAMIC_BITSET_SWAP_NOEXCEPT;
 
 #ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
     //!     Move constructor.
@@ -419,24 +419,23 @@ public:
     //!     while using the resources from `src`. The allocator for this
     //!     bitset is moved from the allocator in `src`.
     //!
-    //!     \par Throws
-    //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `Allocator` is a `std::allocator`).
+    //!     This member has a `noexcept` specification if and only if
+    //!     DynamicBitset is compiled as C++17 or later.
     // -----------------------------------------------------------------------
-    dynamic_bitset( dynamic_bitset && src );
+    dynamic_bitset( dynamic_bitset && src ) BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( noexcept );
 
     //!     Move assignment operator.
     //!
     //!     This bitset becomes the same as the bitset `src`, while
     //!     using the resources from `src`.
     //!
+    //!     This member has a `noexcept` specification if and only if
+    //!     DynamicBitset is compiled as C++17 or later.
+    //!
     //!     \return
     //!     `*this`.
-    //!
-    //!     \par Throws
-    //!     Nothing.
     // -----------------------------------------------------------------------
-    dynamic_bitset & operator=( dynamic_bitset && src );
+    dynamic_bitset & operator=( dynamic_bitset && src ) BOOST_DYNAMIC_BITSET_MOVE_ASSIGN_NOEXCEPT;
 #endif // BOOST_NO_CXX11_RVALUE_REFERENCES
 
     //!     Returns a copy of the allocator object used to construct
@@ -1343,11 +1342,12 @@ operator-( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< B
 
 //!     Exchanges the contents of `a` and `b`.
 //!
-//!     \par Throws
-//!     Nothing.
+//!     This member has a `noexcept` specification if and only if
+//!     DynamicBitset is compiled as C++17 or later.
 // -----------------------------------------------------------------------
 template< typename Block, typename Allocator >
-void swap( dynamic_bitset< Block, Allocator > & a, dynamic_bitset< Block, Allocator > & b ) BOOST_NOEXCEPT;
+void swap( dynamic_bitset< Block, Allocator > & a, dynamic_bitset< Block, Allocator > & b )
+    BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( noexcept( noexcept( a.swap( b ) ) ) );
 
 //!     Copies a representation of `b` into the string `s`.
 //!
