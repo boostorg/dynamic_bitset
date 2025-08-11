@@ -1368,7 +1368,7 @@ template< typename Block, typename Allocator >
 const Block &
 dynamic_bitset< Block, Allocator >::m_highest_block() const
 {
-    BOOST_ASSERT( size() > 0 && num_blocks() > 0 );
+    BOOST_ASSERT( num_blocks() > 0 );
     return m_bits.back();
 }
 
