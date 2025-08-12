@@ -1332,10 +1332,10 @@ operator-( const dynamic_bitset< Block, Allocator > & x, const dynamic_bitset< B
 
 template< typename Block, typename Allocator >
 void
-swap( dynamic_bitset< Block, Allocator > & left, dynamic_bitset< Block, Allocator > & right )
-    BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( noexcept( noexcept( left.swap( right ) ) ) )
+swap( dynamic_bitset< Block, Allocator > & a, dynamic_bitset< Block, Allocator > & b )
+    BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( noexcept( noexcept( a.swap( b ) ) ) )
 {
-    left.swap( right );
+    a.swap( b );
 }
 
 template< typename Block, typename Allocator >
