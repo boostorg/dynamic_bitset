@@ -183,6 +183,8 @@ public:
         operator bool() const;
 
         //!     See the class description.
+        //!
+        //!     \return The opposite of the value of `*this`.
         // -------------------------------------------------------------------
         bool        operator~() const;
 
@@ -242,6 +244,9 @@ public:
     //!     object will be used in subsequent bitset operations such as
     //!     `resize()` to allocate memory.
     //!
+    //!     \param alloc An allocator, a copy of which will be used to
+    //!     allocate memory when needed.
+    //!
     //!     \par Postconditions
     //!     `this->size() == 0`
     // -----------------------------------------------------------------------
@@ -265,6 +270,10 @@ public:
     //!     one), but the underlying implementation will still "do the
     //!     right thing" and construct a bitset of 16 bits, from the
     //!     value 7.
+    //!
+    //!     \param num_bits The size of the constructed bitset.
+    //!     \param value The value to initialize the bitset from.
+    //!     \param alloc The allocator to use.
     //!
     //!     \par Postconditions:
     //!     - `this->size() == num_bits`
@@ -291,6 +300,14 @@ public:
     //!     \pre
     //!     `pos <= s.size()` and the characters used to initialize the
     //!     bits are '0' or '1'.
+    //!
+    //!     \param s The string to construct from.
+    //!     \param pos The start position in the string.
+    //!     \param n The maximum number of characters in the string to
+    //!     consider.
+    //!     \param num_bits The size of the bitset to construct, if
+    //!     different from `npos`.
+    //!     \param alloc The allocator to use.
     // -----------------------------------------------------------------------
     template< typename CharT, typename Traits, typename Alloc >
     dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = (std::basic_string<CharT, Traits, Alloc>::npos), size_type num_bits = npos, const Allocator & alloc = Allocator() );
@@ -356,6 +373,12 @@ public:
     //!     model of <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
     //!     whose `value_type` is the same type as `Block`.
     //!
+    //!     \param first `numbits` if the template argument is an
+    //!     integral type, otherwise the start of the range.
+    //!     \param last `value` if the template argument is an integral
+    //!     type, otherwise the end of the range.
+    //!     \param alloc The allocator to use.
+    //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
     //!     if `Allocator` is a `std::allocator`).
@@ -407,6 +430,8 @@ public:
 
     //!     Swaps the contents of this bitset and bitset `b`.
     //!
+    //!     \param b The bitset to be swapped with `*this`.
+    //!
     //!     This member has a `noexcept` specification if and only if
     //!     DynamicBitset is compiled as C++17 or later.
     // -----------------------------------------------------------------------
@@ -440,6 +465,8 @@ public:
 
     //!     Returns a copy of the allocator object used to construct
     //!     `*this`.
+    //!
+    //!     \return A copy of the said allocator.
     // -----------------------------------------------------------------------
     allocator_type get_allocator() const;
 
@@ -450,6 +477,9 @@ public:
     //!     num_bits]` are all set to `value`. If `num_bits < size()`
     //!     then the bits in the range `[0, num_bits)` stay the same
     //!     (and the remaining bits are discarded).
+    //!
+    //!     \param num_bits The new size of the bitset.
+    //!     \param value The value to set any new bit to.
     // -----------------------------------------------------------------------
     void           resize( size_type num_bits, bool value = false );
 
@@ -466,6 +496,8 @@ public:
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
     //!     if `Allocator` is a `std::allocator`).
+    //!
+    //!     \param bit The value to set the most significant bit to.
     // -----------------------------------------------------------------------
     void           push_back( bool bit );
 
@@ -482,6 +514,8 @@ public:
     //!     by `bits_per_block`. Let `s` be the old size of the bitset,
     //!     then for `i` in the range `[0, bits_per_block)`, the bit at
     //!     position `s + i` is set to `( block >> i ) & 1`.
+    //!
+    //!     \param block The block to append.
     // -----------------------------------------------------------------------
     void           append( Block block );
 
@@ -500,6 +534,9 @@ public:
     //!     The `BlockInputIterator` type must be a model of
     //!     <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
     //!     and its value_type must be the same type as Block.
+    //!
+    //!     \param first The start of the range.
+    //!     \param last The end of the range.
     // -----------------------------------------------------------------------
     template< typename BlockInputIterator >
     void             append( BlockInputIterator first, BlockInputIterator last ); // strong guarantee
@@ -642,6 +679,10 @@ public:
     //!     \pre
     //!     `pos + len <= this->size()`.
     //!
+    //!     \param pos The position of the first bit to set.
+    //!     \param len The number of bits to set.
+    //!     \param val The value to set the bits to.
+    //!
     //!     \return
     //!     `*this`.
     // -----------------------------------------------------------------------
@@ -651,6 +692,9 @@ public:
     //!
     //!     \pre
     //!     `pos < this->size()`.
+    //!
+    //!     \param pos The position of the bit to set or clear.
+    //!     \param val The value to set the bit to.
     //!
     //!     \return
     //!     `*this`.
@@ -674,6 +718,9 @@ public:
     //!     \pre
     //!     `pos + len <= this->size()`.
     //!
+    //!     \oaram pos The position of the lowest bit to reset.
+    //!     \param len The number of bits to reset.
+    //!
     //!     \return
     //!     `*this`.
     // -----------------------------------------------------------------------
@@ -683,6 +730,8 @@ public:
     //!
     //!     \pre
     //!     `pos < this->size()`.
+    //!
+    //!     \param pos The position of the bit to reset.
     //!
     //!     \return
     //!     `this`.
@@ -705,6 +754,9 @@ public:
     //!     \pre
     //!     `pos + len <= this->size()`.
     //!
+    //!     \param pos The position of the lowest bit to toggle.
+    //!     \param len The number of bits to toggle.
+    //!
     //!     \return
     //!     `*this`.
     // -----------------------------------------------------------------------
@@ -714,6 +766,8 @@ public:
     //!
     //!     \pre
     //!     `pos < this->size()`.
+    //!
+    //!     \param pos The position of the bit to toggle.
     //!
     //!     \return
     //!     `*this`.
@@ -732,6 +786,8 @@ public:
 
     //!     A checked version of `operator[]()`.
     //!
+    //!     \param pos The position of the bit to test.
+    //!
     //!     \return
     //!     The same as `operator[]( n )`.
     //!
@@ -742,6 +798,8 @@ public:
     reference        at( size_type pos );
 
     //!     A checked version of `operator[]()`.
+    //!
+    //!     \param n The position of the bit to test.
     //!
     //!     \return
     //!     The same as `operator[]( n )`.
@@ -757,6 +815,8 @@ public:
     //!     \pre
     //!     `pos < this->size()`.
     //!
+    //!     \param pos The position of the bit to test.
+    //!
     //!     \return
     //!     `true` if bit `pos` is set, and `false` if it is zero.
     // -----------------------------------------------------------------------
@@ -767,6 +827,9 @@ public:
     //!
     //!     \pre
     //!     `pos < this->size()`.
+    //!
+    //!     \param pos The position of the bit to set or clear.
+    //!     \param val The value to set the bit at position `pos` to.
     //!
     //!     \return
     //!     The previous state of bit `pos`.
@@ -803,6 +866,8 @@ public:
     bool             none() const;
 
     //!     Returns a copy of `*this` with all of its bits toggled.
+    //!
+    //!     \return A copy of `*this` with all of its bits toggled.
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
@@ -850,6 +915,9 @@ public:
     //!     represented in an `unsigned long`, i.e. if `*this` has any
     //!     non-zero bit at a position >= `std::numeric_limits< unsigned
     //!     long >::digits`.
+    //!
+    //!     \return
+    //!     The numeric value corresponding to the bits in `*this`.
     // -----------------------------------------------------------------------
     unsigned long    to_ulong() const;
 
@@ -897,6 +965,8 @@ public:
     //!     Returns the total number of elements that `*this` can hold
     //!     without requiring reallocation.
     //!
+    //!     \return The abovementioned number of elements.
+    //!
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
@@ -910,6 +980,9 @@ public:
     //!     to the previous value of `capacity()` otherwise.
     //!     Reallocation happens at this point if and only if the
     //!     current capacity is less than the argument of `reserve()`.
+    //!
+    //!     \param num_bits The number of bits the bitset should be able
+    //!     to store without reallocation.
     //!
     //!     \par Note
     //!     It does not change the size of the bitset.
@@ -933,6 +1006,8 @@ public:
     //!     \pre
     //!     `this->size() == b.size()`.
     //!
+    //!     \param b The bitset to test `*this` against.
+    //!
     //!     \return
     //!     `true` if this bitset is a subset of bitset `b`. That is, it
     //!     returns `true` if, for every bit that is set in this bitset,
@@ -945,6 +1020,8 @@ public:
     //!
     //!     \pre
     //!     `this->size() == b.size()`.
+    //!
+    //!     \param b The bitset to test `*this` against.
     //!
     //!     \return
     //!     `true` if this bitset is a proper subset of bitset `b`. That
@@ -959,6 +1036,8 @@ public:
     //!
     //!     \pre
     //!     `this->size() == b.size()`.
+    //!
+    //!     \param b The bitset to test `*this` against.
     //!
     //!     \return
     //!     `true` if this bitset and `b` intersect. That is, it returns
@@ -994,6 +1073,9 @@ public:
 
     //!     Finds the first bit set in `*this` with an index > `pos`, if
     //!     any.
+    //!
+    //!     \param pos The lower bound (exclusively) to start the search
+    //!     from.
     //!
     //!     \return
     //!     The lowest index `i` greater than `pos` such that bit `i` is
@@ -1342,6 +1424,9 @@ operator-( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< B
 
 //!     Exchanges the contents of `a` and `b`.
 //!
+//!     \param a The bitset to exchange the contents of with `b`.
+//!     \param b The bitset to exchange the contents of with `a`.
+//!
 //!     This member has a `noexcept` specification if and only if
 //!     DynamicBitset is compiled as C++17 or later.
 // -----------------------------------------------------------------------
@@ -1366,6 +1451,9 @@ void swap( dynamic_bitset< Block, Allocator > & a, dynamic_bitset< Block, Alloca
 //!     function would require explicit template parameters. Few C++ programmers
 //!     were familiar with explicit template parameters, and some C++ compilers
 //!     did not handle them properly.
+//!
+//!     \param b The bitset of which to copy the representation.
+//!     \param s The string in which to copy the representation.
 // -----------------------------------------------------------------------
 template< typename Block, typename Allocator, typename StringT >
 void
@@ -1387,6 +1475,9 @@ to_string( const dynamic_bitset< Block, Allocator > & b, StringT & s );
 //!     and its `value_type` must be the same type as `Block`.
 //!     Furthermore, the size of the output range must be greater than
 //!     or equal to `b.num_blocks()`.
+//!
+//!     \param b The bitset of which to copy the bits.
+//!     \param result The start of the range to write to.
 // -----------------------------------------------------------------------
 template< typename Block, typename Allocator, typename BlockOutputIterator >
 void
@@ -1400,6 +1491,10 @@ to_block_range( const dynamic_bitset< Block, Allocator > & b, BlockOutputIterato
 //!     and its `value_type` must be the same type as `Block`. The size
 //!     of the iterator range must be less than or equal to
 //!     `b.num_blocks()`.
+//!
+//!     \param first The start of the range.
+//!     \param last The end of the range.
+//!     \param result The resulting bitset.
 // -----------------------------------------------------------------------
 template< typename BlockIterator, typename Block, typename Allocator >
 void
