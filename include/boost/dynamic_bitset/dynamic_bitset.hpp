@@ -98,7 +98,7 @@ public:
     //!
     //!     - `(bool)~ b[ i ]`
     //!
-    //!       Returns the opposite of the ith bit of `b`.
+    //!       Returns the opposite of the i-th bit of `b`.
     //!
     //!     - `b[ i ].flip()`
     //!
@@ -519,7 +519,7 @@ public:
     // -----------------------------------------------------------------------
     void           append( Block block );
 
-    //!     Appends a range of block to `*this`.
+    //!     Appends a range of blocks to `*this`.
     //!
     //!     This member provides the same end result as the following
     //!     code, but is typically more efficient.
