@@ -473,7 +473,7 @@ public:
     //!     Changes the number of bits of the bitset to `num_bits`.
     //!
     //!     If `num_bits >= size()` then the bits in the range `[0,
-    //!     size())` remain the same, and the bits in `[size(), num_bits]`
+    //!     size())` remain the same, and the bits in `[size(), num_bits)`
     //!     are all set to `value`. If `num_bits < size()` then the bits
     //!     in the range `[0, num_bits)` stay the same (and the
     //!     remaining bits are discarded).
