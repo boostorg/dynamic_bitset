@@ -318,8 +318,8 @@ public:
     //!     If this constructor is called with a type
     //!     `BlockInputIterator` which is actually an integral type, the
     //!     library behaves as if the constructor from `unsigned long`
-    //!     were called, with arguments `static_cast< size_type >( first
-    //!     )`, `last` and `alloc`, in that order.
+    //!     were called, with arguments `static_cast< size_type >( first )`,
+    //!     `last` and `alloc`, in that order.
     //!
     //!     \par Example
     //!     Given:
@@ -351,17 +351,17 @@ public:
     //!     C++0x. Informally speaking, the critical changes with
     //!     respect to C++03 are the drop of a `static_cast` on the
     //!     second argument, and more leeway as to when the templated
-    //!     constructor should have the same effect as the `(size,
-    //!     value)` one: Only when `InputIterator` is an integral type,
-    //!     in C++03; when it is either an integral type or any other
-    //!     type that the implementation might detect as impossible to
-    //!     be an input iterator, with the proposed resolution. For the
+    //!     constructor should have the same effect as the `(size, value)`
+    //!     one: Only when `InputIterator` is an integral type, in
+    //!     C++03; when it is either an integral type or any other type
+    //!     that the implementation might detect as impossible to be an
+    //!     input iterator, with the proposed resolution. For the
     //!     purposes of dynamic_bitset we limit ourselves to the first
     //!     of these two changes.
     //!
     //!     Otherwise (i.e. if the template argument is not an integral
     //!     type), constructs a bitset based on a range of blocks. Let
-    //!     `*first` be block number 0, `*++first` block number 1, etc.
+    //!     `*first` be block number 0, `\*++first` block number 1, etc.
     //!     Block number `b` is used to initialize the bits of the
     //!     dynamic_bitset in the position range `[b * bits_per_block, (
     //!     b + 1 ) * bits_per_block)`. For each block number `b` with
@@ -473,10 +473,10 @@ public:
     //!     Changes the number of bits of the bitset to `num_bits`.
     //!
     //!     If `num_bits >= size()` then the bits in the range `[0,
-    //!     size())` remain the same, and the bits in `[size(),
-    //!     num_bits]` are all set to `value`. If `num_bits < size()`
-    //!     then the bits in the range `[0, num_bits)` stay the same
-    //!     (and the remaining bits are discarded).
+    //!     size())` remain the same, and the bits in `[size(), num_bits]`
+    //!     are all set to `value`. If `num_bits < size()` then the bits
+    //!     in the range `[0, num_bits)` stay the same (and the
+    //!     remaining bits are discarded).
     //!
     //!     \param num_bits The new size of the bitset.
     //!     \param value The value to set any new bit to.
@@ -1472,10 +1472,10 @@ to_string( const dynamic_bitset< Block, Allocator > & b, StringT & s );
 //!
 //!     The first block written represents the bits in the position
 //!     range `[0, bits_per_block)` in the bitset, the second block
-//!     written the bits in the range `[bits_per_block,
-//!     2 * bits_per_block)`, and so on. For each block `bval` written,
-//!     the bit `( bval >> i ) & 1` corresponds to the bit at position
-//!     `b * bits_per_block + i` in the bitset.
+//!     written the bits in the range `[bits_per_block, 2 \* bits_per_block)`,
+//!     and so on. For each block `bval` written, the bit
+//!     `( bval >> i ) & 1` corresponds to the bit at position
+//!     `b \* bits_per_block + i` in the bitset.
 //!
 //!     \pre
 //!     The type `BlockOutputIterator` must be a model of
