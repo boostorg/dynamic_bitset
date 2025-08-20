@@ -1104,6 +1104,14 @@ public:
     template< typename B, typename A, typename StringT >
     friend void to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all );
 
+    //!     Computes a hash value for a `dynamic_bitset`.
+    //!
+    //!     This enables the use of `dynamic_bitset` in hash-based
+    //!     containers such as `boost::unordered_map` or
+    //!     `boost::unordered_set`.
+    //!
+    //!     \return The computed hash value.
+    // -----------------------------------------------------------------------
     template< typename B, typename A >
     friend std::size_t hash_value( const dynamic_bitset< B, A > & a );
 
