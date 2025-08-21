@@ -931,7 +931,7 @@ template< typename Block, typename Allocator >
 bool
 dynamic_bitset< Block, Allocator >::intersects( const dynamic_bitset & b ) const
 {
-    size_type common_blocks = num_blocks() < b.num_blocks()
+    const size_type common_blocks = num_blocks() < b.num_blocks()
                                 ? num_blocks()
                                 : b.num_blocks();
 
