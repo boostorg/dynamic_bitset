@@ -852,7 +852,7 @@ dynamic_bitset< Block, Allocator >::max_size() const noexcept
     // values, _unrelated_ to the underlying allocator.
     //
     // Given these problems, I was tempted to not provide this function
-    // at all, but the user could need it if he provides his own
+    // at all, but the user could need it if they provide their own
     // allocator.
 
     const size_type m = detail::dynamic_bitset_impl::
