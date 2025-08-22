@@ -1296,7 +1296,9 @@ template< typename Block, typename Allocator >
 bool operator>=( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
 
 //!     Inserts a textual representation of `b` into the stream `os`,
-//!     highest bit first. Informally, the output is the same as:
+//!     highest bit first.
+//!
+//!     Informally, the output is the same as:
 //!
 //!     \code
 //!     std::basic_string<Char, Traits> s;
