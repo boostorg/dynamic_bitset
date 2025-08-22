@@ -880,7 +880,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    size_type        count() const BOOST_NOEXCEPT;
+    size_type        count() const noexcept;
 
     //!     Returns a `reference` to the bit at position `pos`.
     //!
@@ -926,14 +926,14 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    size_type        size() const BOOST_NOEXCEPT;
+    size_type        size() const noexcept;
 
     //!     Returns the number of blocks in this bitset.
     //!
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    size_type        num_blocks() const BOOST_NOEXCEPT;
+    size_type        num_blocks() const noexcept;
 
     //!     Returns the maximum size of a bitset of this type.
     //!
@@ -946,7 +946,7 @@ public:
     //!     [The semantics of this function could change slightly when
     //!     lib issue 197 will be closed.]
     // -----------------------------------------------------------------------
-    size_type        max_size() const BOOST_NOEXCEPT;
+    size_type        max_size() const noexcept;
 
     //!     Checks whether this bitset has size zero.
     //!
@@ -960,7 +960,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    bool             empty() const BOOST_NOEXCEPT;
+    bool             empty() const noexcept;
 
     //!     Returns the total number of elements that `*this` can hold
     //!     without requiring reallocation.
@@ -970,7 +970,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    size_type        capacity() const BOOST_NOEXCEPT;
+    size_type        capacity() const noexcept;
 
     //!     Informs the bitset of a planned change in size, so that it
     //!     can manage the storage allocation accordingly.
@@ -1130,20 +1130,20 @@ private:
     static bool             m_not_empty( Block x );
     size_type               m_do_find_from( size_type first_block ) const;
 
-    int                     count_extra_bits() const BOOST_NOEXCEPT;
-    static size_type        block_index( size_type pos ) BOOST_NOEXCEPT;
-    static int              bit_index( size_type pos ) BOOST_NOEXCEPT;
-    static Block            bit_mask( size_type pos ) BOOST_NOEXCEPT;
-    static Block            bit_mask( size_type first, size_type last ) BOOST_NOEXCEPT;
-    static Block            set_block_bits( Block block, size_type first, size_type last, bool val ) BOOST_NOEXCEPT;
+    int                     count_extra_bits() const noexcept;
+    static size_type        block_index( size_type pos ) noexcept;
+    static int              bit_index( size_type pos ) noexcept;
+    static Block            bit_mask( size_type pos ) noexcept;
+    static Block            bit_mask( size_type first, size_type last ) noexcept;
+    static Block            set_block_bits( Block block, size_type first, size_type last, bool val ) noexcept;
 
     // Functions for operations on ranges
-    static Block            set_block_partial( Block block, size_type first, size_type last ) BOOST_NOEXCEPT;
-    static Block            set_block_full( Block ) BOOST_NOEXCEPT;
-    static Block            reset_block_partial( Block block, size_type first, size_type last ) BOOST_NOEXCEPT;
-    static Block            reset_block_full( Block ) BOOST_NOEXCEPT;
-    static Block            flip_block_partial( Block block, size_type first, size_type last ) BOOST_NOEXCEPT;
-    static Block            flip_block_full( Block block ) BOOST_NOEXCEPT;
+    static Block            set_block_partial( Block block, size_type first, size_type last ) noexcept;
+    static Block            set_block_full( Block ) noexcept;
+    static Block            reset_block_partial( Block block, size_type first, size_type last ) noexcept;
+    static Block            reset_block_full( Block ) noexcept;
+    static Block            flip_block_partial( Block block, size_type first, size_type last ) noexcept;
+    static Block            flip_block_full( Block block ) noexcept;
 
     template< typename T >
     void dispatch_init( T num_bits, unsigned long value, detail::dynamic_bitset_impl::value_to_type< true > );

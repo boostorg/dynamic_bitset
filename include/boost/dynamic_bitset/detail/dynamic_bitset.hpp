@@ -53,7 +53,7 @@ struct value_to_type
 template< typename T >
 typename T::size_type
 vector_max_size_workaround( const T & v )
-    BOOST_NOEXCEPT
+    noexcept
 {
     typedef typename T::allocator_type                          allocator_type;
 
