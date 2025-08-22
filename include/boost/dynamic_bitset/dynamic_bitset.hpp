@@ -789,7 +789,7 @@ public:
     //!     \param pos The position of the bit to test.
     //!
     //!     \return
-    //!     The same as `operator[]( n )`.
+    //!     The same as `operator[]( pos )`.
     //!
     //!     \par Throws
     //!     `std::out_of_range` if `pos` is not within the range of the
@@ -799,16 +799,16 @@ public:
 
     //!     A checked version of `operator[]()`.
     //!
-    //!     \param n The position of the bit to test.
+    //!     \param pos The position of the bit to test.
     //!
     //!     \return
-    //!     The same as `operator[]( n )`.
+    //!     The same as `operator[]( pos )`.
     //!
     //!     \par Throws
     //!     `std::out_of_range` if `pos` is not within the range of the
     //!     bitset.
     // -----------------------------------------------------------------------
-    bool             at( size_type n ) const;
+    bool             at( size_type pos ) const;
 
     //!     Tests the bit at the given position.
     //!
