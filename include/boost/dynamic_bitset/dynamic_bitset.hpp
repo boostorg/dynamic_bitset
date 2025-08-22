@@ -1455,7 +1455,7 @@ void swap( dynamic_bitset< Block, Allocator > & a, dynamic_bitset< Block, Alloca
 //!     \par Rationale
 //!     This function is not a member function taking zero arguments and
 //!     returning a string for a couple of historical reasons. First, this
-//!     version could be slighly more efficient because the string is not
+//!     version could be slightly more efficient because the string is not
 //!     copied. Second, as a member function, to allow for flexibility with
 //!     regards to the template parameters of `basic_string`, the member
 //!     function would require explicit template parameters. Few C++ programmers
