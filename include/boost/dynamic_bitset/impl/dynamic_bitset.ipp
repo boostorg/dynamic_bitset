@@ -736,7 +736,7 @@ dynamic_bitset< Block, Allocator >::operator~() const
 
 template< typename Block, typename Allocator >
 typename dynamic_bitset< Block, Allocator >::size_type
-dynamic_bitset< Block, Allocator >::count() const BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::count() const noexcept
 {
     size_type result = 0;
     for ( block_type block : m_bits ) {
@@ -831,21 +831,21 @@ to_block_range( const dynamic_bitset< Block, Allocator > & b, BlockOutputIterato
 
 template< typename Block, typename Allocator >
 typename dynamic_bitset< Block, Allocator >::size_type
-dynamic_bitset< Block, Allocator >::size() const BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::size() const noexcept
 {
     return m_num_bits;
 }
 
 template< typename Block, typename Allocator >
 typename dynamic_bitset< Block, Allocator >::size_type
-dynamic_bitset< Block, Allocator >::num_blocks() const BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::num_blocks() const noexcept
 {
     return m_bits.size();
 }
 
 template< typename Block, typename Allocator >
 typename dynamic_bitset< Block, Allocator >::size_type
-dynamic_bitset< Block, Allocator >::max_size() const BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::max_size() const noexcept
 {
     // The semantics of vector<>::max_size() aren't very clear (see lib
     // issue 197) and many library implementations simply return dummy
@@ -863,14 +863,14 @@ dynamic_bitset< Block, Allocator >::max_size() const BOOST_NOEXCEPT
 
 template< typename Block, typename Allocator >
 bool
-dynamic_bitset< Block, Allocator >::empty() const BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::empty() const noexcept
 {
     return size() == 0;
 }
 
 template< typename Block, typename Allocator >
 typename dynamic_bitset< Block, Allocator >::size_type
-dynamic_bitset< Block, Allocator >::capacity() const BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::capacity() const noexcept
 {
     return m_bits.capacity() * bits_per_block;
 }
@@ -1474,35 +1474,35 @@ dynamic_bitset< Block, Allocator >::m_not_empty( Block x )
 
 template< typename Block, typename Allocator >
 int
-dynamic_bitset< Block, Allocator >::count_extra_bits() const BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::count_extra_bits() const noexcept
 {
     return bit_index( size() );
 }
 
 template< typename Block, typename Allocator >
 typename dynamic_bitset< Block, Allocator >::size_type
-dynamic_bitset< Block, Allocator >::block_index( size_type pos ) BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::block_index( size_type pos ) noexcept
 {
     return pos / bits_per_block;
 }
 
 template< typename Block, typename Allocator >
 int
-dynamic_bitset< Block, Allocator >::bit_index( size_type pos ) BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::bit_index( size_type pos ) noexcept
 {
     return static_cast< int >( pos % bits_per_block );
 }
 
 template< typename Block, typename Allocator >
 Block
-dynamic_bitset< Block, Allocator >::bit_mask( size_type pos ) BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::bit_mask( size_type pos ) noexcept
 {
     return Block( 1 ) << bit_index( pos );
 }
 
 template< typename Block, typename Allocator >
 Block
-dynamic_bitset< Block, Allocator >::bit_mask( size_type first, size_type last ) BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::bit_mask( size_type first, size_type last ) noexcept
 {
     Block res = ( last == bits_per_block - 1 )
                   ? Block( -1 )
@@ -1517,7 +1517,7 @@ dynamic_bitset< Block, Allocator >::set_block_bits(
     Block     block,
     size_type first,
     size_type last,
-    bool      val ) BOOST_NOEXCEPT
+    bool      val ) noexcept
 {
     if ( val ) {
         return block | bit_mask( first, last );
@@ -1533,14 +1533,14 @@ Block
 dynamic_bitset< Block, Allocator >::set_block_partial(
     Block     block,
     size_type first,
-    size_type last ) BOOST_NOEXCEPT
+    size_type last ) noexcept
 {
     return set_block_bits( block, first, last, true );
 }
 
 template< typename Block, typename Allocator >
 Block
-dynamic_bitset< Block, Allocator >::set_block_full( Block ) BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::set_block_full( Block ) noexcept
 {
     return Block( -1 );
 }
@@ -1550,14 +1550,14 @@ Block
 dynamic_bitset< Block, Allocator >::reset_block_partial(
     Block     block,
     size_type first,
-    size_type last ) BOOST_NOEXCEPT
+    size_type last ) noexcept
 {
     return set_block_bits( block, first, last, false );
 }
 
 template< typename Block, typename Allocator >
 Block
-dynamic_bitset< Block, Allocator >::reset_block_full( Block ) BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::reset_block_full( Block ) noexcept
 {
     return 0;
 }
@@ -1567,14 +1567,14 @@ Block
 dynamic_bitset< Block, Allocator >::flip_block_partial(
     Block     block,
     size_type first,
-    size_type last ) BOOST_NOEXCEPT
+    size_type last ) noexcept
 {
     return block ^ bit_mask( first, last );
 }
 
 template< typename Block, typename Allocator >
 Block
-dynamic_bitset< Block, Allocator >::flip_block_full( Block block ) BOOST_NOEXCEPT
+dynamic_bitset< Block, Allocator >::flip_block_full( Block block ) noexcept
 {
     return ~block;
 }
@@ -1770,7 +1770,7 @@ struct hash< boost::dynamic_bitset< Block, Allocator > >
     typedef boost::dynamic_bitset< Block, Allocator > argument_type;
     typedef std::size_t                               result_type;
     result_type
-    operator()( const argument_type & a ) const BOOST_NOEXCEPT
+    operator()( const argument_type & a ) const noexcept
     {
         boost::hash< argument_type > hasher;
         return hasher( a );
