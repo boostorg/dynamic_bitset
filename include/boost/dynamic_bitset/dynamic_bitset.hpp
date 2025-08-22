@@ -962,7 +962,7 @@ public:
     //!
     //!     \return
     //!     `true` if this bitset and `b` intersect. That is, it returns
-    //!     `true` if, there is a bit which is set in this bitset, such
+    //!     `true` if there is a bit which is set in this bitset, such
     //!     that the corresponding bit in bitset `b` is also set.
     //!     Otherwise this function returns `false`.
     // -----------------------------------------------------------------------
