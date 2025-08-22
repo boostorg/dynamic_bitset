@@ -937,6 +937,9 @@ public:
 
     //!     Returns the maximum size of a bitset of this type.
     //!
+    //!     \par Throws
+    //!     Nothing.
+    //!
     //!     \return
     //!     The maximum size of a `dynamic_bitset` object having the
     //!     same type as `*this`. Note that if any `dynamic_bitset`
