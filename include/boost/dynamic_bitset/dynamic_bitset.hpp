@@ -1515,5 +1515,20 @@ from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< Block
 
 }
 
+#if ! defined( BOOST_NO_CXX11_HDR_FUNCTIONAL ) && ! defined( BOOST_DYNAMIC_BITSET_NO_STD_HASH )
+#    include <functional>
+namespace std {
+
+//!     Support for std::hash.
+//!
+//!     You can exclude this support by defining
+//!     `BOOST_DYNAMIC_BITSET_NO_STD_HASH`.
+// -----------------------------------------------------------------------
+template< typename Block, typename Allocator >
+struct hash< boost::dynamic_bitset< Block, Allocator > >;
+
+}
+#endif
+
 #include "boost/dynamic_bitset/impl/dynamic_bitset.ipp"
 #endif // include guard

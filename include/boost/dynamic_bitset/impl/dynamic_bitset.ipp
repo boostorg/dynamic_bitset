@@ -1762,7 +1762,6 @@ dynamic_bitset< Block, Allocator >::bit_appender::get_count() const
 
 // std::hash support
 #if ! defined( BOOST_NO_CXX11_HDR_FUNCTIONAL ) && ! defined( BOOST_DYNAMIC_BITSET_NO_STD_HASH )
-#    include <functional>
 namespace std {
 template< typename Block, typename Allocator >
 struct hash< boost::dynamic_bitset< Block, Allocator > >
