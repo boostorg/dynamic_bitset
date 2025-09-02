@@ -28,7 +28,7 @@
 #include <string>
 #include <vector>
 
-#if ! defined( BOOST_NO_CXX11_HDR_FUNCTIONAL ) && ! defined( BOOST_DYNAMIC_BITSET_NO_STD_HASH )
+#if defined( BOOST_DYNAMIC_BITSET_SPECIALIZE_STD_HASH )
 #    include <functional>
 namespace std {
 

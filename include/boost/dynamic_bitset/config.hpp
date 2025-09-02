@@ -56,4 +56,8 @@ make_non_const( T t )
 
 #endif
 
+#if ! defined( BOOST_NO_CXX11_HDR_FUNCTIONAL ) && ! defined( BOOST_DYNAMIC_BITSET_NO_STD_HASH )
+#    define BOOST_DYNAMIC_BITSET_SPECIALIZE_STD_HASH
+#endif
+
 #endif // include guard
