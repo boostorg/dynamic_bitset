@@ -1,7 +1,7 @@
 // -----------------------------------------------------------
 //
 //   Copyright (c) 2001-2002 Chuck Allison and Jeremy Siek
-//        Copyright (c) 2003-2006, 2008 Gennaro Prota
+//      Copyright (c) 2003-2006, 2008, 2025 Gennaro Prota
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -54,6 +54,10 @@ make_non_const( T t )
 #    define BOOST_DYNAMIC_BITSET_CTYPE_FACET( ch, name, loc ) /**/
 #    define BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, c )         c
 
+#endif
+
+#if ! defined( BOOST_NO_CXX11_HDR_FUNCTIONAL ) && ! defined( BOOST_DYNAMIC_BITSET_NO_STD_HASH )
+#    define BOOST_DYNAMIC_BITSET_SPECIALIZE_STD_HASH
 #endif
 
 #endif // include guard
