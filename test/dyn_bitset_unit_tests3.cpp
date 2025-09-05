@@ -305,30 +305,35 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
         // empty bitset
         bitset_type b;
         Tests::find_first( b );
+        Tests::find_first( b, 0, false );
     }
     {
         // bitset of size 1
         bitset_type b( 1, 1ul );
         Tests::find_first( b );
+        Tests::find_first( b, 0, false );
     }
     {
         // all-0s bitset
         bitset_type b( 4 * bitset_type::bits_per_block, 0ul );
         Tests::find_first( b );
+        Tests::find_first( b, 0, false );
     }
     {
-        // first bit on
+        // first bit on or off
         bitset_type b( 1, 1ul );
         Tests::find_first( b );
+        Tests::find_first( b, 0, false );
     }
     {
-        // last bit on
+        // last bit on or off
         bitset_type b( 4 * bitset_type::bits_per_block - 1, 0ul );
         b.set( b.size() - 1 );
         Tests::find_first( b );
+        Tests::find_first( b, 0, false );
     }
     //=====================================================================
-    // Test find_next and offset find_first
+    // Test find_next, find_next_off, offset find_first and offset find_first_off
     {
         // empty bitset
         bitset_type b;
@@ -338,6 +343,10 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
         Tests::find_pos( b, 1 );
         Tests::find_pos( b, 200 );
         Tests::find_pos( b, b.npos );
+        Tests::find_pos( b, 0, false );
+        Tests::find_pos( b, 1, false );
+        Tests::find_pos( b, 200, false );
+        Tests::find_pos( b, b.npos, false );
     }
     {
         // bitset of size 1 (find_next can never find)
@@ -348,6 +357,10 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
         Tests::find_pos( b, 1 );
         Tests::find_pos( b, 200 );
         Tests::find_pos( b, b.npos );
+        Tests::find_pos( b, 0, false );
+        Tests::find_pos( b, 1, false );
+        Tests::find_pos( b, 200, false );
+        Tests::find_pos( b, b.npos, false );
     }
     {
         // all-1s bitset
@@ -358,8 +371,10 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
         const typename bitset_type::size_type larger_than_size = 5 + b.size();
         for ( typename bitset_type::size_type i = 0; i <= larger_than_size; ++i ) {
             Tests::find_pos( b, i );
+            Tests::find_pos( b, i, false );
         }
         Tests::find_pos( b, b.npos );
+        Tests::find_pos( b, b.npos, false );
     }
     {
         // a bitset with 1s at block boundary only
@@ -378,8 +393,10 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
         const typename bitset_type::size_type larger_than_size = 5 + b.size();
         for ( i = 0; i <= larger_than_size; ++i ) {
             Tests::find_pos( b, i );
+            Tests::find_pos( b, i, false );
         }
         Tests::find_pos( b, b.npos );
+        Tests::find_pos( b, b.npos, false );
     }
     {
         // bitset with alternate 1s and 0s
@@ -395,8 +412,10 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
         const typename bitset_type::size_type larger_than_size = 5 + b.size();
         for ( i = 0; i <= larger_than_size; ++i ) {
             Tests::find_pos( b, i );
+            Tests::find_pos( b, i, false );
         }
         Tests::find_pos( b, b.npos );
+        Tests::find_pos( b, b.npos, false );
     }
     //=====================================================================
     // Test operator==

@@ -946,26 +946,39 @@ dynamic_bitset< Block, Allocator >::intersects( const dynamic_bitset & b ) const
 // --------------------------------
 // lookup
 
-// Look for the first bit "on", starting from the block with index
+// Look for the first bit with value `value`, starting from the block with index
 // first_block.
 template< typename Block, typename Allocator >
 typename dynamic_bitset< Block, Allocator >::size_type
-dynamic_bitset< Block, Allocator >::m_do_find_from( size_type first_block ) const
+dynamic_bitset< Block, Allocator >::m_do_find_from( size_type first_block, bool value ) const
 {
-    size_type i = std::distance( m_bits.begin(), std::find_if( m_bits.begin() + first_block, m_bits.end(), m_not_empty ) );
+    size_type i = std::distance( m_bits.begin(), std::find_if( m_bits.begin() + first_block, m_bits.end(),
+                                 value
+                                 ? m_not_empty
+                                 : m_not_full ) );
 
     if ( i >= num_blocks() ) {
         return npos; // not found
     }
 
-    return i * bits_per_block + static_cast< size_type >( detail::lowest_bit( m_bits[ i ] ) );
+    const Block b = value
+                    ? m_bits[ i ]
+                    : m_bits[ i ] ^ Block( -1 );
+    return i * bits_per_block + static_cast< size_type >( detail::lowest_bit( b ) );
 }
 
 template< typename Block, typename Allocator >
 typename dynamic_bitset< Block, Allocator >::size_type
 dynamic_bitset< Block, Allocator >::find_first() const
 {
-    return m_do_find_from( 0 );
+    return m_do_find_from( 0, true );
+}
+
+template< typename Block, typename Allocator >
+typename dynamic_bitset< Block, Allocator >::size_type
+dynamic_bitset< Block, Allocator >::find_first_off() const
+{
+    return m_do_find_from( 0, false );
 }
 
 template< typename Block, typename Allocator >
@@ -983,8 +996,36 @@ dynamic_bitset< Block, Allocator >::find_first( size_type pos ) const
     // shift bits upto one immediately after current
     const Block            fore = m_bits[ blk ] >> ind;
 
-    return fore ? pos + static_cast< size_type >( detail::lowest_bit( fore ) )
-                : m_do_find_from( blk + 1 );
+    const bool found = m_not_empty( fore );
+    return found ? pos + static_cast< size_type >( detail::lowest_bit( fore ) )
+                 : m_do_find_from( blk + 1, true );
+}
+
+template< typename Block, typename Allocator >
+typename dynamic_bitset< Block, Allocator >::size_type
+dynamic_bitset< Block, Allocator >::find_first_off( size_type pos ) const
+{
+    if ( pos >= size() ) {
+        return npos;
+    }
+
+    const size_type blk = block_index( pos );
+    const int       ind = bit_index( pos );
+    const Block     fore = m_bits[ blk ] >> ind;
+    bool found = false;
+    int lowest_off_bit_pos = -1;
+    if ( m_not_full( fore ) ) {
+        lowest_off_bit_pos = detail::lowest_bit( fore ^ Block( -1 ) );
+        // don't consider a zero introduced by m_bits[ blk ] >> ind as found
+        found = lowest_off_bit_pos <= ( bits_per_block - 1 - ind );
+    }
+    
+    const size_type zero_pos = found
+        ? pos + lowest_off_bit_pos
+        : m_do_find_from( blk + 1, false );
+    return zero_pos >= size()
+        ? npos
+        : zero_pos;
 }
 
 template< typename Block, typename Allocator >
@@ -995,6 +1036,15 @@ dynamic_bitset< Block, Allocator >::find_next( size_type pos ) const
         return npos;
     }
     return find_first( pos + 1 );
+}
+
+template< typename Block, typename Allocator >
+typename dynamic_bitset< Block, Allocator >::size_type
+dynamic_bitset< Block, Allocator >::find_next_off( size_type pos ) const
+{
+    return pos == npos
+        ? npos
+        : find_first_off( pos + 1 );
 }
 
 //-----------------------------------------------------------------------------
@@ -1470,6 +1520,13 @@ bool
 dynamic_bitset< Block, Allocator >::m_not_empty( Block x )
 {
     return x != Block( 0 );
+}
+
+template< typename Block, typename Allocator >
+bool
+dynamic_bitset< Block, Allocator >::m_not_full( Block x )
+{
+    return x != Block( -1 );
 }
 
 template< typename Block, typename Allocator >
