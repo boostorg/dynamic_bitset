@@ -994,26 +994,34 @@ struct bitset_test
     }
 
     static void
-    find_first( const Bitset & b, typename Bitset::size_type offset = 0 )
+    find_first( const Bitset & b, typename Bitset::size_type offset = 0, bool value = true )
     {
-        // find first non-null bit from offset onwards, if any
+        const typename Bitset::size_type result = value
+            ? b.find_first( offset )
+            : b.find_first_off( offset );
+
+        // find first bit with value `value` from offset onwards, if any
         typename Bitset::size_type i = offset;
-        while ( i < b.size() && b[ i ] == 0 )
+        while ( i < b.size() && b[ i ] != value )
             ++i;
 
         if ( i >= b.size() )
-            BOOST_TEST( b.find_first( offset ) == Bitset::npos ); // not found;
+            BOOST_TEST( result == Bitset::npos ); // not found;
         else {
-            BOOST_TEST( b.find_first( offset ) == i );
-            BOOST_TEST( b.test( i ) == true );
+            BOOST_TEST( result == i );
+            BOOST_TEST( b.test( i ) == value );
         }
     }
 
     static void
-    find_pos( const Bitset & b, typename Bitset::size_type pos )
+    find_pos( const Bitset & b, typename Bitset::size_type pos, bool value = true )
     {
-        find_first( b, pos );
-        BOOST_TEST( next_bit_on( b, pos ) == b.find_next( pos ) );
+        find_first( b, pos, value);
+        if ( value ) {
+            BOOST_TEST( next_bit_on( b, pos ) == b.find_next( pos ) );
+        } else {
+            BOOST_TEST( next_bit_off( b, pos ) == b.find_next_off( pos ) );
+        }
     }
 
     static void
@@ -1104,6 +1112,32 @@ struct bitset_test
             ++i;
 
         return i == b.size() ? Bitset::npos : i;
+    }
+
+    static typename Bitset::size_type
+    next_bit_off( const Bitset & b, typename Bitset::size_type prev )
+    {
+        // helper function for find_pos()
+        //
+        
+        if ( b.all() || prev == Bitset::npos ) {
+            return Bitset::npos;
+        }
+        
+        ++prev;
+        
+        if ( prev >= b.size() ) {
+            return Bitset::npos;
+        }
+        
+        typename Bitset::size_type i = prev;
+        while ( i < b.size() && b[ i ] ) {
+            ++i;
+        }
+        
+        return i == b.size()
+            ? Bitset::npos
+            : i;
     }
 
     static void

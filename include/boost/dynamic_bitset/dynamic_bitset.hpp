@@ -1076,6 +1076,17 @@ public:
     // -----------------------------------------------------------------------
     size_type        find_first() const;
 
+    //!     Finds the first unset bit in `*this`, if any.
+    //!
+    //!     \return
+    //!     The lowest index `i` such that bit `i` is unset in `*this`,
+    //!     or `npos` if no such index exists.
+    //!
+    //!     \par Throws
+    //!     Nothing.
+    // -----------------------------------------------------------------------
+    size_type        find_first_off() const;
+
     //!     Finds the first set bit in `*this` with an index >= `pos`,
     //!     if any.
     //!
@@ -1088,6 +1099,19 @@ public:
     //!     Nothing.
     // -----------------------------------------------------------------------
     size_type        find_first( size_type pos ) const;
+
+    //!     Finds the first unset bit in `*this` with an index >= `pos`,
+    //!     if any.
+    //!
+    //!     \return
+    //!     The lowest index `i` greater than or equal to `pos` such
+    //!     that bit `i` is unset in `*this`, or `npos` if no such index
+    //!     exists.
+    //!
+    //!     \par Throws
+    //!     Nothing.
+    // -----------------------------------------------------------------------
+    size_type        find_first_off( size_type pos ) const;
 
     //!     Finds the first bit set in `*this` with an index > `pos`, if
     //!     any.
@@ -1103,6 +1127,18 @@ public:
     //!     Nothing.
     // -----------------------------------------------------------------------
     size_type        find_next( size_type pos ) const;
+
+    //!     Finds the first unset bit in `*this` with an index > `pos`,
+    //!     if any.
+    //!
+    //!     \param pos The lower bound (exclusively) to start the search
+    //!     from.
+    //!
+    //!     \return
+    //!     The lowest index `i` greater than `pos` such that bit `i` is
+    //!     unset, or `npos` if no such index exists.
+    // -----------------------------------------------------------------------
+    size_type        find_next_off( size_type pos ) const;
 
     template< typename B, typename A >
     friend bool operator==( const dynamic_bitset< B, A > & a, const dynamic_bitset< B, A > & b );
@@ -1146,7 +1182,8 @@ private:
     bool                    m_check_invariants() const;
 
     static bool             m_not_empty( Block x );
-    size_type               m_do_find_from( size_type first_block ) const;
+    static bool             m_not_full( Block x );
+    size_type               m_do_find_from( size_type first_block, bool value ) const;
 
     int                     count_extra_bits() const noexcept;
     static size_type        block_index( size_type pos ) noexcept;
