@@ -15,6 +15,7 @@
 #define BOOST_BITSET_TEST_HPP_GP_20040319
 
 #include "boost/config.hpp"
+#include "boost/container/small_vector.hpp"
 #include "boost/core/lightweight_test.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
 #include "boost/filesystem.hpp"
@@ -27,6 +28,10 @@
 #if ! defined( BOOST_NO_STD_LOCALE )
 #    include <locale>
 #endif
+
+
+template< typename T >
+using small_vector = boost::container::small_vector< T, 8 >;
 
 template< typename Block >
 bool
@@ -347,8 +352,11 @@ struct bitset_test
             b1.swap( b2 );
             BOOST_TEST( b2[ i ] == x ); // now it must be equal..
             b2.flip( i );
-            BOOST_TEST( ref == b2[ i ] ); // .. and ref must be into b2
-            BOOST_TEST( ref == ! x );
+            // Since we transformed the Allocator parameter into
+            // AllocatorOrContainer, the following is no longer true (think e.g.
+            // of boost::container::small_vector).
+            // BOOST_TEST( ref == b2[ i ] ); // .. and ref must be into b2
+            // BOOST_TEST( ref == ! x );
         }
     }
 
@@ -817,19 +825,9 @@ struct bitset_test
     }
 
     static void
-    capacity_test_one( const Bitset & lhs )
+    capacity( const Bitset & lhs )
     {
-        // empty bitset
         Bitset b( lhs );
-        BOOST_TEST( b.capacity() == 0 );
-    }
-
-    static void
-    capacity_test_two( const Bitset & lhs )
-    {
-        // bitset constructed with size "100"
-        Bitset b( lhs );
-        BOOST_TEST( b.capacity() >= 100 );
         b.resize( 200 );
         BOOST_TEST( b.capacity() >= 200 );
     }
@@ -864,7 +862,7 @@ struct bitset_test
         Bitset b( lhs );
         b.shrink_to_fit();
         BOOST_TEST( b.size() == 0 );
-        BOOST_TEST( b.capacity() == 0 );
+        BOOST_TEST( b.capacity() == Bitset().capacity() );
     }
 
     static void
@@ -875,11 +873,11 @@ struct bitset_test
         b.shrink_to_fit();
         BOOST_TEST( b.capacity() >= 100 );
         BOOST_TEST( b.size() == 100 );
-        b.reserve( 200 );
-        BOOST_TEST( b.capacity() >= 200 );
+        b.reserve( 550 );
+        BOOST_TEST( b.capacity() >= 550 );
         BOOST_TEST( b.size() == 100 );
         b.shrink_to_fit();
-        BOOST_TEST( b.capacity() < 200 );
+        BOOST_TEST( b.capacity() < 550 );
         BOOST_TEST( b.size() == 100 );
     }
 

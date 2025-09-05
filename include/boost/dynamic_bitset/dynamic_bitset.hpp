@@ -37,8 +37,8 @@ namespace std {
 //!     You can exclude this support by defining the macro
 //!     `BOOST_DYNAMIC_BITSET_NO_STD_HASH`.
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-struct hash< boost::dynamic_bitset< Block, Allocator > >;
+template< typename Block, typename AllocatorOrContainer >
+struct hash< boost::dynamic_bitset< Block, AllocatorOrContainer > >;
 
 }
 #endif
@@ -52,9 +52,9 @@ namespace boost {
 //!       The integer type in which the bits are stored. Defaults to
 //!       `unsigned long`.
 //!
-//!     - `Allocator`
-//!       The allocator type used for all internal memory management.
-//!       Defaults to `std::allocator< Block >`.
+//!     - `AllocatorOrContainer`
+//!       Either an allocator (to use for all internal memory management) or
+//!       a container of Block's. Defaults to `std::allocator< Block >`.
 //!
 //!     \par Concepts modeled
 //!     DefaultConstructible, CopyConstructible, CopyAssignable,
@@ -63,23 +63,29 @@ namespace boost {
 //!
 //!     \par Type requirements
 //!     `Block` is a cv-unqualified unsigned integer type other than
-//!     `bool`. `Allocator` satisfies the standard requirements for an
-//!     <a href="https://en.cppreference.com/w/cpp/named_req/Allocator.html">allocator</a>.
+//!     `bool`. `AllocatorOrContainer` satisfies the standard requirements for an
+//!     <a href="https://en.cppreference.com/w/cpp/named_req/Allocator.html">allocator</a>
+//!     or is a container-like type.
 // ---------------------------------------------------------------------------
-template< typename Block, typename Allocator >
+template< typename Block, typename AllocatorOrContainer >
 class dynamic_bitset
 {
     BOOST_STATIC_ASSERT( (bool)detail::dynamic_bitset_impl::allowed_block_type< Block >::value );
-    typedef std::vector< Block, Allocator > buffer_type;
+    typedef typename std::conditional<
+            detail::dynamic_bitset_impl::is_container< AllocatorOrContainer, Block >::value,
+            AllocatorOrContainer,
+            std::vector< Block, AllocatorOrContainer >
+        >::type                             buffer_type;
 
 public:
     //!     The same type as `Block`.
     // -----------------------------------------------------------------------
     typedef Block                           block_type;
 
-    //!     The same type as `Allocator`.
+    //!     The allocator used for all memory allocations.
     // -----------------------------------------------------------------------
-    typedef Allocator                       allocator_type;
+    typedef typename detail::dynamic_bitset_impl::allocator_type_extractor< AllocatorOrContainer, Block >::type
+                                            allocator_type;
 
     //!     An unsigned integral type that can represent the size of the
     //!     bitset. See \ref size().
@@ -175,7 +181,7 @@ public:
     // -----------------------------------------------------------------------
     class reference
     {
-        friend class dynamic_bitset< Block, Allocator >;
+        friend class dynamic_bitset< Block, AllocatorOrContainer >;
 
         //!     The one and only non-copy ctor
         // -------------------------------------------------------------------
@@ -245,8 +251,7 @@ public:
     // -----------------------------------------------------------------------
     typedef bool const_reference;
 
-    //!     Constructs a bitset of size zero. The allocator for this
-    //!     bitset is a default-constructed object of type `Allocator`.
+    //!     Constructs a bitset of size zero.
     //!
     //!     \par Postconditions
     //!     `this->size() == 0`.
@@ -255,9 +260,7 @@ public:
     // -----------------------------------------------------------------------
     dynamic_bitset();
 
-    //!     Constructs a bitset of size zero. A copy of the `alloc`
-    //!     object will be used in subsequent bitset operations such as
-    //!     `resize()` to allocate memory.
+    //!     Constructs a bitset of size zero.
     //!
     //!     \param alloc An allocator, a copy of which will be used to
     //!     allocate memory when needed.
@@ -265,7 +268,7 @@ public:
     //!     \par Postconditions
     //!     `this->size() == 0`
     // -----------------------------------------------------------------------
-    explicit dynamic_bitset( const Allocator & alloc );
+    explicit dynamic_bitset( const allocator_type & alloc );
 
     //!     Constructs a bitset from an integer.
     //!
@@ -299,9 +302,9 @@ public:
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `Allocator` is a `std::allocator`).
+    //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
-    explicit dynamic_bitset( size_type num_bits, unsigned long value = 0, const Allocator & alloc = Allocator() );
+    explicit dynamic_bitset( size_type num_bits, unsigned long value = 0, const allocator_type & alloc = allocator_type() );
 
     //!     Constructs a bitset from a string of 0's and 1's. The size
     //!     of the bitset is `num_bits` if `num_bits != npos`, otherwise
@@ -325,7 +328,7 @@ public:
     //!     \param alloc The allocator to use.
     // -----------------------------------------------------------------------
     template< typename CharT, typename Traits, typename Alloc >
-    dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = (std::basic_string<CharT, Traits, Alloc>::npos), size_type num_bits = npos, const Allocator & alloc = Allocator() );
+    dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = (std::basic_string<CharT, Traits, Alloc>::npos), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
     //!     Constructs a bitset from a range of blocks or from an
     //!     integer.
@@ -348,7 +351,7 @@ public:
     //!     \code
     //!     dynamic_bitset(size_type num_bits,
     //!                    unsigned long value = 0,
-    //!                    const Allocator& alloc = Allocator())
+    //!                    const allocator_type & alloc = allocator_type())
     //!     \endcode
     //!
     //!     with arguments:
@@ -356,7 +359,7 @@ public:
     //!     \code
     //!     static_cast< dynamic_bitset< unsigned short >::size_type >( 8 ),
     //!     7,
-    //!     Allocator()
+    //!     allocator_type()
     //!     \endcode
     //!
     //!     Note:
@@ -396,10 +399,10 @@ public:
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `Allocator` is a `std::allocator`).
+    //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
     template< typename BlockInputIterator >
-    dynamic_bitset( BlockInputIterator first, BlockInputIterator last, const Allocator & alloc = Allocator() );
+    dynamic_bitset( BlockInputIterator first, BlockInputIterator last, const allocator_type & alloc = allocator_type() );
 
     //!     Copy constructor.
     //!
@@ -412,7 +415,7 @@ public:
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `Allocator` is a `std::allocator`).
+    //!     if `allocator_type` is a `std::allocator`).
     //!
     //!     (Required by <a href="https://en.cppreference.com/w/cpp/named_req/CopyConstructible">CopyConstructible</a>.)
     // -----------------------------------------------------------------------
@@ -431,7 +434,7 @@ public:
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `Allocator` is a `std::allocator`).
+    //!     if `allocator_type` is a `std::allocator`).
     //!     (Required by <a href="https://en.cppreference.com/w/cpp/named_req/CopyAssignable">CopyAssignable</a>.)
     // -----------------------------------------------------------------------
     dynamic_bitset & operator=( const dynamic_bitset & b );
@@ -447,10 +450,10 @@ public:
     //!
     //!     \param b The bitset to be swapped with `*this`.
     //!
-    //!     This member has a `noexcept` specification if and only if
-    //!     DynamicBitset is compiled as C++17 or later.
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    void             swap( dynamic_bitset & b ) BOOST_DYNAMIC_BITSET_SWAP_NOEXCEPT;
+    void             swap( dynamic_bitset & b ) noexcept;
 
 #ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
     //!     Move constructor.
@@ -459,23 +462,24 @@ public:
     //!     while using the resources from `src`. The allocator for this
     //!     bitset is moved from the allocator in `src`.
     //!
-    //!     This member has a `noexcept` specification if and only if
-    //!     DynamicBitset is compiled as C++17 or later.
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
-    dynamic_bitset( dynamic_bitset && src ) BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( noexcept );
+    dynamic_bitset( dynamic_bitset && src );
 
     //!     Move assignment operator.
     //!
     //!     This bitset becomes the same as the bitset `src`, while
     //!     using the resources from `src`.
     //!
-    //!     This member has a `noexcept` specification if and only if
-    //!     DynamicBitset is compiled as C++17 or later.
-    //!
     //!     \return
     //!     `*this`.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    dynamic_bitset & operator=( dynamic_bitset && src ) BOOST_DYNAMIC_BITSET_MOVE_ASSIGN_NOEXCEPT;
+    dynamic_bitset & operator=( dynamic_bitset && src );
 #endif // BOOST_NO_CXX11_RVALUE_REFERENCES
 
     //!     Returns a copy of the allocator object used to construct
@@ -510,7 +514,7 @@ public:
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `Allocator` is a `std::allocator`).
+    //!     if `allocator_type` is a `std::allocator`).
     //!
     //!     \param bit The value to set the most significant bit to.
     // -----------------------------------------------------------------------
@@ -667,7 +671,7 @@ public:
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `Allocator` is a `std::allocator`).
+    //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
     dynamic_bitset   operator<<( size_type n ) const;
 
@@ -681,7 +685,7 @@ public:
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `Allocator` is a `std::allocator`).
+    //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
     dynamic_bitset   operator>>( size_type n ) const;
 
@@ -886,7 +890,7 @@ public:
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `Allocator` is a `std::allocator`).
+    //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
     dynamic_bitset   operator~() const;
 
@@ -1015,7 +1019,7 @@ public:
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `Allocator` is a `std::allocator`).
+    //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
     void             shrink_to_fit();
 
@@ -1213,7 +1217,7 @@ private:
     void init_from_string( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos, typename std::basic_string< CharT, Traits, Alloc >::size_type n, size_type num_bits );
 
     void init_from_unsigned_long( size_type num_bits, unsigned long value /*,
-                                                       const Allocator& alloc*/
+                                                       const allocator_type& alloc*/
     );
 
     template< typename BlockInputIterator >
@@ -1264,17 +1268,17 @@ private:
 
 #if ! defined BOOST_NO_INCLASS_MEMBER_INITIALIZATION
 
-template< typename Block, typename Allocator >
+template< typename Block, typename AllocatorOrContainer >
 const int
-    dynamic_bitset< Block, Allocator >::bits_per_block;
+    dynamic_bitset< Block, AllocatorOrContainer >::bits_per_block;
 
-template< typename Block, typename Allocator >
-const typename dynamic_bitset< Block, Allocator >::size_type
-    dynamic_bitset< Block, Allocator >::npos;
+template< typename Block, typename AllocatorOrContainer >
+const typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
+    dynamic_bitset< Block, AllocatorOrContainer >::npos;
 
-template< typename Block, typename Allocator >
+template< typename Block, typename AllocatorOrContainer >
 const int
-    dynamic_bitset< Block, Allocator >::ulong_width;
+    dynamic_bitset< Block, AllocatorOrContainer >::ulong_width;
 
 #endif
 
@@ -1289,8 +1293,8 @@ const int
 //!
 //!     (Required by <a href="https://en.cppreference.com/w/cpp/named_req/EqualityComparable">EqualityComparable</a>.)
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-bool operator==( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
+template< typename Block, typename AllocatorOrContainer >
+bool operator==( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Compares two bitsets.
 //!
@@ -1300,8 +1304,8 @@ bool operator==( const dynamic_bitset< Block, Allocator > & a, const dynamic_bit
 //!     \par Throws
 //!     Nothing.
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-bool operator!=( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
+template< typename Block, typename AllocatorOrContainer >
+bool operator!=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Compares two bitsets.
 //!
@@ -1314,8 +1318,8 @@ bool operator!=( const dynamic_bitset< Block, Allocator > & a, const dynamic_bit
 //!
 //!     (Required by <a href="https://en.cppreference.com/w/cpp/named_req/LessThanComparable">LessThanComparable</a>.)
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-bool operator<( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
+template< typename Block, typename AllocatorOrContainer >
+bool operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Compares two bitsets.
 //!
@@ -1325,8 +1329,8 @@ bool operator<( const dynamic_bitset< Block, Allocator > & a, const dynamic_bits
 //!     \par Throws
 //!     Nothing.
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-bool operator<=( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
+template< typename Block, typename AllocatorOrContainer >
+bool operator<=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Compares two bitsets.
 //!
@@ -1336,8 +1340,8 @@ bool operator<=( const dynamic_bitset< Block, Allocator > & a, const dynamic_bit
 //!     \par Throws
 //!     Nothing.
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-bool operator>( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
+template< typename Block, typename AllocatorOrContainer >
+bool operator>( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Compares two bitsets.
 //!
@@ -1347,8 +1351,8 @@ bool operator>( const dynamic_bitset< Block, Allocator > & a, const dynamic_bits
 //!     \par Throws
 //!     Nothing.
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-bool operator>=( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
+template< typename Block, typename AllocatorOrContainer >
+bool operator>=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Inserts a textual representation of `b` into the stream `os`,
 //!     highest bit first.
@@ -1376,9 +1380,9 @@ bool operator>=( const dynamic_bitset< Block, Allocator > & a, const dynamic_bit
 //!     \return
 //!     `os`.
 // -----------------------------------------------------------------------
-template< typename CharT, typename Traits, typename Block, typename Allocator >
+template< typename CharT, typename Traits, typename Block, typename AllocatorOrContainer >
 std::basic_ostream< CharT, Traits > &
-operator<<( std::basic_ostream< CharT, Traits > & os, const dynamic_bitset< Block, Allocator > & b );
+operator<<( std::basic_ostream< CharT, Traits > & os, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Extracts a `dynamic_bitset` from an input stream.
 //!
@@ -1416,9 +1420,9 @@ operator<<( std::basic_ostream< CharT, Traits > & os, const dynamic_bitset< Bloc
 //!     \return
 //!     `is`.
 // -----------------------------------------------------------------------
-template< typename CharT, typename Traits, typename Block, typename Allocator >
+template< typename CharT, typename Traits, typename Block, typename AllocatorOrContainer >
 std::basic_istream< CharT, Traits > &
-operator>>( std::basic_istream< CharT, Traits > & is, dynamic_bitset< Block, Allocator > & b );
+operator>>( std::basic_istream< CharT, Traits > & is, dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Performs a bitwise-AND of two bitsets.
 //!
@@ -1431,11 +1435,11 @@ operator>>( std::basic_istream< CharT, Traits > & is, dynamic_bitset< Block, All
 //!
 //!     \par Throws
 //!     An allocation error if memory is exhausted (`std::bad_alloc` if
-//!     `Allocator` is a `std::allocator`).
+//!     `AllocatorOrContainer` is a `std::allocator`).
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-dynamic_bitset< Block, Allocator >
-operator&( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
+template< typename Block, typename AllocatorOrContainer >
+dynamic_bitset< Block, AllocatorOrContainer >
+operator&( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Performs a bitwise-OR of two bitsets.
 //!
@@ -1447,11 +1451,11 @@ operator&( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< B
 //!
 //!     \par Throws
 //!     An allocation error if memory is exhausted (`std::bad_alloc` if
-//!     `Allocator` is a `std::allocator`).
+//!     `allocator_type` is a `std::allocator`).
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-dynamic_bitset< Block, Allocator >
-operator|( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
+template< typename Block, typename AllocatorOrContainer >
+dynamic_bitset< Block, AllocatorOrContainer >
+operator|( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Performs a bitwise-XOR of two bitsets.
 //!
@@ -1464,11 +1468,11 @@ operator|( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< B
 //!
 //!     \par Throws
 //!     An allocation error if memory is exhausted (`std::bad_alloc` if
-//!     `Allocator` is a `std::allocator`).
+//!     `allocator_type` is a `std::allocator`).
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-dynamic_bitset< Block, Allocator >
-operator^( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
+template< typename Block, typename AllocatorOrContainer >
+dynamic_bitset< Block, AllocatorOrContainer >
+operator^( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Calculates the set difference of two bitsets.
 //!
@@ -1481,23 +1485,22 @@ operator^( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< B
 //!
 //!     \par Throws
 //!     An allocation error if memory is exhausted (`std::bad_alloc` if
-//!     `Allocator` is a `std::allocator`).
+//!     `allocator_type` is a `std::allocator`).
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-dynamic_bitset< Block, Allocator >
-operator-( const dynamic_bitset< Block, Allocator > & a, const dynamic_bitset< Block, Allocator > & b );
+template< typename Block, typename AllocatorOrContainer >
+dynamic_bitset< Block, AllocatorOrContainer >
+operator-( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Exchanges the contents of `a` and `b`.
 //!
 //!     \param a The bitset to exchange the contents of with `b`.
 //!     \param b The bitset to exchange the contents of with `a`.
 //!
-//!     This member has a `noexcept` specification if and only if
-//!     DynamicBitset is compiled as C++17 or later.
+//!     \par Throws
+//!     Nothing.
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator >
-void swap( dynamic_bitset< Block, Allocator > & a, dynamic_bitset< Block, Allocator > & b )
-    BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( noexcept( noexcept( a.swap( b ) ) ) );
+template< typename Block, typename AllocatorOrContainer >
+void swap( dynamic_bitset< Block, AllocatorOrContainer > & a, dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept;
 
 //!     Copies a representation of `b` into the string `s`.
 //!
@@ -1520,9 +1523,9 @@ void swap( dynamic_bitset< Block, Allocator > & a, dynamic_bitset< Block, Alloca
 //!     \param b The bitset of which to copy the representation.
 //!     \param s The string in which to copy the representation.
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator, typename StringT >
+template< typename Block, typename AllocatorOrContainer, typename StringT >
 void
-to_string( const dynamic_bitset< Block, Allocator > & b, StringT & s );
+to_string( const dynamic_bitset< Block, AllocatorOrContainer > & b, StringT & s );
 
 //!     Writes the bits of the bitset into the iterator `result`, a
 //!     block at a time.
@@ -1544,9 +1547,9 @@ to_string( const dynamic_bitset< Block, Allocator > & b, StringT & s );
 //!     \param b The bitset of which to copy the bits.
 //!     \param result The start of the range to write to.
 // -----------------------------------------------------------------------
-template< typename Block, typename Allocator, typename BlockOutputIterator >
+template< typename Block, typename AllocatorOrContainer, typename BlockOutputIterator >
 void
-to_block_range( const dynamic_bitset< Block, Allocator > & b, BlockOutputIterator result );
+to_block_range( const dynamic_bitset< Block, AllocatorOrContainer > & b, BlockOutputIterator result );
 
 //!     Reads blocks from the iterator range into the bitset.
 //!
@@ -1561,9 +1564,9 @@ to_block_range( const dynamic_bitset< Block, Allocator > & b, BlockOutputIterato
 //!     \param last The end of the range.
 //!     \param result The resulting bitset.
 // -----------------------------------------------------------------------
-template< typename BlockIterator, typename Block, typename Allocator >
+template< typename BlockIterator, typename Block, typename AllocatorOrContainer >
 void
-from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< Block, Allocator > & result );
+from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< Block, AllocatorOrContainer > & result );
 
 }
 
