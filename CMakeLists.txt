@@ -7,25 +7,66 @@
 cmake_minimum_required(VERSION 3.5...3.16)
 
 project(boost_dynamic_bitset VERSION "${BOOST_SUPERPROJECT_VERSION}" LANGUAGES CXX)
+set(BOOST_DYNAMIC_BITSET_IS_ROOT OFF)
+if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(BOOST_DYNAMIC_BITSET_IS_ROOT ON)
+endif ()
 
 add_library(boost_dynamic_bitset INTERFACE)
 add_library(Boost::dynamic_bitset ALIAS boost_dynamic_bitset)
 
 target_include_directories(boost_dynamic_bitset INTERFACE include)
 
-if (NOT DYNAMIC_BITSET_MRDOCS_BUILD)
-    target_link_libraries(boost_dynamic_bitset
-      INTERFACE
-        Boost::assert
-        Boost::config
-        Boost::container_hash
-        Boost::core
-        Boost::integer
-        Boost::move
-        Boost::static_assert
-        Boost::throw_exception
-    )
+if (BOOST_DYNAMIC_BITSET_IS_ROOT)
+    # This means this script will be executed as the root CMakeLists.txt
+    # so the Boost:: targets are not available unless we explicitly include
+    # them here. MrDocs executes this script as root too.
+    if (NOT DEFINED BOOST_SRC_DIR AND DEFINED ENV{BOOST_SRC_DIR})
+        set(DEFAULT_BOOST_SRC_DIR "$ENV{BOOST_SRC_DIR}")
+    else ()
+        set(DEFAULT_BOOST_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+    endif ()
+    set(BOOST_SRC_DIR ${DEFAULT_BOOST_SRC_DIR} CACHE STRING "Boost source dir to use when running CMake from this directory")
+    if (NOT IS_ABSOLUTE ${BOOST_SRC_DIR})
+        set(BOOST_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${BOOST_SRC_DIR}")
+    endif ()
+
+    # Validate BOOST_SRC_DIR
+    set(BOOST_SRC_DIR_IS_VALID ON)
+    foreach (F "CMakeLists.txt" "Jamroot" "boost-build.jam" "bootstrap.sh" "libs")
+        if (NOT EXISTS "${BOOST_SRC_DIR}/${F}")
+            message(STATUS "${BOOST_SRC_DIR}/${F} does not exist. Fallback to find_package.")
+            set(BOOST_SRC_DIR_IS_VALID OFF)
+            break()
+        endif ()
+    endforeach ()
+    if (NOT BOOST_SRC_DIR_IS_VALID)
+        message(FATAL_ERROR "BOOST_SRC_DIR is not valid. Please set it to the root of a Boost checkout.")
+    endif ()
+
+    # If BOOST_SRC_DIR is valid, fallback to find_package
+    set(CMAKE_FOLDER Dependencies)
+    set(BOOST_INCLUDE_LIBRARIES assert config container_hash core integer move static_assert throw_exception)
+    set(BOOST_EXCLUDE_LIBRARIES dynamic_bitset)
+    set(PREV_BUILD_TESTING ${BUILD_TESTING})
+    set(BUILD_TESTING OFF CACHE BOOL "Build the tests." FORCE)
+    add_subdirectory(${BOOST_SRC_DIR} Dependencies/boost EXCLUDE_FROM_ALL)
+    set(BUILD_TESTING ${PREV_BUILD_TESTING} CACHE BOOL "Build the tests." FORCE)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${BOOST_SRC_DIR}/tools/cmake/include")
+    unset(CMAKE_FOLDER)
 endif()
+
+target_link_libraries(boost_dynamic_bitset
+  INTERFACE
+    Boost::assert
+    Boost::config
+    Boost::container_hash
+    Boost::core
+    Boost::integer
+    Boost::move
+    Boost::static_assert
+    Boost::throw_exception
+)
 
 if(BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/CMakeLists.txt")
 
