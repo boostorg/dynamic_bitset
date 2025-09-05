@@ -18,5 +18,5 @@ exclude-symbols:
   - 'boost::dynamic_bitset::bit_appender'
 file-patterns:
   - '*.hpp'
-multipage: false
+multipage: true
 generator: adoc
