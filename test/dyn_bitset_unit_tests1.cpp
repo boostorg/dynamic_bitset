@@ -132,11 +132,12 @@ run_numeric_ctor_tests( BOOST_EXPLICIT_TEMPLATE_TYPE( Tests )
     }
 }
 
-template< typename Block >
+template< typename Block, typename AllocatorOrContainer = std::allocator< Block > >
 void
 run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
 {
-    typedef boost::dynamic_bitset< Block > bitset_type;
+    typedef boost::dynamic_bitset< Block, AllocatorOrContainer >
+                                           bitset_type;
     typedef bitset_test< bitset_type >     Tests;
     const int                              bits_per_block = bitset_type::bits_per_block;
 
@@ -250,15 +251,15 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     //=====================================================================
     // Test copy constructor
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::copy_constructor( b );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "0" ) );
+        bitset_type b( std::string( "0" ) );
         Tests::copy_constructor( b );
     }
     {
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b ( long_string );
         Tests::copy_constructor( b );
     }
     //=====================================================================
@@ -290,15 +291,15 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     //=====================================================================
     // Test move constructor
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::move_constructor( b );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "0" ) );
+        bitset_type b( std::string( "0" ) );
         Tests::move_constructor( b );
     }
     {
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::move_constructor( b );
     }
     //=====================================================================
@@ -352,121 +353,121 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     //=====================================================================
     // Test resize
     {
-        boost::dynamic_bitset< Block > a;
+        bitset_type a;
         Tests::resize( a );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) );
         Tests::resize( a );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) );
         Tests::resize( a );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string );
+        bitset_type a( long_string );
         Tests::resize( a );
     }
     //=====================================================================
     // Test clear
     {
-        boost::dynamic_bitset< Block > a;
+        bitset_type a;
         Tests::clear( a );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string );
+        bitset_type a( long_string );
         Tests::clear( a );
     }
     //=====================================================================
     // Test pop back
     {
-        boost::dynamic_bitset< Block > a( std::string( "01" ) );
+        bitset_type a( std::string( "01" ) );
         Tests::pop_back( a );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "10" ) );
+        bitset_type a( std::string( "10" ) );
         Tests::pop_back( a );
     }
     {
-        const int                      size_to_fill_all_blocks = 4 * bits_per_block;
-        boost::dynamic_bitset< Block > a( size_to_fill_all_blocks, 255ul );
+        const int   size_to_fill_all_blocks = 4 * bits_per_block;
+        bitset_type a( size_to_fill_all_blocks, 255ul );
         Tests::pop_back( a );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string );
+        bitset_type a( long_string );
         Tests::pop_back( a );
     }
     //=====================================================================
     // Test append bit
     {
-        boost::dynamic_bitset< Block > a;
+        bitset_type a;
         Tests::append_bit( a );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) );
         Tests::append_bit( a );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) );
         Tests::append_bit( a );
     }
     {
-        const int                      size_to_fill_all_blocks = 4 * bits_per_block;
-        boost::dynamic_bitset< Block > a( size_to_fill_all_blocks, 255ul );
+        const int   size_to_fill_all_blocks = 4 * bits_per_block;
+        bitset_type a( size_to_fill_all_blocks, 255ul );
         Tests::append_bit( a );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string );
+        bitset_type a( long_string );
         Tests::append_bit( a );
     }
     //=====================================================================
     // Test append block
     {
-        boost::dynamic_bitset< Block > a;
+        bitset_type a;
         Tests::append_block( a );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) );
         Tests::append_block( a );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) );
         Tests::append_block( a );
     }
     {
-        const int                      size_to_fill_all_blocks = 4 * bits_per_block;
-        boost::dynamic_bitset< Block > a( size_to_fill_all_blocks, 15ul );
+        const int   size_to_fill_all_blocks = 4 * bits_per_block;
+        bitset_type a( size_to_fill_all_blocks, 15ul );
         Tests::append_block( a );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string );
+        bitset_type a( long_string );
         Tests::append_block( a );
     }
     //=====================================================================
     // Test append block range
     {
-        boost::dynamic_bitset< Block > a;
-        std::vector< Block >           blocks;
+        bitset_type          a;
+        std::vector< Block > blocks;
         Tests::append_block_range( a, blocks );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) );
-        std::vector< Block >           blocks( 3 );
+        bitset_type          a( std::string( "0" ) );
+        std::vector< Block > blocks( 3 );
         blocks[ 0 ] = static_cast< Block >( 0 );
         blocks[ 1 ] = static_cast< Block >( 1 );
         blocks[ 2 ] = all_1s;
         Tests::append_block_range( a, blocks );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) );
-        const unsigned int             n = ( std::numeric_limits< unsigned char >::max )();
-        std::vector< Block >           blocks( n );
+        bitset_type          a( std::string( "1" ) );
+        const unsigned int   n = ( std::numeric_limits< unsigned char >::max )();
+        std::vector< Block > blocks( n );
         for ( typename std::vector< Block >::size_type i = 0; i < n; ++i )
             blocks[ i ] = static_cast< Block >( i );
         Tests::append_block_range( a, blocks );
     }
     {
-        boost::dynamic_bitset< Block > a;
+        bitset_type a;
         a.append( Block( 1 ) );
         a.append( Block( 2 ) );
         Block                x[] = { 3, 4, 5 };
@@ -475,8 +476,8 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
         Tests::append_block_range( a, blocks );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string );
-        std::vector< Block >           blocks( 3 );
+        bitset_type          a( long_string );
+        std::vector< Block > blocks( 3 );
         blocks[ 0 ] = static_cast< Block >( 0 );
         blocks[ 1 ] = static_cast< Block >( 1 );
         blocks[ 2 ] = all_1s;
@@ -485,19 +486,19 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     //=====================================================================
     // Test bracket operator
     {
-        boost::dynamic_bitset< Block > b1;
-        std::vector< bool >            bitvec1;
+        bitset_type         b1;
+        std::vector< bool > bitvec1;
         Tests::operator_bracket( b1, bitvec1 );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "1" ) );
-        std::vector< bool >            bit_vec( 1, true );
+        bitset_type         b( std::string( "1" ) );
+        std::vector< bool > bit_vec( 1, true );
         Tests::operator_bracket( b, bit_vec );
     }
     {
-        boost::dynamic_bitset< Block > b( long_string );
-        std::size_t                    n = long_string.size();
-        std::vector< bool >            bit_vec( n );
+        bitset_type         b( long_string );
+        std::size_t         n = long_string.size();
+        std::vector< bool > bit_vec( n );
         for ( std::size_t i = 0; i < n; ++i )
             bit_vec[ i ] = long_string[ n - 1 - i ] == '0' ? 0 : 1;
         Tests::operator_bracket( b, bit_vec );
@@ -505,19 +506,19 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     //=====================================================================
     // Test at
     {
-        boost::dynamic_bitset< Block > b1;
-        std::vector< bool >            bitvec1;
+        bitset_type         b1;
+        std::vector< bool > bitvec1;
         Tests::at( b1, bitvec1 );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "1" ) );
-        std::vector< bool >            bit_vec( 1, true );
+        bitset_type         b( std::string( "1" ) );
+        std::vector< bool > bit_vec( 1, true );
         Tests::at( b, bit_vec );
     }
     {
-        boost::dynamic_bitset< Block > b( long_string );
-        std::size_t                    n = long_string.size();
-        std::vector< bool >            bit_vec( n );
+        bitset_type         b( long_string );
+        std::size_t         n = long_string.size();
+        std::vector< bool > bit_vec( n );
         for ( std::size_t i = 0; i < n; ++i )
             bit_vec[ i ] = long_string[ n - 1 - i ] == '0' ? 0 : 1;
         Tests::at( b, bit_vec );
@@ -531,7 +532,7 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
 #endif
     // Test copy-initialize with default constructor
     {
-        boost::dynamic_bitset< Block > b[ 1 ] = {};
+        bitset_type b[ 1 ] = {};
         (void)b;
     }
 }
@@ -540,11 +541,16 @@ int
 main()
 {
     run_test_cases< unsigned char >();
+    run_test_cases< unsigned char, small_vector< unsigned char > >();
     run_test_cases< unsigned short >();
+    run_test_cases< unsigned short, small_vector< unsigned short > >();
     run_test_cases< unsigned int >();
+    run_test_cases< unsigned int, small_vector< unsigned int > >();
     run_test_cases< unsigned long >();
+    run_test_cases< unsigned long, small_vector< unsigned long > >();
 #ifdef BOOST_HAS_LONG_LONG
     run_test_cases< ::boost::ulong_long_type >();
+    run_test_cases< ::boost::ulong_long_type, small_vector< ::boost::ulong_long_type > >();
 #endif
 
     return boost::report_errors();

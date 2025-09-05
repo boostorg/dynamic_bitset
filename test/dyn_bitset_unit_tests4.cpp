@@ -45,11 +45,11 @@ widen_string( const std::string & str, const std::locale & loc = std::locale() )
 }
 #endif
 
-template< typename Block >
+template< typename Block, typename AllocatorOrContainer = std::allocator< Block > >
 void
 run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
 {
-    typedef boost::dynamic_bitset< Block > bitset_type;
+    typedef boost::dynamic_bitset< Block, AllocatorOrContainer > bitset_type;
     typedef bitset_test< bitset_type >     Tests;
 
     //=====================================================================
@@ -300,11 +300,16 @@ int
 main()
 {
     run_test_cases< unsigned char >();
+    run_test_cases< unsigned char, small_vector< unsigned char > >();
     run_test_cases< unsigned short >();
+    run_test_cases< unsigned short, small_vector< unsigned short > >();
     run_test_cases< unsigned int >();
+    run_test_cases< unsigned int, small_vector< unsigned int > >();
     run_test_cases< unsigned long >();
+    run_test_cases< unsigned long, small_vector< unsigned long > >();
 #ifdef BOOST_HAS_LONG_LONG
     run_test_cases< ::boost::ulong_long_type >();
+    run_test_cases< ::boost::ulong_long_type, small_vector< ::boost::ulong_long_type > >();
 #endif
 
     return boost::report_errors();

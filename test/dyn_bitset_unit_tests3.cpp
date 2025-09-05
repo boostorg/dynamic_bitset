@@ -16,12 +16,12 @@
 #include "boost/limits.hpp"
 #include <assert.h>
 
-template< typename Block >
+template< typename Block, typename AllocatorOrContainer = std::allocator< Block > >
 void
 run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
 {
     // a bunch of typedefs which will be handy later on
-    typedef boost::dynamic_bitset< Block > bitset_type;
+    typedef boost::dynamic_bitset< Block, AllocatorOrContainer > bitset_type;
     typedef bitset_test< bitset_type >     Tests;
     // typedef typename bitset_type::size_type size_type; // unusable with Borland 5.5.1
 
@@ -45,129 +45,129 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     //=====================================================================
     // Test b.to_long()
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::to_ulong( b );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "1" ) );
+        bitset_type b( std::string( "1" ) );
         Tests::to_ulong( b );
     }
     {
-        boost::dynamic_bitset< Block > b( bitset_type::bits_per_block, static_cast< unsigned long >( -1 ) );
+        bitset_type b( bitset_type::bits_per_block, static_cast< unsigned long >( -1 ) );
         Tests::to_ulong( b );
     }
     {
         std::string                    str( ul_width - 1, '1' );
-        boost::dynamic_bitset< Block > b( str );
+        bitset_type                    b( str );
         Tests::to_ulong( b );
     }
     {
         std::string                    ul_str( ul_width, '1' );
-        boost::dynamic_bitset< Block > b( ul_str );
+        bitset_type                    b( ul_str );
         Tests::to_ulong( b );
     }
     { // case overflow
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::to_ulong( b );
     }
     //=====================================================================
     // Test to_string(b, str)
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::to_string( b );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "0" ) );
+        bitset_type b( std::string( "0" ) );
         Tests::to_string( b );
     }
     {
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::to_string( b );
     }
     //=====================================================================
     // Test b.count()
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::count( b );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "0" ) );
+        bitset_type b( std::string( "0" ) );
         Tests::count( b );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "1" ) );
+        bitset_type b( std::string( "1" ) );
         Tests::count( b );
     }
     {
-        boost::dynamic_bitset< Block > b( 8, 255ul );
+        bitset_type b( 8, 255ul );
         Tests::count( b );
     }
     {
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::count( b );
     }
     //=====================================================================
     // Test b.size()
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::size( b );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "0" ) );
+        bitset_type b( std::string( "0" ) );
         Tests::size( b );
     }
     {
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::size( b );
     }
     //=====================================================================
     // Test b.capacity()
     {
-        boost::dynamic_bitset< Block > b;
-        Tests::capacity_test_one( b );
+        bitset_type b;
+        Tests::capacity( b );
     }
     {
-        boost::dynamic_bitset< Block > b( 100 );
-        Tests::capacity_test_two( b );
+        bitset_type b( 100 );
+        Tests::capacity( b );
     }
     //=====================================================================
     // Test b.reserve()
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::reserve_test_one( b );
     }
     {
-        boost::dynamic_bitset< Block > b( 100 );
+        bitset_type b( 100 );
         Tests::reserve_test_two( b );
     }
     //=====================================================================
     // Test b.shrink_to_fit()
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::shrink_to_fit_test_one( b );
     }
     {
-        boost::dynamic_bitset< Block > b( 100 );
+        bitset_type b( 100 );
         Tests::shrink_to_fit_test_two( b );
     }
     //=====================================================================
     // Test b.all()
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::all( b );
         Tests::all( ~b );
         Tests::all( b.set() );
         Tests::all( b.reset() );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "0" ) );
+        bitset_type b( std::string( "0" ) );
         Tests::all( b );
         Tests::all( ~b );
         Tests::all( b.set() );
         Tests::all( b.reset() );
     }
     {
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::all( b );
         Tests::all( ~b );
         Tests::all( b.set() );
@@ -176,21 +176,21 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     //=====================================================================
     // Test b.any()
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::any( b );
         Tests::any( ~b );
         Tests::any( b.set() );
         Tests::any( b.reset() );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "0" ) );
+        bitset_type b( std::string( "0" ) );
         Tests::any( b );
         Tests::any( ~b );
         Tests::any( b.set() );
         Tests::any( b.reset() );
     }
     {
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::any( b );
         Tests::any( ~b );
         Tests::any( b.set() );
@@ -199,21 +199,21 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     //=====================================================================
     // Test b.none()
     {
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::none( b );
         Tests::none( ~b );
         Tests::none( b.set() );
         Tests::none( b.reset() );
     }
     {
-        boost::dynamic_bitset< Block > b( std::string( "0" ) );
+        bitset_type b( std::string( "0" ) );
         Tests::none( b );
         Tests::none( ~b );
         Tests::none( b.set() );
         Tests::none( b.reset() );
     }
     {
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::none( b );
         Tests::none( ~b );
         Tests::none( b.set() );
@@ -222,56 +222,56 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     //=====================================================================
     // Test a.is_subset_of(b)
     {
-        boost::dynamic_bitset< Block > a, b;
+        bitset_type a, b;
         Tests::subset( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) ), b( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) ), b( std::string( "0" ) );
         Tests::subset( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) ), b( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) ), b( std::string( "1" ) );
         Tests::subset( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         Tests::subset( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         a[ long_string.size() / 2 ].flip();
         Tests::subset( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         b[ long_string.size() / 2 ].flip();
         Tests::subset( a, b );
     }
     //=====================================================================
     // Test a.is_proper_subset_of(b)
     {
-        boost::dynamic_bitset< Block > a, b;
+        bitset_type a, b;
         Tests::proper_subset( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) ), b( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) ), b( std::string( "0" ) );
         Tests::proper_subset( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) ), b( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) ), b( std::string( "1" ) );
         Tests::proper_subset( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         Tests::proper_subset( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         a[ long_string.size() / 2 ].flip();
         Tests::proper_subset( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         b[ long_string.size() / 2 ].flip();
         Tests::proper_subset( a, b );
     }
@@ -422,288 +422,288 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     //=====================================================================
     // Test operator==
     {
-        boost::dynamic_bitset< Block > a, b;
+        bitset_type a, b;
         Tests::operator_equal( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) ), b( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) ), b( std::string( "0" ) );
         Tests::operator_equal( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) ), b( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) ), b( std::string( "1" ) );
         Tests::operator_equal( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         Tests::operator_equal( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         a[ long_string.size() / 2 ].flip();
         Tests::operator_equal( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         b[ long_string.size() / 2 ].flip();
         Tests::operator_equal( a, b );
     }
     //=====================================================================
     // Test operator!=
     {
-        boost::dynamic_bitset< Block > a, b;
+        bitset_type a, b;
         Tests::operator_not_equal( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) ), b( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) ), b( std::string( "0" ) );
         Tests::operator_not_equal( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) ), b( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) ), b( std::string( "1" ) );
         Tests::operator_not_equal( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         Tests::operator_not_equal( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         a[ long_string.size() / 2 ].flip();
         Tests::operator_not_equal( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         b[ long_string.size() / 2 ].flip();
         Tests::operator_not_equal( a, b );
     }
     //=====================================================================
     // Test operator<
     {
-        boost::dynamic_bitset< Block > a, b;
+        bitset_type a, b;
         Tests::operator_less_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) ), b( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) ), b( std::string( "0" ) );
         Tests::operator_less_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) ), b( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) ), b( std::string( "1" ) );
         Tests::operator_less_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "10" ) ), b( std::string( "11" ) );
+        bitset_type a( std::string( "10" ) ), b( std::string( "11" ) );
         Tests::operator_less_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "101" ) ), b( std::string( "11" ) );
+        bitset_type a( std::string( "101" ) ), b( std::string( "11" ) );
         Tests::operator_less_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "10" ) ), b( std::string( "111" ) );
+        bitset_type a( std::string( "10" ) ), b( std::string( "111" ) );
         Tests::operator_less_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         Tests::operator_less_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         a[ long_string.size() / 2 ].flip();
         Tests::operator_less_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         b[ long_string.size() / 2 ].flip();
         Tests::operator_less_than( a, b );
     }
     // check for consistency with ulong behaviour when the sizes are equal
     {
-        boost::dynamic_bitset< Block > a( 3, 4ul ), b( 3, 5ul );
+        bitset_type a( 3, 4ul ), b( 3, 5ul );
         BOOST_TEST( a < b );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 4ul ), b( 3, 4ul );
+        bitset_type a( 3, 4ul ), b( 3, 4ul );
         BOOST_TEST( ! ( a < b ) );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 5ul ), b( 3, 4ul );
+        bitset_type a( 3, 5ul ), b( 3, 4ul );
         BOOST_TEST( ! ( a < b ) );
     }
     // when the sizes are not equal lexicographic compare does not necessarily correspond to ulong behavior
     {
-        boost::dynamic_bitset< Block > a( 4, 4ul ), b( 3, 5ul );
+        bitset_type a( 4, 4ul ), b( 3, 5ul );
         BOOST_TEST( a < b );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 4ul ), b( 4, 5ul );
+        bitset_type a( 3, 4ul ), b( 4, 5ul );
         BOOST_TEST( ! ( a < b ) );
     }
     {
-        boost::dynamic_bitset< Block > a( 4, 4ul ), b( 3, 4ul );
+        bitset_type a( 4, 4ul ), b( 3, 4ul );
         BOOST_TEST( a < b );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 4ul ), b( 4, 4ul );
+        bitset_type a( 3, 4ul ), b( 4, 4ul );
         BOOST_TEST( ! ( a < b ) );
     }
     {
-        boost::dynamic_bitset< Block > a( 4, 5ul ), b( 3, 4ul );
+        bitset_type a( 4, 5ul ), b( 3, 4ul );
         BOOST_TEST( a < b );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 5ul ), b( 4, 4ul );
+        bitset_type a( 3, 5ul ), b( 4, 4ul );
         BOOST_TEST( ! ( a < b ) );
     }
     //=====================================================================
     // Test operator<=
     {
-        boost::dynamic_bitset< Block > a, b;
+        bitset_type a, b;
         Tests::operator_less_than_eq( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) ), b( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) ), b( std::string( "0" ) );
         Tests::operator_less_than_eq( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) ), b( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) ), b( std::string( "1" ) );
         Tests::operator_less_than_eq( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         Tests::operator_less_than_eq( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         a[ long_string.size() / 2 ].flip();
         Tests::operator_less_than_eq( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         b[ long_string.size() / 2 ].flip();
         Tests::operator_less_than_eq( a, b );
     }
     // check for consistency with ulong behaviour
     {
-        boost::dynamic_bitset< Block > a( 3, 4ul ), b( 3, 5ul );
+        bitset_type a( 3, 4ul ), b( 3, 5ul );
         BOOST_TEST( a <= b );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 4ul ), b( 3, 4ul );
+        bitset_type a( 3, 4ul ), b( 3, 4ul );
         BOOST_TEST( a <= b );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 5ul ), b( 3, 4ul );
+        bitset_type a( 3, 5ul ), b( 3, 4ul );
         BOOST_TEST( ! ( a <= b ) );
     }
     //=====================================================================
     // Test operator>
     {
-        boost::dynamic_bitset< Block > a, b;
+        bitset_type a, b;
         Tests::operator_greater_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) ), b( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) ), b( std::string( "0" ) );
         Tests::operator_greater_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) ), b( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) ), b( std::string( "1" ) );
         Tests::operator_greater_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         Tests::operator_greater_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         a[ long_string.size() / 2 ].flip();
         Tests::operator_greater_than( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         b[ long_string.size() / 2 ].flip();
         Tests::operator_greater_than( a, b );
     }
     // check for consistency with ulong behaviour
     {
-        boost::dynamic_bitset< Block > a( 3, 4ul ), b( 3, 5ul );
+        bitset_type a( 3, 4ul ), b( 3, 5ul );
         BOOST_TEST( ! ( a > b ) );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 4ul ), b( 3, 4ul );
+        bitset_type a( 3, 4ul ), b( 3, 4ul );
         BOOST_TEST( ! ( a > b ) );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 5ul ), b( 3, 4ul );
+        bitset_type a( 3, 5ul ), b( 3, 4ul );
         BOOST_TEST( a > b );
     }
     //=====================================================================
     // Test operator<=
     {
-        boost::dynamic_bitset< Block > a, b;
+        bitset_type a, b;
         Tests::operator_greater_than_eq( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "0" ) ), b( std::string( "0" ) );
+        bitset_type a( std::string( "0" ) ), b( std::string( "0" ) );
         Tests::operator_greater_than_eq( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( std::string( "1" ) ), b( std::string( "1" ) );
+        bitset_type a( std::string( "1" ) ), b( std::string( "1" ) );
         Tests::operator_greater_than_eq( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         Tests::operator_greater_than_eq( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         a[ long_string.size() / 2 ].flip();
         Tests::operator_greater_than_eq( a, b );
     }
     {
-        boost::dynamic_bitset< Block > a( long_string ), b( long_string );
+        bitset_type a( long_string ), b( long_string );
         b[ long_string.size() / 2 ].flip();
         Tests::operator_greater_than_eq( a, b );
     }
     // check for consistency with ulong behaviour
     {
-        boost::dynamic_bitset< Block > a( 3, 4ul ), b( 3, 5ul );
+        bitset_type a( 3, 4ul ), b( 3, 5ul );
         BOOST_TEST( ! ( a >= b ) );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 4ul ), b( 3, 4ul );
+        bitset_type a( 3, 4ul ), b( 3, 4ul );
         BOOST_TEST( a >= b );
     }
     {
-        boost::dynamic_bitset< Block > a( 3, 5ul ), b( 3, 4ul );
+        bitset_type a( 3, 5ul ), b( 3, 4ul );
         BOOST_TEST( a >= b );
     }
     //=====================================================================
     // Test b.test(pos)
     { // case pos >= b.size()
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::test_bit( b, 0 );
     }
     { // case pos < b.size()
-        boost::dynamic_bitset< Block > b( std::string( "0" ) );
+        bitset_type b( std::string( "0" ) );
         Tests::test_bit( b, 0 );
     }
     { // case pos == b.size() / 2
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::test_bit( b, long_string.size() / 2 );
     }
     //=====================================================================
     // Test b.test_set(pos)
     { // case pos >= b.size()
-        boost::dynamic_bitset< Block > b;
+        bitset_type b;
         Tests::test_set_bit( b, 0, true );
         Tests::test_set_bit( b, 0, false );
     }
     { // case pos < b.size()
-        boost::dynamic_bitset< Block > b( std::string( "0" ) );
+        bitset_type b( std::string( "0" ) );
         Tests::test_set_bit( b, 0, true );
         Tests::test_set_bit( b, 0, false );
     }
     { // case pos == b.size() / 2
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::test_set_bit( b, long_string.size() / 2, true );
         Tests::test_set_bit( b, long_string.size() / 2, false );
     }
@@ -711,106 +711,106 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
     // Test b << pos
     { // case pos == 0
         std::size_t                    pos = 0;
-        boost::dynamic_bitset< Block > b( std::string( "1010" ) );
+        bitset_type b( std::string( "1010" ) );
         Tests::operator_shift_left( b, pos );
     }
     { // case pos == size()/2
         std::size_t                    pos = long_string.size() / 2;
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::operator_shift_left( b, pos );
     }
     { // case pos >= n
         std::size_t                    pos = long_string.size();
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::operator_shift_left( b, pos );
     }
     //=====================================================================
     // Test b >> pos
     { // case pos == 0
         std::size_t                    pos = 0;
-        boost::dynamic_bitset< Block > b( std::string( "1010" ) );
+        bitset_type b( std::string( "1010" ) );
         Tests::operator_shift_right( b, pos );
     }
     { // case pos == size()/2
         std::size_t                    pos = long_string.size() / 2;
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::operator_shift_right( b, pos );
     }
     { // case pos >= n
         std::size_t                    pos = long_string.size();
-        boost::dynamic_bitset< Block > b( long_string );
+        bitset_type b( long_string );
         Tests::operator_shift_right( b, pos );
     }
     //=====================================================================
     // Test a & b
     {
-        boost::dynamic_bitset< Block > lhs, rhs;
+        bitset_type lhs, rhs;
         Tests::operator_and( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( std::string( "1" ) ), rhs( std::string( "0" ) );
+        bitset_type lhs( std::string( "1" ) ), rhs( std::string( "0" ) );
         Tests::operator_and( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( long_string.size(), 0 ), rhs( long_string );
+        bitset_type lhs( long_string.size(), 0 ), rhs( long_string );
         Tests::operator_and( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( long_string.size(), 1 ), rhs( long_string );
+        bitset_type lhs( long_string.size(), 1 ), rhs( long_string );
         Tests::operator_and( lhs, rhs );
     }
     //=====================================================================
     // Test a | b
     {
-        boost::dynamic_bitset< Block > lhs, rhs;
+        bitset_type lhs, rhs;
         Tests::operator_or( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( std::string( "1" ) ), rhs( std::string( "0" ) );
+        bitset_type lhs( std::string( "1" ) ), rhs( std::string( "0" ) );
         Tests::operator_or( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( long_string.size(), 0 ), rhs( long_string );
+        bitset_type lhs( long_string.size(), 0 ), rhs( long_string );
         Tests::operator_or( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( long_string.size(), 1 ), rhs( long_string );
+        bitset_type lhs( long_string.size(), 1 ), rhs( long_string );
         Tests::operator_or( lhs, rhs );
     }
     //=====================================================================
     // Test a^b
     {
-        boost::dynamic_bitset< Block > lhs, rhs;
+        bitset_type lhs, rhs;
         Tests::operator_xor( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( std::string( "1" ) ), rhs( std::string( "0" ) );
+        bitset_type lhs( std::string( "1" ) ), rhs( std::string( "0" ) );
         Tests::operator_xor( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( long_string.size(), 0 ), rhs( long_string );
+        bitset_type lhs( long_string.size(), 0 ), rhs( long_string );
         Tests::operator_xor( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( long_string.size(), 1 ), rhs( long_string );
+        bitset_type lhs( long_string.size(), 1 ), rhs( long_string );
         Tests::operator_xor( lhs, rhs );
     }
     //=====================================================================
     // Test a-b
     {
-        boost::dynamic_bitset< Block > lhs, rhs;
+        bitset_type lhs, rhs;
         Tests::operator_sub( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( std::string( "1" ) ), rhs( std::string( "0" ) );
+        bitset_type lhs( std::string( "1" ) ), rhs( std::string( "0" ) );
         Tests::operator_sub( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( long_string.size(), 0 ), rhs( long_string );
+        bitset_type lhs( long_string.size(), 0 ), rhs( long_string );
         Tests::operator_sub( lhs, rhs );
     }
     {
-        boost::dynamic_bitset< Block > lhs( long_string.size(), 1 ), rhs( long_string );
+        bitset_type lhs( long_string.size(), 1 ), rhs( long_string );
         Tests::operator_sub( lhs, rhs );
     }
 }
@@ -819,11 +819,16 @@ int
 main()
 {
     run_test_cases< unsigned char >();
+    run_test_cases< unsigned char, small_vector< unsigned char > >();
     run_test_cases< unsigned short >();
+    run_test_cases< unsigned short, small_vector< unsigned short > >();
     run_test_cases< unsigned int >();
+    run_test_cases< unsigned int, small_vector< unsigned int > >();
     run_test_cases< unsigned long >();
+    run_test_cases< unsigned long, small_vector< unsigned long > >();
 #ifdef BOOST_HAS_LONG_LONG
     run_test_cases< ::boost::ulong_long_type >();
+    run_test_cases< ::boost::ulong_long_type, small_vector< ::boost::ulong_long_type > >();
 #endif
 
     return boost::report_errors();

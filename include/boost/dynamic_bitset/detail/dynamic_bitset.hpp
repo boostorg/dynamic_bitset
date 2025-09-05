@@ -20,11 +20,61 @@
 #include "boost/core/allocator_access.hpp"
 #include <cstddef>
 #include <memory>
+#include <type_traits>
+#include <utility>
 
 namespace boost {
 
 namespace detail {
 namespace dynamic_bitset_impl {
+
+template< typename AllocatorOrContainer, typename Block >
+class is_container
+{
+private:
+    template< typename U >
+    static decltype(
+            std::declval< U >().resize( std::size_t{} ),
+            std::declval< U >()[ 0 ],
+            typename U::value_type(),
+            std::is_same< typename U::value_type, Block >{},
+            std::true_type{}
+        ) test( int );
+
+    template< typename >
+    static std::false_type test( ... );
+
+public:
+    static constexpr bool value = decltype( test< AllocatorOrContainer >( 0 ) )::value;
+};
+
+template< typename AllocatorOrContainer, typename Block, bool IsContainer >
+class allocator_type_extractor_impl;
+
+template< typename AllocatorOrContainer, typename Block >
+class allocator_type_extractor_impl< AllocatorOrContainer, Block, false >
+{
+public:
+    typedef AllocatorOrContainer type;
+};
+
+template< typename AllocatorOrContainer, typename Block >
+class allocator_type_extractor_impl< AllocatorOrContainer, Block, true >
+{
+public:
+    typedef typename AllocatorOrContainer::allocator_type type;
+};
+
+template< typename AllocatorOrContainer, typename Block >
+class allocator_type_extractor
+{
+public:
+    typedef typename allocator_type_extractor_impl<
+        AllocatorOrContainer,
+        Block,
+        is_container< AllocatorOrContainer, Block >::value
+    >::type type;
+};
 
 template< typename T, int amount, int width /* = default */ >
 struct shifter
@@ -137,22 +187,5 @@ BOOST_dynamic_bitset_is_numeric( ::boost::ulong_long_type );
 } // namespace detail
 
 } // namespace boost
-
-
-#if ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201703L ) || __cplusplus >= 201703L
-#define BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( x )    x
-#else
-#define BOOST_DYNAMIC_BITSET_CPP17_OR_LATER( x )    /**/
-#endif
-
-#define BOOST_DYNAMIC_BITSET_MOVE_ASSIGN_NOEXCEPT                                                               \
-            BOOST_DYNAMIC_BITSET_CPP17_OR_LATER(                                                                \
-                    noexcept( std::allocator_traits< Allocator >::propagate_on_container_move_assignment::value \
-                    || std::allocator_traits< Allocator >::is_always_equal::value ) ) /**/
-
-#define BOOST_DYNAMIC_BITSET_SWAP_NOEXCEPT                                                                      \
-            BOOST_DYNAMIC_BITSET_CPP17_OR_LATER(                                                                \
-                    noexcept( std::allocator_traits< Allocator >::propagate_on_container_swap::value            \
-                    || std::allocator_traits< Allocator >::is_always_equal::value ) ) /**/
 
 #endif // include guard
