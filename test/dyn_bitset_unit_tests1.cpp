@@ -15,7 +15,6 @@
 
 #include "bitset_test.hpp"
 #include "boost/config.hpp"
-#include "boost/config/workaround.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
 #include "boost/limits.hpp"
 
@@ -56,12 +55,6 @@ public:
 #endif
 
 #define BOOST_BITSET_TEST_COUNT( x ) ( sizeof( x ) / sizeof( x[ 0 ] ) )
-
-// Codewarrior 8.3 for Win fails without this.
-// Thanks Howard Hinnant ;)
-#if defined __MWERKS__ && BOOST_WORKAROUND( __MWERKS__, <= 0x3003 ) // 8.x
-#    pragma parse_func_templ off
-#endif
 
 template< typename Tests, typename String >
 void
