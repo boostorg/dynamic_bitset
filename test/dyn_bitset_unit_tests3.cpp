@@ -18,7 +18,7 @@
 
 template< typename Block, typename AllocatorOrContainer = std::allocator< Block > >
 void
-run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
+run_test_cases()
 {
     // a bunch of typedefs which will be handy later on
     typedef boost::dynamic_bitset< Block, AllocatorOrContainer > bitset_type;

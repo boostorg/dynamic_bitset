@@ -58,7 +58,7 @@ public:
 
 template< typename Tests, typename String >
 void
-run_string_tests( const String & s BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE( Tests ) )
+run_string_tests( const String & s )
 {
     const std::size_t len  = s.length();
     const std::size_t step = len / 4 ? len / 4 : 1;
@@ -84,8 +84,7 @@ run_string_tests( const String & s BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE( Tests ) 
 // tests the do-the-right-thing constructor dispatch
 template< typename Tests, typename T >
 void
-run_numeric_ctor_tests( BOOST_EXPLICIT_TEMPLATE_TYPE( Tests )
-                            BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE( T ) )
+run_numeric_ctor_tests()
 {
     const int bits_per_block = Tests::bits_per_block;
     const int width          = std::numeric_limits< T >::digits;
@@ -127,7 +126,7 @@ run_numeric_ctor_tests( BOOST_EXPLICIT_TEMPLATE_TYPE( Tests )
 
 template< typename Block, typename AllocatorOrContainer = std::allocator< Block > >
 void
-run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
+run_test_cases()
 {
     typedef boost::dynamic_bitset< Block, AllocatorOrContainer >
                                            bitset_type;

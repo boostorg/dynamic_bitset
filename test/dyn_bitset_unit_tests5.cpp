@@ -46,7 +46,7 @@ private:
 
 template< typename Block, typename IArchive, typename OArchive >
 void
-test_serialization( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
+test_serialization()
 {
     SerializableType< Block > a;
 
@@ -77,14 +77,14 @@ test_serialization( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
 
 template< typename Block >
 void
-test_binary_archive( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
+test_binary_archive()
 {
     test_serialization< Block, boost::archive::binary_iarchive, boost::archive::binary_oarchive >();
 }
 
 template< typename Block >
 void
-test_xml_archive( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
+test_xml_archive()
 {
     test_serialization< Block, boost::archive::xml_iarchive, boost::archive::xml_oarchive >();
 }
@@ -92,7 +92,7 @@ test_xml_archive( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
 
 template< typename Block >
 void
-run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
+run_test_cases()
 {
     test_binary_archive< Block >();
     test_xml_archive< Block >();
