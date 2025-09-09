@@ -46,22 +46,12 @@ an unsigned long `n`, the bit at position `i` of the bitset has the same value
 as `(n >> i) & 1`.
 
 == Rationale
-`dynamic_bitset` is not a <a
+Because of the proxy reference type, `dynamic_bitset` is not a <a
 href="https://en.cppreference.com/w/cpp/named_req/Container.html">Container</a>
-and does not provide iterators for the following reason:
-
-A container with a proxy reference type can not fulfill the container
-requirements as specified in the C++ standard (unless one resorts to strange
-iterator semantics). `std::vector<bool>` has a proxy reference type and does not
-fulfill the container requirements and as a result has caused many problems. One
-common problem is when people try to use iterators from `std::vector<bool>` with
-a standard algorithm such as `std::search()`. The `std::search()` requirements
-say that the iterator must be a LegacyForwardIterator, but
-`std::vector<bool>::iterator` does not meet this requirement because of the
-proxy reference. Depending on the implementation, they may or not be a compile
-error or even a run-time error due to this misuse. For further discussion of the
-problem see "Effective STL" by Scott Meyers. So `dynamic_bitset` tries to avoid
-these problems by not pretending to be a container.
+and its iterators do not satisfy the requirements for a LegacyForwardIterator.
+This means that its iterators are not usable with many standard algorithms.
+However, `dynamic_bitset` provides C++20 iterators which can be used with
+ranges.
 
 Some people prefer the name "toggle" to "flip". The name "flip" was chosen
 because that is the name used in `std::bitset`. In fact, most of the function
