@@ -211,6 +211,51 @@ struct bitset_test
     }
 
     static void
+    iterate_forward( const Bitset & b )
+    {
+        std::ptrdiff_t i = 0;
+        for ( auto it = b.begin(); it != b.end(); ++it ) {
+            BOOST_TEST( *it == b[ i ] );
+            ++i;
+        }
+    }
+
+    static void
+    iterate_backward( const Bitset & b )
+    {
+        std::ptrdiff_t i = static_cast< std::ptrdiff_t >( b.size() ) - 1;
+        for ( auto it = b.rbegin(); it != b.rend(); ++it ) {
+            BOOST_TEST( *it == b[ i ] );
+            --i;
+        }
+    }
+
+    static void
+    iterator_operations( const Bitset & b )
+    {
+        if ( b.size() >= 1 ) {
+            BOOST_TEST( *( b.end() - 1 ) == b[ b.size() - 1 ] );
+            BOOST_TEST( b.begin() < b.end() );
+            BOOST_TEST( b.begin() <= b.end() );
+            BOOST_TEST( b.end() > b.begin() );
+            BOOST_TEST( b.end() >= b.begin() );
+            typename Bitset::const_iterator it = b.begin();
+            it += b.size() / 2;
+            BOOST_TEST( *it == b[ b.size() / 2 ] );
+            it -= b.size() / 2;
+            BOOST_TEST( *it == b[ 0 ] );
+        } else {
+            BOOST_TEST( b.begin() == b.end() );
+        }
+
+        if ( b.size() > 1 ) {
+            BOOST_TEST( *( b.begin() + 1 ) == b[ 1 ] );
+            BOOST_TEST( *( 1 + b.begin() ) == b[ 1 ] );
+            BOOST_TEST( *( b.end() - 1 ) == b[ b.size() - 1 ] );
+        }
+    }
+
+    static void
     to_block_range( const Bitset & b /*, BlockOutputIterator result*/ )
     {
         typedef typename Bitset::size_type size_type;

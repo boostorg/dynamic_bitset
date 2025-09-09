@@ -24,6 +24,9 @@
 #include "boost/dynamic_bitset_fwd.hpp"
 #include "boost/limits.hpp"
 #include "boost/static_assert.hpp"
+#if __cpp_lib_three_way_comparison
+#include <compare>
+#endif
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -45,6 +48,15 @@ struct hash< boost::dynamic_bitset< Block, AllocatorOrContainer > >;
 
 namespace boost {
 
+template< typename Iterator >
+class bit_iterator_base;
+
+template< typename DynamicBitset >
+class bit_iterator;
+
+template< typename DynamicBitset >
+class const_bit_iterator;
+
 //!     The `dynamic_bitset` template represents a set of bits.
 //!
 //!     \par Template parameters
@@ -65,7 +77,8 @@ namespace boost {
 //!     `Block` is a cv-unqualified unsigned integer type other than
 //!     `bool`. `AllocatorOrContainer` satisfies the standard requirements for an
 //!     <a href="https://en.cppreference.com/w/cpp/named_req/Allocator.html">allocator</a>
-//!     or is a container-like type.
+//!     or is a container-like type which provides at least bidirectional
+//!     iterators.
 // ---------------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
 class dynamic_bitset
@@ -250,6 +263,25 @@ public:
     //!     The type bool.
     // -----------------------------------------------------------------------
     typedef bool const_reference;
+
+    friend class bit_iterator< dynamic_bitset >;
+    friend class const_bit_iterator< dynamic_bitset >;
+
+    //!     A read/write iterator into the bitset.
+    // -----------------------------------------------------------------------
+    typedef bit_iterator< dynamic_bitset > iterator;
+
+    //!     A read-only iterator into the bitset.
+    // -----------------------------------------------------------------------
+    typedef const_bit_iterator< dynamic_bitset > const_iterator;
+
+    //!     A reverse read/write reverse iterator into the bitset.
+    // -----------------------------------------------------------------------
+    typedef std::reverse_iterator< iterator > reverse_iterator;
+
+    //!     A reverse read-only iterator into the bitset.
+    // -----------------------------------------------------------------------
+    typedef std::reverse_iterator< const_iterator > const_reverse_iterator;
 
     //!     Constructs a bitset of size zero.
     //!
@@ -445,6 +477,66 @@ public:
     //!     the bitset object itself.
     // -----------------------------------------------------------------------
     ~dynamic_bitset();
+
+    //!     Returns a read/write iterator that refers to the least
+    //!     significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    iterator               begin();
+
+    //!     Returns a read-only iterator that refers to the least
+    //!     significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    const_iterator         begin() const;
+
+    //!     Returns a read/write iterator that refers one past the most
+    //!     significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    iterator               end();
+
+    //!     Returns a read-only iterator that refers one past the most
+    //!     significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    const_iterator         end() const;
+
+    //!     Returns a read/write reverse iterator that refers to the
+    //!     most significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    reverse_iterator       rbegin();
+
+    //!     Returns a read-only reverse iterator that refers to the most
+    //!     significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    const_reverse_iterator rbegin() const;
+
+    //!     Returns a read/write reverse iterator that refers to one
+    //!     before the least significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    reverse_iterator       rend();
+
+    //!     Returns a read-only reverse iterator that refers to one
+    //!     before the least significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    const_reverse_iterator rend() const;
+
+    //!     Returns a read-only iterator that refers to the least
+    //!     significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    const_iterator         cbegin() const;
+
+    //!     Returns a read-only iterator that refers to one past the
+    //!     most significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    const_iterator         cend() const;
+
+    //!     Returns a read-only reverse iterator that refers to the most
+    //!     significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    const_reverse_iterator crbegin() const;
+
+    //!     Returns a read-only reverse iterator that refers to one
+    //!     before the least significant bit in the bitset.
+    // -----------------------------------------------------------------------
+    const_reverse_iterator crend() const;
 
     //!     Swaps the contents of this bitset and bitset `b`.
     //!
@@ -1266,6 +1358,72 @@ private:
     };
 };
 
+template< typename Iterator >
+class bit_iterator_base
+{
+public:
+    typedef typename Iterator::iterator_category iterator_category;
+    typedef bool                                 value_type;
+    typedef std::ptrdiff_t                       difference_type;
+    typedef value_type *                         pointer;
+    typedef value_type &                         reference;
+
+    bit_iterator_base( Iterator block_iterator, int bit_index );
+
+    void increment();
+    void decrement();
+    void add( typename Iterator::difference_type n );
+
+    BOOST_STATIC_CONSTANT( int, bits_per_block = std::numeric_limits< typename Iterator::value_type >::digits );
+    Iterator m_block_iterator;
+    int      m_bit_index = 0;
+};
+
+template< typename DynamicBitset >
+class bit_iterator
+    : public bit_iterator_base< typename DynamicBitset::buffer_type::iterator >
+{
+public:
+    typedef typename DynamicBitset::reference reference;
+    typedef reference * pointer;
+    typedef typename bit_iterator_base< typename DynamicBitset::buffer_type::iterator >::difference_type difference_type;
+
+    bit_iterator();
+    bit_iterator( typename DynamicBitset::buffer_type::iterator block_iterator, int bit_index );
+
+    reference      operator*() const;
+    bit_iterator & operator++();
+    bit_iterator   operator++( int );
+    bit_iterator & operator--();
+    bit_iterator   operator--( int );
+    bit_iterator & operator+=( difference_type n );
+    bit_iterator & operator-=( difference_type n );
+    reference      operator[]( difference_type n ) const;
+};
+
+template< typename DynamicBitset >
+class const_bit_iterator
+    : public bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >
+{
+public:
+    typedef bool reference;
+    typedef bool const_reference;
+    typedef const bool * pointer;
+    typedef typename bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >::difference_type difference_type;
+
+    const_bit_iterator( typename DynamicBitset::buffer_type::const_iterator block_iterator, int bit_index );
+    const_bit_iterator( const bit_iterator< DynamicBitset > & it );
+
+    const_reference      operator*() const;
+    const_bit_iterator & operator++();
+    const_bit_iterator   operator++( int );
+    const_bit_iterator & operator--();
+    const_bit_iterator   operator--( int );
+    const_bit_iterator & operator+=( difference_type n );
+    const_bit_iterator & operator-=( difference_type n );
+    const_reference      operator[]( difference_type n ) const;
+};
+
 #if ! defined BOOST_NO_INCLASS_MEMBER_INITIALIZATION
 
 template< typename Block, typename AllocatorOrContainer >
@@ -1280,6 +1438,9 @@ template< typename Block, typename AllocatorOrContainer >
 const int
     dynamic_bitset< Block, AllocatorOrContainer >::ulong_width;
 
+template< typename Container >
+const int
+    bit_iterator_base< Container >::bits_per_block;
 #endif
 
 //!     Compares two bitsets.

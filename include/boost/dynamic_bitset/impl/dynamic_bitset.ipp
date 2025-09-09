@@ -155,6 +155,319 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::do_assign( bool x )
     }
 }
 
+template< typename Iterator >
+bit_iterator_base< Iterator >::bit_iterator_base( Iterator block_iterator, int bit_index )
+    : m_block_iterator( block_iterator )
+    , m_bit_index( bit_index )
+{
+    BOOST_ASSERT( 0 <= bit_index && bit_index < bits_per_block );
+}
+
+template< typename Iterator >
+void
+bit_iterator_base< Iterator >::increment()
+{
+    ++m_bit_index;
+    if ( m_bit_index == bits_per_block ) {
+        m_bit_index = 0;
+        ++m_block_iterator;
+    }
+}
+
+template< typename Iterator >
+void
+bit_iterator_base< Iterator >::decrement()
+{
+    --m_bit_index;
+    if ( m_bit_index < 0 ) {
+        m_bit_index = bits_per_block - 1;
+        --m_block_iterator;
+    }
+}
+
+template< typename Iterator >
+void
+bit_iterator_base< Iterator >::add( typename Iterator::difference_type n )
+{
+    typename Iterator::difference_type d = m_bit_index + n;
+    m_block_iterator += d / bits_per_block;
+    d %= bits_per_block;
+    if ( d < 0 ) {
+        d += bits_per_block;
+        --m_block_iterator;
+    }
+    m_bit_index = static_cast< int >( d );
+}
+
+template< typename Iterator >
+bool
+operator==( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
+{
+    return lhs.m_block_iterator == rhs.m_block_iterator && lhs.m_bit_index == rhs.m_bit_index;
+}
+
+#if __cpp_lib_three_way_comparison
+template< typename Iterator >
+std::strong_ordering
+operator<=>( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
+{
+    if ( const auto cmp = lhs.m_block_iterator <=> rhs.m_block_iterator; cmp != 0 ) {
+        return cmp;
+    } else {
+        return lhs.m_bit_index <=> rhs.m_bit_index;
+    }
+}
+#else
+template< typename Iterator >
+bool
+operator!=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
+{
+    return !( lhs == rhs );
+}
+
+template< typename Iterator >
+bool
+operator<( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
+{
+    return lhs.m_block_iterator < rhs.m_block_iterator
+        || ( lhs.m_block_iterator == rhs.m_block_iterator && lhs.m_bit_index < rhs.m_bit_index );
+}
+
+template< typename Iterator >
+bool
+operator<=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
+{
+    return !( rhs < lhs );
+}
+
+template< typename Iterator >
+bool
+operator>( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
+{
+    return rhs < lhs;
+}
+
+template< typename Iterator >
+bool
+operator>=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
+{
+    return !( lhs < rhs );
+}
+#endif // __cpp_lib_three_way_comparison
+
+template< typename Iterator >
+std::ptrdiff_t
+operator-( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
+{
+    return ( lhs.m_block_iterator - rhs.m_block_iterator ) * bit_iterator_base< Iterator >::bits_per_block
+         + lhs.m_bit_index - rhs.m_bit_index;
+}
+
+template< typename DynamicBitset>
+bit_iterator< DynamicBitset >::bit_iterator()
+    : bit_iterator_base< typename DynamicBitset::buffer_type::iterator >()
+{
+}
+
+template< typename DynamicBitset >
+bit_iterator< DynamicBitset >::bit_iterator( typename DynamicBitset::buffer_type::iterator block_iterator, int bit_index )
+    : bit_iterator_base< typename DynamicBitset::buffer_type::iterator >( block_iterator, bit_index )
+{
+}
+
+template< typename DynamicBitset >
+typename DynamicBitset::reference
+bit_iterator< DynamicBitset >::operator*() const
+{
+    return reference( *(this->m_block_iterator), this->m_bit_index );
+}
+
+template< typename DynamicBitset >
+bit_iterator< DynamicBitset > &
+bit_iterator< DynamicBitset >::operator++()
+{
+    this->increment();
+    return *this;
+}
+template< typename DynamicBitset >
+bit_iterator< DynamicBitset >
+bit_iterator< DynamicBitset >::operator++( int )
+{
+    bit_iterator temp = *this;
+    this->increment();
+    return temp;
+}
+
+template< typename DynamicBitset >
+bit_iterator< DynamicBitset > &
+bit_iterator< DynamicBitset >::operator--()
+{
+    this->decrement();
+    return *this;
+}
+
+template< typename DynamicBitset >
+bit_iterator< DynamicBitset >
+bit_iterator< DynamicBitset >::operator--( int )
+{
+    bit_iterator temp = *this;
+    this->decrement();
+    return temp;
+}
+
+template< typename DynamicBitset >
+bit_iterator< DynamicBitset > &
+bit_iterator< DynamicBitset >::operator+=( difference_type n )
+{
+    this->add( n );
+    return *this;
+}
+
+template< typename DynamicBitset >
+bit_iterator< DynamicBitset > &
+bit_iterator< DynamicBitset >::operator-=( difference_type n )
+{
+    this->add( -n );
+    return *this;
+}
+
+template< typename DynamicBitset >
+bit_iterator< DynamicBitset >
+operator+( const bit_iterator< DynamicBitset > & it, typename bit_iterator< DynamicBitset >::difference_type n )
+{
+    bit_iterator< DynamicBitset > temp = it;
+    temp += n;
+    return temp;
+}
+
+template< typename DynamicBitset >
+bit_iterator< DynamicBitset >
+operator+( typename bit_iterator< DynamicBitset >::difference_type n, const bit_iterator< DynamicBitset > & it )
+{
+    return it + n;
+}
+
+template< typename DynamicBitset >
+bit_iterator< DynamicBitset >
+operator-( const bit_iterator< DynamicBitset > & it, typename bit_iterator< DynamicBitset >::difference_type n )
+{
+    bit_iterator< DynamicBitset > temp = it;
+    temp -= n;
+    return temp;
+}
+
+template< typename DynamicBitset >
+typename DynamicBitset::reference
+bit_iterator< DynamicBitset >::operator[]( difference_type n ) const
+{
+    return *( *this + n );
+}
+
+template< typename DynamicBitset >
+const_bit_iterator< DynamicBitset >::const_bit_iterator( typename DynamicBitset::buffer_type::const_iterator block_iterator, int bit_index )
+    : bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >( block_iterator, bit_index )
+{
+}
+
+template< typename DynamicBitset >
+const_bit_iterator< DynamicBitset >::const_bit_iterator( const bit_iterator< DynamicBitset > & it )
+    : bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >( it.m_block_iterator, it.m_bit_index )
+{
+}
+
+template< typename DynamicBitset >
+typename const_bit_iterator< DynamicBitset >::const_reference
+const_bit_iterator< DynamicBitset >::operator*() const
+{
+    return ( *( this->m_block_iterator ) & ( typename DynamicBitset::block_type( 1 ) << this->m_bit_index ) ) != 0;
+}
+
+template< typename DynamicBitset  >
+const_bit_iterator< DynamicBitset > &
+const_bit_iterator< DynamicBitset >::const_bit_iterator::operator++()
+{
+    this->increment();
+    return *this;
+}
+
+template< typename DynamicBitset >
+const_bit_iterator< DynamicBitset >
+const_bit_iterator< DynamicBitset >::operator++( int )
+{
+    const_bit_iterator temp = *this;
+    this->increment();
+    return temp;
+}
+
+template< typename DynamicBitset >
+const_bit_iterator< DynamicBitset > &
+const_bit_iterator< DynamicBitset >::const_bit_iterator::operator--()
+{
+    this->decrement();
+    return *this;
+}
+
+template< typename DynamicBitset >
+const_bit_iterator< DynamicBitset >
+const_bit_iterator< DynamicBitset >::operator--( int )
+{
+    const_bit_iterator temp = *this;
+    this->decrement();
+    return temp;
+}
+
+template< typename DynamicBitset >
+const_bit_iterator< DynamicBitset > &
+const_bit_iterator< DynamicBitset >::operator+=( difference_type n )
+{
+    this->add( n );
+    return *this;
+}
+
+template< typename DynamicBitset >
+const_bit_iterator< DynamicBitset > &
+const_bit_iterator< DynamicBitset >::operator-=( difference_type n )
+{
+    this->add( -n );
+    return *this;
+}
+
+template< typename DynamicBitset >
+const_bit_iterator< DynamicBitset >
+operator+( const const_bit_iterator< DynamicBitset > & it,
+           typename const_bit_iterator< DynamicBitset >::difference_type n )
+{
+    const_bit_iterator< DynamicBitset > temp = it;
+    temp += n;
+    return temp;
+}
+
+template< typename DynamicBitset >
+const_bit_iterator< DynamicBitset >
+operator+( typename const_bit_iterator< DynamicBitset >::difference_type n,
+           const const_bit_iterator< DynamicBitset > & it )
+{
+    return it + n;
+}
+
+template< typename DynamicBitset >
+const_bit_iterator< DynamicBitset >
+operator-( const const_bit_iterator< DynamicBitset > & it,
+           typename const_bit_iterator< DynamicBitset >::difference_type n )
+{
+    const_bit_iterator< DynamicBitset > temp = it;
+    temp -= n;
+    return temp;
+}
+
+template< typename DynamicBitset >
+typename const_bit_iterator< DynamicBitset >::const_reference
+const_bit_iterator< DynamicBitset >::operator[]( difference_type n ) const
+{
+    return *( *this + n );
+}
+
+
 template< typename BlockIterator, typename B, typename A >
 void
 from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< B, A > & result )
@@ -226,6 +539,98 @@ template< typename Block, typename AllocatorOrContainer >
 dynamic_bitset< Block, AllocatorOrContainer >::~dynamic_bitset()
 {
     BOOST_ASSERT( m_check_invariants() );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::iterator
+dynamic_bitset< Block, AllocatorOrContainer >::begin()
+{
+    return iterator( m_bits.begin(), 0 );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::const_iterator
+dynamic_bitset< Block, AllocatorOrContainer >::begin() const
+{
+    return const_iterator( m_bits.cbegin(), 0 );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::iterator
+dynamic_bitset< Block, AllocatorOrContainer >::end()
+{
+    if ( count_extra_bits() == 0 ) {
+        return iterator( m_bits.end(), 0 );
+    } else {
+        return iterator( std::prev( m_bits.end() ), size() % bits_per_block );
+    }
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::const_iterator
+dynamic_bitset< Block, AllocatorOrContainer >::end() const
+{
+    if ( count_extra_bits() == 0 ) {
+        return const_iterator( m_bits.cend(), 0 );
+    } else {
+        return const_iterator( std::prev( m_bits.cend() ), size() % bits_per_block );
+    }
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::reverse_iterator
+dynamic_bitset< Block, AllocatorOrContainer >::rbegin()
+{
+    return reverse_iterator( end() );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::const_reverse_iterator
+dynamic_bitset< Block, AllocatorOrContainer >::rbegin() const
+{
+    return const_reverse_iterator( end() );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::reverse_iterator
+dynamic_bitset< Block, AllocatorOrContainer >::rend()
+{
+    return reverse_iterator( begin() );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::const_reverse_iterator
+dynamic_bitset< Block, AllocatorOrContainer >::rend() const
+{
+    return const_reverse_iterator( begin() );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::const_iterator
+dynamic_bitset< Block, AllocatorOrContainer >::cbegin() const
+{
+    return const_iterator( begin() );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::const_iterator
+dynamic_bitset< Block, AllocatorOrContainer >::cend() const
+{
+    return const_iterator( end() );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::const_reverse_iterator
+dynamic_bitset< Block, AllocatorOrContainer >::crbegin() const
+{
+    return const_reverse_iterator( end() );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+typename dynamic_bitset< Block, AllocatorOrContainer >::const_reverse_iterator
+dynamic_bitset< Block, AllocatorOrContainer >::crend() const
+{
+    return const_reverse_iterator( begin() );
 }
 
 template< typename Block, typename AllocatorOrContainer >

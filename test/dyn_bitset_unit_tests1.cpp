@@ -233,6 +233,34 @@ run_test_cases( BOOST_EXPLICIT_TEMPLATE_TYPE( Block ) )
             blocks[ i ] = static_cast< Block >( i );
         Tests::from_block_range( blocks );
     }
+
+    //=====================================================================
+    // test iterators
+    {
+        bitset_type b;
+        Tests::iterate_forward( b );
+        Tests::iterate_backward( b );
+        Tests::iterator_operations( b );
+    }
+    {
+        bitset_type b( 1, 1ul );
+        Tests::iterate_forward( b );
+        Tests::iterate_backward( b );
+        Tests::iterator_operations( b );
+    }
+    {
+        bitset_type b( bitset_type::bits_per_block, 100ul );
+        Tests::iterate_forward( b );
+        Tests::iterate_backward( b );
+        Tests::iterator_operations( b );
+    }
+    {
+        bitset_type b( long_string );
+        Tests::iterate_forward( b );
+        Tests::iterate_backward( b );
+        Tests::iterator_operations( b );
+    }
+
     //=====================================================================
     // test to_block_range
     {
