@@ -15,7 +15,8 @@
 #define BOOST_LOWEST_BIT_HPP_GP_20030301
 
 #include "boost/assert.hpp"
-#include "boost/integer/integer_log2.hpp"
+#include "boost/core/bit.hpp"
+#include <type_traits>
 
 namespace boost {
 namespace detail {
@@ -26,10 +27,7 @@ lowest_bit( T x )
 {
     BOOST_ASSERT( x >= 1 );
 
-    // Clear all the bits that are set except the rightmost one,
-    // then calculate the logarithm to base 2.
-    //
-    return boost::integer_log2< T >( x - ( x & ( x - 1 ) ) );
+    return boost::core::countr_zero( static_cast< typename std::make_unsigned< T >::type >( x ) );
 }
 
 }
