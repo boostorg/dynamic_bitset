@@ -134,7 +134,7 @@ template< typename Bitset >
 struct bitset_test
 {
     typedef typename Bitset::block_type Block;
-    BOOST_STATIC_CONSTANT( int, bits_per_block = Bitset::bits_per_block );
+    static constexpr int bits_per_block = Bitset::bits_per_block;
 
     // from unsigned long
     //
