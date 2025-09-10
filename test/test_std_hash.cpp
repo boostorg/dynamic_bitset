@@ -20,12 +20,12 @@ main( int, char *[] )
 
     bitset_type                       zeroes( long_string.size(), 0 );
     bitset_type                       stuff( long_string );
-    bitset_type                       ones( long_string.size(), 1 );
+    bitset_type                       one( long_string.size(), 1 );
 
     std::unordered_set< bitset_type > bitsets;
     bitsets.insert( zeroes );
     bitsets.insert( stuff );
-    bitsets.insert( ones );
+    bitsets.insert( one );
 
     BOOST_TEST_EQ( bitsets.size(), 3 );
 
