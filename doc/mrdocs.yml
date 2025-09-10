@@ -16,6 +16,7 @@ exclude-symbols:
   - 'boost::detail::**'
   - 'boost::to_string_helper'
   - 'boost::dynamic_bitset::bit_appender'
+  - 'boost::dynamic_bitset::buffer_type'
 file-patterns:
   - '*.hpp'
 multipage: true

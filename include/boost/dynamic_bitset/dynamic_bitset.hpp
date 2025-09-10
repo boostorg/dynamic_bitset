@@ -84,11 +84,6 @@ template< typename Block, typename AllocatorOrContainer >
 class dynamic_bitset
 {
     BOOST_STATIC_ASSERT( (bool)detail::dynamic_bitset_impl::allowed_block_type< Block >::value );
-    typedef typename std::conditional<
-            detail::dynamic_bitset_impl::is_container< AllocatorOrContainer, Block >::value,
-            AllocatorOrContainer,
-            std::vector< Block, AllocatorOrContainer >
-        >::type                             buffer_type;
 
 public:
     //!     The same type as `Block`.
@@ -104,6 +99,16 @@ public:
     //!     bitset. See \ref size().
     // -----------------------------------------------------------------------
     typedef std::size_t                     size_type;
+
+    //!     Note: Made public to cope with failures from many GCC and
+    //!     Clang versions which seem to ignore the friend declarations
+    //!     of `bit_iterator` and `const_bit_iterator`.
+    // -----------------------------------------------------------------------
+    typedef typename std::conditional<
+            detail::dynamic_bitset_impl::is_container< AllocatorOrContainer, Block >::value,
+            AllocatorOrContainer,
+            std::vector< Block, AllocatorOrContainer >
+        >::type                             buffer_type;
 
     //!     The number of bits the type `Block` uses to represent
     //!     values, excluding any padding bits. Numerically equal to
