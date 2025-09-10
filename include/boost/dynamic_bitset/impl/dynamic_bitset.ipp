@@ -742,15 +742,14 @@ dynamic_bitset< Block, AllocatorOrContainer >::
     pop_back()
 {
     BOOST_ASSERT( ! empty() );
-    const size_type old_num_blocks  = num_blocks();
-    const size_type required_blocks = calc_num_blocks( m_num_bits - 1 );
 
-    if ( required_blocks != old_num_blocks ) {
+    if ( count_extra_bits() == 1 ) {
         m_bits.pop_back();
+        --m_num_bits;
+    } else {
+        --m_num_bits;
+        m_zero_unused_bits();
     }
-
-    --m_num_bits;
-    m_zero_unused_bits();
 }
 
 template< typename Block, typename AllocatorOrContainer >
