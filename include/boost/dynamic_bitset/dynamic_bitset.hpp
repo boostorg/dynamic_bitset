@@ -24,9 +24,6 @@
 #include "boost/dynamic_bitset_fwd.hpp"
 #include "boost/limits.hpp"
 #include "boost/static_assert.hpp"
-#if __cpp_lib_three_way_comparison
-#include <compare>
-#endif
 #include <iosfwd>
 #include <string>
 #include <vector>

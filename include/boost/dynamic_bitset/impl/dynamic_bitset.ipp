@@ -206,18 +206,6 @@ operator==( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< 
     return lhs.m_block_iterator == rhs.m_block_iterator && lhs.m_bit_index == rhs.m_bit_index;
 }
 
-#if __cpp_lib_three_way_comparison
-template< typename Iterator >
-std::strong_ordering
-operator<=>( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
-{
-    if ( const auto cmp = lhs.m_block_iterator <=> rhs.m_block_iterator; cmp != 0 ) {
-        return cmp;
-    } else {
-        return lhs.m_bit_index <=> rhs.m_bit_index;
-    }
-}
-#else
 template< typename Iterator >
 bool
 operator!=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
@@ -253,7 +241,6 @@ operator>=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< 
 {
     return !( lhs < rhs );
 }
-#endif // __cpp_lib_three_way_comparison
 
 template< typename Iterator >
 std::ptrdiff_t
