@@ -23,7 +23,6 @@
 #include "boost/dynamic_bitset/detail/dynamic_bitset.hpp"
 #include "boost/dynamic_bitset_fwd.hpp"
 #include "boost/limits.hpp"
-#include "boost/static_assert.hpp"
 #include <iosfwd>
 #include <string>
 #include <type_traits>
@@ -81,8 +80,8 @@ class const_bit_iterator;
 template< typename Block, typename AllocatorOrContainer >
 class dynamic_bitset
 {
-    BOOST_STATIC_ASSERT( (bool)detail::dynamic_bitset_impl::allowed_block_type< Block >::value );
-    BOOST_STATIC_ASSERT( std::is_same< Block, typename AllocatorOrContainer::value_type >::value );
+    static_assert( (bool)detail::dynamic_bitset_impl::allowed_block_type< Block >::value, "Block type not allowed" );
+    static_assert( std::is_same< Block, typename AllocatorOrContainer::value_type >::value, "Block is not the same type as AllocatorOrContainer::value_type" );
 
 public:
     //!     The same type as `Block`.
@@ -113,11 +112,11 @@ public:
     //!     values, excluding any padding bits. Numerically equal to
     //!     `std::numeric_limits< Block >::digits`.
     // -----------------------------------------------------------------------
-    BOOST_STATIC_CONSTANT( int, bits_per_block = std::numeric_limits< Block >::digits );
+    static constexpr int bits_per_block = std::numeric_limits< Block >::digits;
 
     //!     The maximum value of `size_type`.
     // -----------------------------------------------------------------------
-    BOOST_STATIC_CONSTANT( size_type, npos = static_cast< size_type >( -1 ) );
+    static constexpr size_type npos = static_cast< size_type >( -1 );
 
     //!     A proxy class to simulate lvalues of bit type.
     //!
@@ -1253,7 +1252,7 @@ public:
     friend class serialize_impl;
 
 private:
-    BOOST_STATIC_CONSTANT( int, ulong_width = std::numeric_limits< unsigned long >::digits );
+    static constexpr int ulong_width = std::numeric_limits< unsigned long >::digits;
 
     dynamic_bitset &        range_operation( size_type pos, size_type len, Block ( *partial_block_operation )( Block, size_type, size_type ), Block ( *full_block_operation )( Block ) );
     void                    m_zero_unused_bits();
@@ -1356,7 +1355,7 @@ public:
     void decrement();
     void add( typename Iterator::difference_type n );
 
-    BOOST_STATIC_CONSTANT( int, bits_per_block = std::numeric_limits< typename Iterator::value_type >::digits );
+    static constexpr int bits_per_block = std::numeric_limits< typename Iterator::value_type >::digits;
     Iterator m_block_iterator;
     int      m_bit_index = 0;
 };
@@ -1405,25 +1404,6 @@ public:
     const_bit_iterator & operator-=( difference_type n );
     const_reference      operator[]( difference_type n ) const;
 };
-
-#if ! defined BOOST_NO_INCLASS_MEMBER_INITIALIZATION
-
-template< typename Block, typename AllocatorOrContainer >
-const int
-    dynamic_bitset< Block, AllocatorOrContainer >::bits_per_block;
-
-template< typename Block, typename AllocatorOrContainer >
-const typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
-    dynamic_bitset< Block, AllocatorOrContainer >::npos;
-
-template< typename Block, typename AllocatorOrContainer >
-const int
-    dynamic_bitset< Block, AllocatorOrContainer >::ulong_width;
-
-template< typename Container >
-const int
-    bit_iterator_base< Container >::bits_per_block;
-#endif
 
 //!     Compares two bitsets.
 //!
