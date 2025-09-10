@@ -2092,8 +2092,8 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_unsigned_long(
     m_bits.resize( calc_num_blocks( num_bits ) );
     m_num_bits = num_bits;
 
-    typedef unsigned long                                                                         num_type;
-    typedef boost::detail::dynamic_bitset_impl ::shifter< num_type, bits_per_block, ulong_width > shifter;
+    typedef unsigned long                                                                        num_type;
+    typedef boost::detail::dynamic_bitset_impl::shifter< num_type, bits_per_block, ulong_width > shifter;
 
     // if (num_bits == 0)
     //     return;
