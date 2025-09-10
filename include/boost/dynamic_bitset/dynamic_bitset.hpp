@@ -1163,28 +1163,6 @@ public:
     // -----------------------------------------------------------------------
     bool             intersects( const dynamic_bitset & b ) const;
 
-    //!     Finds the first set bit in `*this`, if any.
-    //!
-    //!     \return
-    //!     The lowest index `i` such that bit `i` is set in `*this`, or
-    //!     `npos` if `*this` has no bits set.
-    //!
-    //!     \par Throws
-    //!     Nothing.
-    // -----------------------------------------------------------------------
-    size_type        find_first() const;
-
-    //!     Finds the first unset bit in `*this`, if any.
-    //!
-    //!     \return
-    //!     The lowest index `i` such that bit `i` is unset in `*this`,
-    //!     or `npos` if no such index exists.
-    //!
-    //!     \par Throws
-    //!     Nothing.
-    // -----------------------------------------------------------------------
-    size_type        find_first_off() const;
-
     //!     Finds the first set bit in `*this` with an index >= `pos`,
     //!     if any.
     //!
@@ -1196,7 +1174,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    size_type        find_first( size_type pos ) const;
+    size_type        find_first( size_type pos = 0 ) const;
 
     //!     Finds the first unset bit in `*this` with an index >= `pos`,
     //!     if any.
@@ -1209,7 +1187,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    size_type        find_first_off( size_type pos ) const;
+    size_type        find_first_off( size_type pos = 0 ) const;
 
     //!     Finds the first bit set in `*this` with an index > `pos`, if
     //!     any.
