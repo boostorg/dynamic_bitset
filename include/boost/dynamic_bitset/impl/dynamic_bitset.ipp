@@ -1360,20 +1360,6 @@ dynamic_bitset< Block, AllocatorOrContainer >::m_do_find_from( size_type first_b
 
 template< typename Block, typename AllocatorOrContainer >
 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
-dynamic_bitset< Block, AllocatorOrContainer >::find_first() const
-{
-    return m_do_find_from( 0, true );
-}
-
-template< typename Block, typename AllocatorOrContainer >
-typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
-dynamic_bitset< Block, AllocatorOrContainer >::find_first_off() const
-{
-    return m_do_find_from( 0, false );
-}
-
-template< typename Block, typename AllocatorOrContainer >
-typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::find_first( size_type pos ) const
 {
     const size_type sz = size();
