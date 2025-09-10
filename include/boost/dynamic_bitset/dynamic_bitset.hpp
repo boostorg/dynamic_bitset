@@ -26,6 +26,7 @@
 #include "boost/static_assert.hpp"
 #include <iosfwd>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #if defined( BOOST_DYNAMIC_BITSET_SPECIALIZE_STD_HASH )
@@ -81,6 +82,7 @@ template< typename Block, typename AllocatorOrContainer >
 class dynamic_bitset
 {
     BOOST_STATIC_ASSERT( (bool)detail::dynamic_bitset_impl::allowed_block_type< Block >::value );
+    BOOST_STATIC_ASSERT( std::is_same< Block, typename AllocatorOrContainer::value_type >::value );
 
 public:
     //!     The same type as `Block`.
