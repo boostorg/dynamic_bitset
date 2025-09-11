@@ -2071,10 +2071,10 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
     for ( ; i < m; ++i ) {
         const CharT c = s[ ( pos + m - 1 ) - i ];
 
-        BOOST_ASSERT( Tr::eq( c, one ) || Tr::eq( c, BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' ) ) );
-
         if ( Tr::eq( c, one ) ) {
             set( i );
+        } else {
+            BOOST_ASSERT( Tr::eq( c, BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' ) ) );
         }
     }
 }
