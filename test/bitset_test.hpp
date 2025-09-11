@@ -358,8 +358,9 @@ struct bitset_test
     static void
     move_constructor( const Bitset & b )
     {
-        Bitset copy( boost::move( b ) );
-        BOOST_TEST( b == copy );
+        Bitset copy( b );
+        Bitset b2( boost::move( copy ) );
+        BOOST_TEST( b2 == b );
     }
 
     // move assignment operator (absent from std::bitset)
