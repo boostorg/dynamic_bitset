@@ -6,7 +6,6 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include "boost/config.hpp"
 #include "boost/detail/lightweight_test.hpp"
 #include "boost/dynamic_bitset.hpp"
 #include <unordered_set>
