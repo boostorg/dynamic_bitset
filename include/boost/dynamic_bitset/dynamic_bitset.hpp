@@ -365,6 +365,27 @@ public:
     template< typename CharT, typename Traits, typename Alloc >
     dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = (std::basic_string<CharT, Traits, Alloc>::npos), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
+    //!     Similar to the constructor from a `basic_string`, but takes
+    //!     a pointer to a C-style string (and doesn't take a `pos`).
+    //!
+    //!     The size of the bitset is `num_bits` if `num_bits != npos`,
+    //!     otherwise `rlen = min( n, std::char_traits< CharT >::length( s ) )`.
+    //!     The first `M = min( num_bits, rlen )` bits are initialized
+    //!     to the corresponding characters in `s`.
+    //!
+    //!     \pre
+    //!     The characters in `s` are '0' or '1'.
+    //!
+    //!     \param s The string to construct from.
+    //!     \param n The maximum number of characters in the string to
+    //!     consider.
+    //!     \param num_bits The size of the bitset to construct, if
+    //!     different from `npos`.
+    //!     \param alloc The allocator to use.
+    // -----------------------------------------------------------------------
+    template< typename CharT >
+    dynamic_bitset( const CharT * s, std::size_t n = std::size_t( -1 ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+
     //!     Constructs a bitset from a range of blocks or from an
     //!     integer.
     //!
@@ -1286,8 +1307,8 @@ private:
     template< typename BlockIter >
     void init_from_block_range( BlockIter first, BlockIter last );
 
-    template< typename CharT, typename Traits, typename Alloc >
-    void init_from_string( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos, typename std::basic_string< CharT, Traits, Alloc >::size_type n, size_type num_bits );
+    template< typename CharT, typename Traits = std::char_traits< CharT > >
+    void init_from_string( const CharT * s, std::size_t pos, std::size_t n, size_type num_bits );
 
     void init_from_unsigned_long( size_type num_bits, unsigned long value /*,
                                                        const allocator_type& alloc*/

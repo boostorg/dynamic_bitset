@@ -275,7 +275,7 @@ run_test_cases()
         Tests::copy_constructor( b );
     }
     {
-        bitset_type b( std::string( "0" ) );
+        bitset_type b( "0" );
         Tests::copy_constructor( b );
     }
     {
@@ -289,7 +289,7 @@ run_test_cases()
         Tests::copy_assignment_operator( a, b );
     }
     {
-        bitset_type a( std::string( "1" ) ), b( std::string( "0" ) );
+        bitset_type a( "1" ), b( "0" );
         Tests::copy_assignment_operator( a, b );
     }
     {
@@ -302,7 +302,7 @@ run_test_cases()
         Tests::copy_assignment_operator( a, b );
     }
     {
-        bitset_type a( std::string( "0" ) );
+        bitset_type a( "0" );
         bitset_type b( long_string ); // b greater than a
         Tests::copy_assignment_operator( a, b );
     }
@@ -315,7 +315,7 @@ run_test_cases()
         Tests::move_constructor( b );
     }
     {
-        bitset_type b( std::string( "0" ) );
+        bitset_type b( "0" );
         Tests::move_constructor( b );
     }
     {
@@ -329,7 +329,7 @@ run_test_cases()
         Tests::move_assignment_operator( a, b );
     }
     {
-        bitset_type a( std::string( "1" ) ), b( std::string( "0" ) );
+        bitset_type a( "1" ), b( "0" );
         Tests::move_assignment_operator( a, b );
     }
     {
@@ -342,7 +342,7 @@ run_test_cases()
         Tests::move_assignment_operator( a, b );
     }
     {
-        bitset_type a( std::string( "0" ) );
+        bitset_type a( "0" );
         bitset_type b( long_string ); // b greater than a
         Tests::move_assignment_operator( a, b );
     }
@@ -351,7 +351,7 @@ run_test_cases()
     // Test swap
     {
         bitset_type a;
-        bitset_type b( std::string( "1" ) );
+        bitset_type b( "1" );
         Tests::swap( a, b );
         Tests::swap( b, a );
         Tests::swap( a, a );
@@ -363,7 +363,7 @@ run_test_cases()
         Tests::swap( b, a );
     }
     {
-        bitset_type a( std::string( "0" ) );
+        bitset_type a( "0" );
         bitset_type b( long_string );
         Tests::swap( a, b );
         Tests::swap( b, a );
@@ -377,11 +377,11 @@ run_test_cases()
         Tests::resize( a );
     }
     {
-        bitset_type a( std::string( "0" ) );
+        bitset_type a( "0" );
         Tests::resize( a );
     }
     {
-        bitset_type a( std::string( "1" ) );
+        bitset_type a( "1" );
         Tests::resize( a );
     }
     {
@@ -401,11 +401,11 @@ run_test_cases()
     //=====================================================================
     // Test pop back
     {
-        bitset_type a( std::string( "01" ) );
+        bitset_type a( "01" );
         Tests::pop_back( a );
     }
     {
-        bitset_type a( std::string( "10" ) );
+        bitset_type a( "10" );
         Tests::pop_back( a );
     }
     {
@@ -414,7 +414,7 @@ run_test_cases()
         Tests::pop_back( a );
     }
     {
-        bitset_type a( long_string );
+        bitset_type a( long_string.c_str() );
         Tests::pop_back( a );
     }
     //=====================================================================
@@ -424,11 +424,11 @@ run_test_cases()
         Tests::append_bit( a );
     }
     {
-        bitset_type a( std::string( "0" ) );
+        bitset_type a( "0" );
         Tests::append_bit( a );
     }
     {
-        bitset_type a( std::string( "1" ) );
+        bitset_type a( "1" );
         Tests::append_bit( a );
     }
     {
@@ -447,11 +447,11 @@ run_test_cases()
         Tests::append_block( a );
     }
     {
-        bitset_type a( std::string( "0" ) );
+        bitset_type a( "0" );
         Tests::append_block( a );
     }
     {
-        bitset_type a( std::string( "1" ) );
+        bitset_type a( "1" );
         Tests::append_block( a );
     }
     {
@@ -460,7 +460,7 @@ run_test_cases()
         Tests::append_block( a );
     }
     {
-        bitset_type a( long_string );
+        bitset_type a( long_string.c_str() );
         Tests::append_block( a );
     }
     //=====================================================================
@@ -471,7 +471,7 @@ run_test_cases()
         Tests::append_block_range( a, blocks );
     }
     {
-        bitset_type          a( std::string( "0" ) );
+        bitset_type          a( "0" );
         std::vector< Block > blocks( 3 );
         blocks[ 0 ] = static_cast< Block >( 0 );
         blocks[ 1 ] = static_cast< Block >( 1 );
@@ -479,7 +479,7 @@ run_test_cases()
         Tests::append_block_range( a, blocks );
     }
     {
-        bitset_type          a( std::string( "1" ) );
+        bitset_type          a( "1" );
         const unsigned int   n = ( std::numeric_limits< unsigned char >::max )();
         std::vector< Block > blocks( n );
         for ( typename std::vector< Block >::size_type i = 0; i < n; ++i )
@@ -496,7 +496,7 @@ run_test_cases()
         Tests::append_block_range( a, blocks );
     }
     {
-        bitset_type          a( long_string );
+        bitset_type          a( long_string.c_str() );
         std::vector< Block > blocks( 3 );
         blocks[ 0 ] = static_cast< Block >( 0 );
         blocks[ 1 ] = static_cast< Block >( 1 );
@@ -511,12 +511,12 @@ run_test_cases()
         Tests::operator_bracket( b1, bitvec1 );
     }
     {
-        bitset_type         b( std::string( "1" ) );
+        bitset_type         b( "1" );
         std::vector< bool > bit_vec( 1, true );
         Tests::operator_bracket( b, bit_vec );
     }
     {
-        bitset_type         b( long_string );
+        bitset_type         b( long_string.c_str() );
         std::size_t         n = long_string.size();
         std::vector< bool > bit_vec( n );
         for ( std::size_t i = 0; i < n; ++i )
@@ -531,12 +531,12 @@ run_test_cases()
         Tests::at( b1, bitvec1 );
     }
     {
-        bitset_type         b( std::string( "1" ) );
+        bitset_type         b( "1" );
         std::vector< bool > bit_vec( 1, true );
         Tests::at( b, bit_vec );
     }
     {
-        bitset_type         b( long_string );
+        bitset_type         b( long_string.c_str() );
         std::size_t         n = long_string.size();
         std::vector< bool > bit_vec( n );
         for ( std::size_t i = 0; i < n; ++i )
