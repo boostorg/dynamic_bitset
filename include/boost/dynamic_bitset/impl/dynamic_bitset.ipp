@@ -494,8 +494,21 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
 
     : m_bits( alloc ), m_num_bits( 0 )
 {
-    init_from_string( s, pos, n, num_bits );
+    init_from_string( s.c_str(), pos, n, num_bits );
 }
+
+template< typename Block, typename AllocatorOrContainer >
+template< typename CharT >
+dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
+    const CharT * s,
+    std::size_t   n,
+    size_type     num_bits,
+    const allocator_type & alloc )
+    : m_bits( alloc ), m_num_bits( 0 )
+{
+    init_from_string( s, 0, n, num_bits );
+}
+
 
 template< typename Block, typename AllocatorOrContainer >
 template< typename BlockInputIterator >
@@ -2045,21 +2058,20 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_block_range( BlockIter 
 }
 
 template< typename Block, typename AllocatorOrContainer >
-template< typename CharT, typename Traits, typename Alloc >
+template< typename CharT, typename Traits >
 void
 dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
-    const std::basic_string< CharT, Traits, Alloc > &             s,
-    typename std::basic_string< CharT, Traits, Alloc >::size_type pos,
-    typename std::basic_string< CharT, Traits, Alloc >::size_type n,
-    size_type                                                     num_bits )
+    const CharT * s,
+    std::size_t   pos,
+    std::size_t   n,
+    size_type     num_bits )
 {
-    BOOST_ASSERT( pos <= s.size() );
+    const std::size_t string_length = Traits::length( s );
+    BOOST_ASSERT( pos <= string_length );
 
-    typedef typename std::basic_string< CharT, Traits, Alloc > StrT;
-    typedef typename StrT::traits_type                         Tr;
 
-    const typename StrT::size_type                             rlen = (std::min)( n, s.size() - pos );
-    const size_type                                            sz   = ( num_bits != npos ? num_bits : rlen );
+    const std::size_t rlen = (std::min)( n, string_length - pos );
+    const size_type   sz   = ( num_bits != npos ? num_bits : rlen );
     m_bits.resize( calc_num_blocks( sz ) );
     m_num_bits = sz;
 
@@ -2067,14 +2079,13 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
     const CharT              one = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '1' );
 
     const size_type          m   = num_bits < rlen ? num_bits : rlen;
-    typename StrT::size_type i   = 0;
-    for ( ; i < m; ++i ) {
+    for ( std::size_t i = 0; i < m; ++i ) {
         const CharT c = s[ ( pos + m - 1 ) - i ];
 
-        if ( Tr::eq( c, one ) ) {
+        if ( Traits::eq( c, one ) ) {
             set( i );
         } else {
-            BOOST_ASSERT( Tr::eq( c, BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' ) ) );
+            BOOST_ASSERT( Traits::eq( c, BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' ) ) );
         }
     }
 }
