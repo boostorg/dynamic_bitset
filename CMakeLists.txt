@@ -46,7 +46,7 @@ if (BOOST_DYNAMIC_BITSET_IS_ROOT)
 
     # If BOOST_SRC_DIR is valid, fallback to find_package
     set(CMAKE_FOLDER Dependencies)
-    set(BOOST_INCLUDE_LIBRARIES assert config container_hash core move throw_exception)
+    set(BOOST_INCLUDE_LIBRARIES assert config container_hash core throw_exception)
     set(BOOST_EXCLUDE_LIBRARIES dynamic_bitset)
     set(PREV_BUILD_TESTING ${BUILD_TESTING})
     set(BUILD_TESTING OFF CACHE BOOL "Build the tests." FORCE)
@@ -62,7 +62,6 @@ target_link_libraries(boost_dynamic_bitset
     Boost::config
     Boost::container_hash
     Boost::core
-    Boost::move
     Boost::throw_exception
 )
 
