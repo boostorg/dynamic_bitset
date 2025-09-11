@@ -60,4 +60,8 @@ make_non_const( T t )
 #    define BOOST_DYNAMIC_BITSET_SPECIALIZE_STD_HASH
 #endif
 
+#if ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201703L ) || __cplusplus >= 201703L
+#    define BOOST_DYNAMIC_BITSET_USE_CPP17_OR_LATER
+#endif
+
 #endif // include guard

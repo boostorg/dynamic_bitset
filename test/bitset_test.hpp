@@ -208,6 +208,10 @@ struct bitset_test
         // If M < N, remaining bit positions are zero
         for ( ; j < actual_size; ++j )
             BOOST_TEST( b[ j ] == 0 );
+
+#if defined( BOOST_DYNAMIC_BITSET_USE_CPP17_OR_LATER )
+        BOOST_TEST( Bitset( std::basic_string_view< Ch, Tr >( str ).substr( pos, rlen ), num_bits ) == b );
+#endif
     }
 
     static void
