@@ -18,9 +18,9 @@ main( int, char *[] )
     const std::string                              long_string =
         "01001110101110110101011010000000000011110101101111111111";
 
-    bitset_type                       zeroes( long_string.size(), 0 );
-    bitset_type                       stuff( long_string );
-    bitset_type                       one( long_string.size(), 1 );
+    const bitset_type                 zeroes( long_string.size(), 0 );
+    const bitset_type                 stuff( long_string );
+    const bitset_type                 one( long_string.size(), 1 );
 
     std::unordered_set< bitset_type > bitsets;
     bitsets.insert( zeroes );
