@@ -494,7 +494,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
 
     : m_bits( alloc ), m_num_bits( 0 )
 {
-    init_from_string( s.c_str(), pos, n, num_bits );
+    init_from_string( s.c_str(), s.length(), pos, n, num_bits );
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -506,9 +506,23 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
     const allocator_type & alloc )
     : m_bits( alloc ), m_num_bits( 0 )
 {
-    init_from_string( s, 0, n, num_bits );
+    init_from_string( s, std::char_traits< CharT >::length( s ), 0, n, num_bits );
 }
 
+#if defined( BOOST_DYNAMIC_BITSET_USE_CPP17_OR_LATER )
+
+template< typename Block, typename AllocatorOrContainer >
+template< typename CharT, typename Traits >
+dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
+    std::basic_string_view< CharT, Traits > sv,
+    size_type                               num_bits,
+    const allocator_type &                  alloc )
+    : m_bits( alloc ), m_num_bits( 0 )
+{
+    init_from_string( sv.data(), sv.length(), 0, sv.length(), num_bits );
+}
+
+#endif
 
 template< typename Block, typename AllocatorOrContainer >
 template< typename BlockInputIterator >
@@ -2061,12 +2075,12 @@ template< typename Block, typename AllocatorOrContainer >
 template< typename CharT, typename Traits >
 void
 dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
-    const CharT * s,
+    const CharT * s,    // caution: not necessarily null-terminated
+    std::size_t   string_length,
     std::size_t   pos,
     std::size_t   n,
     size_type     num_bits )
 {
-    const std::size_t string_length = Traits::length( s );
     BOOST_ASSERT( pos <= string_length );
 
 

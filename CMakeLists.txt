@@ -82,6 +82,9 @@ if (DYNAMIC_BITSET_MRDOCS_BUILD)
     # Create a custom target for MrDocs.
     add_library(dynamic_bitset_mrdocs_target ${TEMP_CPP_FILE})
 
+    # This is to get the documentation of the constructor from basic_string_view.
+    set_target_properties(dynamic_bitset_mrdocs_target PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+
     # Set any other target properties here.
     target_include_directories(dynamic_bitset_mrdocs_target PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
     target_link_libraries(dynamic_bitset_mrdocs_target PRIVATE boost_dynamic_bitset)

@@ -386,6 +386,27 @@ public:
     template< typename CharT >
     dynamic_bitset( const CharT * s, std::size_t n = std::size_t( -1 ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
+#if defined( BOOST_DYNAMIC_BITSET_USE_CPP17_OR_LATER )
+
+    //!     Similar to the constructor from a pointer to a C-style
+    //!     string, but takes a `std::basic_string_view`. This
+    //!     constructor is only available if DynamicBitset is compiled
+    //!     as C++17 or later.
+    //!
+    //!     \pre
+    //!     The characters in `sv` are '0' or '1'.
+    //!
+    //!     \param sv The basic_string_view to construct from.
+    //!     \param num_bits The size of the bitset to construct, if
+    //!     different from `npos`. (Otherwise the size of the bitset is
+    //!     `sv.length()`.)
+    //!     \param alloc The allocator to use.
+    // -----------------------------------------------------------------------
+    template< typename CharT, typename Traits >
+    dynamic_bitset( std::basic_string_view< CharT, Traits > sv, size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+
+#endif
+
     //!     Constructs a bitset from a range of blocks or from an
     //!     integer.
     //!
@@ -1308,7 +1329,7 @@ private:
     void init_from_block_range( BlockIter first, BlockIter last );
 
     template< typename CharT, typename Traits = std::char_traits< CharT > >
-    void init_from_string( const CharT * s, std::size_t pos, std::size_t n, size_type num_bits );
+    void init_from_string( const CharT * s, std::size_t string_length, std::size_t pos, std::size_t n, size_type num_bits );
 
     void init_from_unsigned_long( size_type num_bits, unsigned long value /*,
                                                        const allocator_type& alloc*/
