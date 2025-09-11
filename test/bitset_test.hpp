@@ -359,7 +359,7 @@ struct bitset_test
     move_constructor( const Bitset & b )
     {
         Bitset copy( b );
-        Bitset b2( boost::move( copy ) );
+        Bitset b2( std::move( copy ) );
         BOOST_TEST( b2 == b );
     }
 
@@ -369,8 +369,8 @@ struct bitset_test
     {
         Bitset b( lhs );
         Bitset c( rhs );
-        b = boost::move( c );
-        b = boost::move( b ); // self assignment check
+        b = std::move( c );
+        b = std::move( b ); // self assignment check
         BOOST_TEST( b == rhs );
     }
 

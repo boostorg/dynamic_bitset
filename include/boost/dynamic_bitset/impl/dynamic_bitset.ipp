@@ -21,7 +21,6 @@
 #include "boost/core/no_exceptions_support.hpp"
 #include "boost/dynamic_bitset/detail/lowest_bit.hpp"
 #include "boost/functional/hash/hash.hpp"
-#include "boost/move/move.hpp"
 #include "boost/throw_exception.hpp"
 #include <algorithm>
 #include <climits>
@@ -29,6 +28,7 @@
 #include <iterator>
 #include <ostream>
 #include <stdexcept>
+#include <utility>
 
 #ifndef BOOST_NO_STD_LOCALE
 #    include <locale>
@@ -644,7 +644,7 @@ operator=( const dynamic_bitset< Block, AllocatorOrContainer > & b )
 template< typename Block, typename AllocatorOrContainer >
 dynamic_bitset< Block, AllocatorOrContainer >::
     dynamic_bitset( dynamic_bitset< Block, AllocatorOrContainer > && b )
-    : m_bits( boost::move( b.m_bits ) ), m_num_bits( boost::move( b.m_num_bits ) )
+    : m_bits( std::move( b.m_bits ) ), m_num_bits( std::move( b.m_num_bits ) )
 {
     // Required so that BOOST_ASSERT(m_check_invariants()); works.
     BOOST_ASSERT( ( b.m_bits = buffer_type( get_allocator() ) ).empty() );
@@ -660,8 +660,8 @@ operator=( dynamic_bitset< Block, AllocatorOrContainer > && b )
         return *this;
     }
 
-    m_bits     = boost::move( b.m_bits );
-    m_num_bits = boost::move( b.m_num_bits );
+    m_bits     = std::move( b.m_bits );
+    m_num_bits = std::move( b.m_num_bits );
     // Required so that BOOST_ASSERT(m_check_invariants()); works.
     BOOST_ASSERT( ( b.m_bits = buffer_type( get_allocator() ) ).empty() );
     b.m_num_bits = 0;
