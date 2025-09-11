@@ -352,7 +352,12 @@ public:
     //!
     //!     \pre
     //!     `pos <= s.size()` and the characters used to initialize the
-    //!     bits are '0' or '1'.
+    //!     bits compare equal to either `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '0' )`
+    //!     or `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '1' )`. E.g.:
+    //!
+    //!     \code
+    //!     dynamic_bitset<> b( std::string( "10xyz" ), 0, 2 ); // OK
+    //!     \endcode
     //!
     //!     \param s The string to construct from.
     //!     \param pos The start position in the string.
@@ -374,7 +379,13 @@ public:
     //!     to the corresponding characters in `s`.
     //!
     //!     \pre
-    //!     The characters in `s` are '0' or '1'.
+    //!     The characters in `s` that are used to initialize the bits
+    //!     compare equal to either `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '0' )`
+    //!     or `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '1' )`. E.g.:
+    //!
+    //!     \code
+    //!     dynamic_bitset<> b( "10xyz", 2 ); // OK
+    //!     \endcode
     //!
     //!     \param s The string to construct from.
     //!     \param n The maximum number of characters in the string to
@@ -394,7 +405,13 @@ public:
     //!     as C++17 or later.
     //!
     //!     \pre
-    //!     The characters in `sv` are '0' or '1'.
+    //!     The characters in `sv` that are use to initialize the bits
+    //!     compare equal to either `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '0' )`
+    //!     or `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '1' )`. E.g.:
+    //!
+    //!     \code
+    //!     dynamic_bitset<> b( std::string_view( "10xyz", 2 ) ); // OK
+    //!     \endcode
     //!
     //!     \param sv The basic_string_view to construct from.
     //!     \param num_bits The size of the bitset to construct, if
