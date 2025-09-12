@@ -454,6 +454,21 @@ struct bitset_test
     }
 
     static void
+    pop_front( const Bitset & lhs )
+    {
+        Bitset b( lhs );
+        b.pop_front();
+        BOOST_TEST( b.size() == lhs.size() - 1 );
+        for ( std::size_t i = 0; i < b.size(); ++i )
+            BOOST_TEST( b[ i ] == lhs[ i + 1 ] );
+        
+        b.pop_front();
+        BOOST_TEST( b.size() == lhs.size() - 2 );
+        for ( std::size_t j = 0; j < b.size(); ++j )
+            BOOST_TEST( b[ j ] == lhs[ j + 2 ] );
+    }
+    
+    static void
     append_bit( const Bitset & lhs )
     {
         Bitset b( lhs );
@@ -469,6 +484,23 @@ struct bitset_test
         BOOST_TEST( b[ b.size() - 2 ] == true );
         for ( std::size_t j = 0; j < lhs.size(); ++j )
             BOOST_TEST( b[ j ] == lhs[ j ] );
+    }
+
+    static void
+    prepend_bit( const Bitset & lhs )
+    {
+        Bitset b( lhs );
+        b.push_front( true );
+        BOOST_TEST( b.size() == lhs.size() + 1 );
+        BOOST_TEST( b[ 0 ] == true );
+        for ( std::size_t i = 0; i < lhs.size(); ++i )
+            BOOST_TEST( b[ i + 1 ] == lhs[ i ] );
+        b.push_front( false );
+        BOOST_TEST( b.size() == lhs.size() + 2 );
+        BOOST_TEST( b[ 0 ] == false );
+        BOOST_TEST( b[ 1 ] == true );
+        for ( std::size_t j = 0; j < lhs.size(); ++j )
+            BOOST_TEST( b[ j + 2 ] == lhs[ j ] );
     }
 
     static void

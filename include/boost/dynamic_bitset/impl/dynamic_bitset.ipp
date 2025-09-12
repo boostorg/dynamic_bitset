@@ -762,6 +762,16 @@ dynamic_bitset< Block, AllocatorOrContainer >::
 template< typename Block, typename AllocatorOrContainer >
 void
 dynamic_bitset< Block, AllocatorOrContainer >::
+    push_front( bool bit )
+{
+    resize( size() + 1 );
+    *this <<= 1;
+    set( 0, bit );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+void
+dynamic_bitset< Block, AllocatorOrContainer >::
     pop_back()
 {
     BOOST_ASSERT( ! empty() );
@@ -773,6 +783,17 @@ dynamic_bitset< Block, AllocatorOrContainer >::
         --m_num_bits;
         m_zero_unused_bits();
     }
+}
+
+template< typename Block, typename AllocatorOrContainer >
+void
+dynamic_bitset< Block, AllocatorOrContainer >::
+    pop_front()
+{
+    BOOST_ASSERT( ! empty() );
+        
+    *this >>= 1;
+    resize( size() - 1 );
 }
 
 template< typename Block, typename AllocatorOrContainer >
