@@ -1485,7 +1485,7 @@ public:
 //!
 //!     \return
 //!     `true` if `a.size() == b.size()` and for all `i` in the range
-//!     `[0, a.size()]`, `a[ i ] == b[ i ]`. Otherwise `false`.
+//!     `[0, a.size())`, `a[ i ] == b[ i ]`. Otherwise `false`.
 //!
 //!     \par Throws
 //!     Nothing.
