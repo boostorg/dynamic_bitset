@@ -1425,13 +1425,20 @@ public:
     typedef value_type *                         pointer;
     typedef value_type &                         reference;
 
+    static constexpr int bits_per_block = std::numeric_limits< typename Iterator::value_type >::digits;
+
     bit_iterator_base( Iterator block_iterator, int bit_index );
 
+    template< typename Iter >
+    friend bool operator==( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
+    template< typename Iter >
+    friend bool operator< ( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
+
+protected:
     void increment();
     void decrement();
     void add( typename Iterator::difference_type n );
 
-    static constexpr int bits_per_block = std::numeric_limits< typename Iterator::value_type >::digits;
     Iterator m_block_iterator;
     int      m_bit_index = 0;
 };
