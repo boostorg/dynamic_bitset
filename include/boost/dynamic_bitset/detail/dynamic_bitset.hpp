@@ -17,7 +17,6 @@
 #define BOOST_DETAIL_DYNAMIC_BITSET_HPP
 
 #include "boost/config.hpp"
-#include "boost/core/allocator_access.hpp"
 #include <cstddef>
 #include <memory>
 #include <type_traits>
@@ -109,8 +108,8 @@ vector_max_size_workaround( const T & v )
 
     const allocator_type &                                      alloc = v.get_allocator();
 
-    typename boost::allocator_size_type< allocator_type >::type alloc_max =
-        boost::allocator_max_size( alloc );
+    typename std::allocator_traits< allocator_type >::size_type alloc_max =
+        std::allocator_traits< allocator_type >::max_size( alloc );
 
     const typename T::size_type container_max = v.max_size();
     return alloc_max < container_max ? alloc_max : container_max;
