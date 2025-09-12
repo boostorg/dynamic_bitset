@@ -307,7 +307,6 @@ run_test_cases()
         Tests::copy_assignment_operator( a, b );
     }
 
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
     //=====================================================================
     // Test move constructor
     {
@@ -346,7 +345,6 @@ run_test_cases()
         bitset_type b( long_string ); // b greater than a
         Tests::move_assignment_operator( a, b );
     }
-#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
     //=====================================================================
     // Test swap
     {

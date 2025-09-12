@@ -609,7 +609,6 @@ public:
     // -----------------------------------------------------------------------
     void             swap( dynamic_bitset & b ) noexcept;
 
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
     //!     Move constructor.
     //!
     //!     Constructs a bitset that is the same as the bitset `src`,
@@ -634,7 +633,6 @@ public:
     //!     Nothing.
     // -----------------------------------------------------------------------
     dynamic_bitset & operator=( dynamic_bitset && src );
-#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
 
     //!     Returns a copy of the allocator object used to construct
     //!     `*this`.
