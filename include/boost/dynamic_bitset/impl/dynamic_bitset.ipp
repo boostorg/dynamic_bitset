@@ -666,8 +666,6 @@ operator=( const dynamic_bitset< Block, AllocatorOrContainer > & b )
     return *this;
 }
 
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
-
 template< typename Block, typename AllocatorOrContainer >
 dynamic_bitset< Block, AllocatorOrContainer >::
     dynamic_bitset( dynamic_bitset< Block, AllocatorOrContainer > && b )
@@ -694,8 +692,6 @@ operator=( dynamic_bitset< Block, AllocatorOrContainer > && b )
     b.m_num_bits = 0;
     return *this;
 }
-
-#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
 
 template< typename Block, typename AllocatorOrContainer >
 typename dynamic_bitset< Block, AllocatorOrContainer >::allocator_type
