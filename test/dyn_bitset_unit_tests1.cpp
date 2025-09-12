@@ -583,6 +583,8 @@ run_test_cases()
             bit_vec[ i ] = long_string[ n - 1 - i ] == '0' ? 0 : 1;
         Tests::at( b, bit_vec );
     }
+    //=====================================================================
+    // Test max_size
 #if ! defined( BOOST_NO_CXX11_ALLOCATOR )
     {
         typedef boost::dynamic_bitset< Block, minimal_allocator< Block > > Bitset;
