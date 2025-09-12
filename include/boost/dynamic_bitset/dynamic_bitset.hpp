@@ -672,6 +672,17 @@ public:
     // -----------------------------------------------------------------------
     void           push_back( bool bit );
 
+    //!     Increases the size of the bitset by one, and sets the value
+    //!     of the new least significant bit to `bit`.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
+    //!
+    //!     \param bit The value to set the least significant bit to.
+    // -----------------------------------------------------------------------
+    void           push_front( bool bit );
+
     //!     Decreases the size of the bitset by one, removing the most
     //!     significant bit.
     //!
@@ -679,6 +690,14 @@ public:
     //!     `! this->empty()`
     // -----------------------------------------------------------------------
     void           pop_back();
+
+    //!     Decreases the size of the bitset by one, removing the least
+    //!     significant bit.
+    //!
+    //!     \pre
+    //!     `! this->empty()`
+    // -----------------------------------------------------------------------
+    void           pop_front();
 
     //!     Appends the bits in `block` to this bitset (appends to the
     //!     most significant end). This increases the size of the bitset

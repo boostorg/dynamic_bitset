@@ -416,6 +416,25 @@ run_test_cases()
         Tests::pop_back( a );
     }
     //=====================================================================
+    // Test pop_front
+    {
+        bitset_type a( "01" );
+        Tests::pop_front( a );
+    }
+    {
+        bitset_type a( "10" );
+        Tests::pop_front( a );
+    }
+    {
+        const int   size_to_fill_all_blocks = 4 * bits_per_block;
+        bitset_type a( size_to_fill_all_blocks, 255ul );
+        Tests::pop_front( a );
+    }
+    {
+        bitset_type a( long_string.c_str() );
+        Tests::pop_front( a );
+    }
+    //=====================================================================
     // Test append bit
     {
         bitset_type a;
@@ -437,6 +456,29 @@ run_test_cases()
     {
         bitset_type a( long_string );
         Tests::append_bit( a );
+    }
+    //=====================================================================
+    // Test push_front
+    {
+        bitset_type a;
+        Tests::prepend_bit( a );
+    }
+    {
+        bitset_type a( "0" );
+        Tests::prepend_bit( a );
+    }
+    {
+        bitset_type a( "1" );
+        Tests::prepend_bit( a );
+    }
+    {
+        const int   size_to_fill_all_blocks = 4 * bits_per_block;
+        bitset_type a( size_to_fill_all_blocks, 255ul );
+        Tests::prepend_bit( a );
+    }
+    {
+        bitset_type a( long_string );
+        Tests::prepend_bit( a );
     }
     //=====================================================================
     // Test append block
