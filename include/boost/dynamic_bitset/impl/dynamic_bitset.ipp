@@ -1239,7 +1239,7 @@ template< typename B, typename A, typename StringT >
 void
 dump_to_string( const dynamic_bitset< B, A > & b, StringT & s )
 {
-    to_string_helper( b, s, true /* =dump_all*/ );
+    to_string_helper( b, s, true /* = dump_all */ );
 }
 
 template< typename Block, typename AllocatorOrContainer, typename BlockOutputIterator >
