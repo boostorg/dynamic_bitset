@@ -12,6 +12,9 @@ cmake: '-DDYNAMIC_BITSET_MRDOCS_BUILD=ON'
 input:
   - ../include
 exclude-symbols:
+  - 'boost::bit_iterator_base'
+  - 'boost::bit_iterator'
+  - 'boost::const_bit_iterator'
   - 'boost::detail'
   - 'boost::detail::**'
   - 'boost::to_string_helper'
