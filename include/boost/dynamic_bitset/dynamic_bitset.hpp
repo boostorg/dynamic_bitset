@@ -350,23 +350,23 @@ public:
     // -----------------------------------------------------------------------
     explicit dynamic_bitset( size_type num_bits, unsigned long value = 0, const allocator_type & alloc = allocator_type() );
 
-    //!     Constructs a bitset from a string of 0's and 1's. The size
-    //!     of the bitset is `num_bits` if `num_bits != npos`, otherwise
-    //!     `rlen = min( n, s.size() - pos )`. The first `M = min(
-    //!     num_bits, rlen )` bits are initialized to the corresponding
-    //!     characters in `s`. Note that the highest character position
-    //!     in `s`, not the lowest, corresponds to the least significant
-    //!     bit. So, for example, `dynamic_bitset( std::string( "1101" )
-    //!     )` is the same as `dynamic_bitset( 13ul )`.
+    //!     Constructs a bitset from a string of 0's and 1's.
+    //!
+    //!     The size of the bitset is `num_bits` if `num_bits != npos`,
+    //!     otherwise `rlen = min( n, s.size() - pos )`. The first `M =
+    //!     min( num_bits, rlen )` bits are initialized to the
+    //!     corresponding characters in `s`. Note that the highest
+    //!     character position in `s`, not the lowest, corresponds to
+    //!     the least significant bit. So, for example, `dynamic_bitset(
+    //!     std::string( "1101" ))` is the same as `dynamic_bitset(
+    //!     13ul)`.
     //!
     //!     \pre
     //!     `pos <= s.size()` and the characters used to initialize the
     //!     bits compare equal to either `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '0' )`
     //!     or `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '1' )`. E.g.:
-    //!
-    //!     \code
-    //!     dynamic_bitset<> b( std::string( "10xyz" ), 0, 2 ); // OK
-    //!     \endcode
+    //!     `dynamic_bitset<> b( std::string( "10xyz" ), 0, 2 ); // OK`.
+
     //!
     //!     \param s The string to construct from.
     //!     \param pos The start position in the string.
@@ -391,10 +391,7 @@ public:
     //!     The characters in `s` that are used to initialize the bits
     //!     compare equal to either `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '0' )`
     //!     or `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '1' )`. E.g.:
-    //!
-    //!     \code
-    //!     dynamic_bitset<> b( "10xyz", 2 ); // OK
-    //!     \endcode
+    //!     `dynamic_bitset<> b( "10xyz", 2 ); // OK`.
     //!
     //!     \param s The string to construct from.
     //!     \param n The maximum number of characters in the string to
@@ -417,10 +414,7 @@ public:
     //!     The characters in `sv` that are use to initialize the bits
     //!     compare equal to either `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '0' )`
     //!     or `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '1' )`. E.g.:
-    //!
-    //!     \code
-    //!     dynamic_bitset<> b( std::string_view( "10xyz", 2 ) ); // OK
-    //!     \endcode
+    //!     `dynamic_bitset<> b( std::string_view( "10xyz", 2 ) ); // OK`.
     //!
     //!     \param sv The basic_string_view to construct from.
     //!     \param num_bits The size of the bitset to construct, if
