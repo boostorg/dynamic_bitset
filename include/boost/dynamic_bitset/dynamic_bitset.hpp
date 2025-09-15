@@ -690,7 +690,7 @@ public:
     //!     significant bit.
     //!
     //!     \pre
-    //!     `! this->empty()`
+    //!     `! this->empty()`.
     // -----------------------------------------------------------------------
     void           pop_back();
 
@@ -698,7 +698,7 @@ public:
     //!     significant bit.
     //!
     //!     \pre
-    //!     `! this->empty()`
+    //!     `! this->empty()`.
     // -----------------------------------------------------------------------
     void           pop_front();
 
@@ -745,7 +745,7 @@ public:
     //!     \endcode
     //!
     //!     \pre
-    //!     `this->size() == b.size()`
+    //!     `this->size() == b.size()`.
     //!
     //!     \return
     //!     `*this`.
@@ -763,7 +763,7 @@ public:
     //!     \endcode
     //!
     //!     \pre
-    //!     `this->size() == b.size()`
+    //!     `this->size() == b.size()`.
     //!
     //!     \return
     //!     `*this`.
