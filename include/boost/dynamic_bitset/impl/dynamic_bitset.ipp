@@ -1235,10 +1235,6 @@ dynamic_bitset< Block, AllocatorOrContainer >::
     return result;
 }
 
-// A comment similar to the one about the constructor from basic_string
-// can be done here. Thanks to James Kanze for making me (Gennaro)
-// realize this important separation of concerns issue, as well as many
-// things about i18n.
 template< typename Block, typename AllocatorOrContainer, typename StringT >
 void
 to_string( const dynamic_bitset< Block, AllocatorOrContainer > & b, StringT & s )
