@@ -1114,25 +1114,16 @@ template< typename Block, typename AllocatorOrContainer >
 bool
 dynamic_bitset< Block, AllocatorOrContainer >::all() const
 {
-    if ( empty() ) {
-        return true;
-    }
-
     const int              extra_bits = count_extra_bits();
     const block_type       all_ones   = Block( -1 );
+    const size_type        num_normal_blocks = num_blocks() - ( extra_bits != 0 ? 1 : 0 );
 
-    if ( extra_bits == 0 ) {
-        for ( size_type i = 0, e = num_blocks(); i < e; ++i ) {
-            if ( m_bits[ i ] != all_ones ) {
-                return false;
-            }
+    for ( size_type i = 0; i < num_normal_blocks; ++i ) {
+        if ( m_bits[ i ] != all_ones ) {
+            return false;
         }
-    } else {
-        for ( size_type i = 0, e = num_blocks() - 1; i < e; ++i ) {
-            if ( m_bits[ i ] != all_ones ) {
-                return false;
-            }
-        }
+    }
+    if ( extra_bits != 0 ) {
         const block_type mask = ( block_type( 1 ) << extra_bits ) - 1;
         if ( m_highest_block() != mask ) {
             return false;
