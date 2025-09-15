@@ -377,7 +377,7 @@ public:
     //!     \param alloc The allocator to use.
     // -----------------------------------------------------------------------
     template< typename CharT, typename Traits, typename Alloc >
-    dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = (std::basic_string<CharT, Traits, Alloc>::npos), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+    explicit dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = (std::basic_string<CharT, Traits, Alloc>::npos), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
     //!     Similar to the constructor from a `basic_string`, but takes
     //!     a pointer to a C-style string (and doesn't take a `pos`).
@@ -404,7 +404,7 @@ public:
     //!     \param alloc The allocator to use.
     // -----------------------------------------------------------------------
     template< typename CharT >
-    dynamic_bitset( const CharT * s, std::size_t n = std::size_t( -1 ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+    explicit dynamic_bitset( const CharT * s, std::size_t n = std::size_t( -1 ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
 #if defined( BOOST_DYNAMIC_BITSET_USE_CPP17_OR_LATER )
 
@@ -429,7 +429,7 @@ public:
     //!     \param alloc The allocator to use.
     // -----------------------------------------------------------------------
     template< typename CharT, typename Traits >
-    dynamic_bitset( std::basic_string_view< CharT, Traits > sv, size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+    explicit dynamic_bitset( std::basic_string_view< CharT, Traits > sv, size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
 #endif
 
