@@ -271,10 +271,19 @@ public:
     friend class const_bit_iterator< dynamic_bitset >;
 
     //!     A read/write iterator into the bitset.
+    //!
+    //!     If `AllocatorOrContainer` is an allocator type, this is a
+    //!     C++20 RandomAccessIterator; otherwise, its category is the
+    //!     corresponding "non-legacy" category of the iterator type of
+    //!     the underlying container; for instance, if the underlying
+    //!     container provides LegacyBidirectionalIterators, this is a
+    //!     BidirectionalIterator.
     // -----------------------------------------------------------------------
     typedef bit_iterator< dynamic_bitset > iterator;
 
     //!     A read-only iterator into the bitset.
+    //!
+    //!     \copydetails iterator
     // -----------------------------------------------------------------------
     typedef const_bit_iterator< dynamic_bitset > const_iterator;
 
