@@ -1510,7 +1510,7 @@ operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynami
                 return false;
             }
         }
-        return ( a.size() < b.size() );
+        return a.size() < b.size();
     }
 }
 
