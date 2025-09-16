@@ -543,6 +543,19 @@ run_test_cases()
         blocks[ 2 ] = all_1s;
         Tests::append_block_range( a, blocks );
     }
+    // Test with input iterators
+    {
+        bitset_type b;
+        Tests::append_block_range_input_iter( b );
+    }
+    {
+        bitset_type b( "0" );
+        Tests::append_block_range_input_iter( b );
+    }
+    {
+        bitset_type b( long_string.c_str() );
+        Tests::append_block_range_input_iter( b );
+    }
     //=====================================================================
     // Test bracket operator
     {

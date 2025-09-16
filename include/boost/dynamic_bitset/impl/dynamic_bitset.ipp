@@ -2145,8 +2145,9 @@ template< typename BlockInputIterator >
 void
 dynamic_bitset< Block, AllocatorOrContainer >::m_append( BlockInputIterator first, BlockInputIterator last, std::input_iterator_tag )
 {
-    std::vector< Block, AllocatorOrContainer > v( first, last );
-    m_append( v.begin(), v.end(), std::random_access_iterator_tag() );
+    for ( ; first != last; ++first ) {
+        append( *first );
+    }
 }
 
 template< typename Block, typename AllocatorOrContainer >

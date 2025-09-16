@@ -22,7 +22,10 @@
 #include "boost/limits.hpp"
 #include <algorithm>
 #include <assert.h> // <cassert> is sometimes macro-guarded :-(
+#include <iterator>
+#include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #if ! defined( BOOST_NO_STD_LOCALE )
@@ -526,6 +529,20 @@ struct bitset_test
               ++i )
             c.append( *i );
         BOOST_TEST( b == c );
+    }
+
+    static void
+    append_block_range_input_iter( const Bitset & lhs )
+    {
+        if ( ! std::is_same< Block, unsigned char >::value ) {
+            Bitset b( lhs ), c( lhs );
+            std::istringstream ss( "1 2 3" );
+            b.append( std::istream_iterator< Block >( ss ), std::istream_iterator< Block >() );
+            c.append( 1 );
+            c.append( 2 );
+            c.append( 3 );
+            BOOST_TEST( b == c );
+        }
     }
 
     // operator[] and reference members
