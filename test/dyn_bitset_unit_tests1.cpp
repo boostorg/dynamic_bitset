@@ -20,6 +20,7 @@
 
 #if ! defined( BOOST_NO_CXX11_ALLOCATOR )
 #    include <cstdlib>
+#    include <new>
 
 template< class T >
 class minimal_allocator
