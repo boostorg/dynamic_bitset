@@ -25,7 +25,6 @@
 #include <algorithm>
 #include <climits>
 #include <istream>
-#include <iterator>
 #include <ostream>
 #include <stdexcept>
 #include <utility>

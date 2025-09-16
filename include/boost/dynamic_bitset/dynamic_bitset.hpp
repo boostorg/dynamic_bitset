@@ -24,6 +24,7 @@
 #include "boost/dynamic_bitset_fwd.hpp"
 #include "boost/limits.hpp"
 #include <iosfwd>
+#include <iterator>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -197,6 +198,7 @@ public:
     class reference
     {
         friend class dynamic_bitset< Block, AllocatorOrContainer >;
+        friend class bit_iterator< dynamic_bitset >;
 
         //!     The one and only non-copy ctor
         // -------------------------------------------------------------------
@@ -293,6 +295,11 @@ public:
     //!     A reverse read-only iterator into the bitset.
     // -----------------------------------------------------------------------
     typedef std::reverse_iterator< const_iterator > const_reverse_iterator;
+
+#if __cplusplus >= 202002L
+    static_assert( std::bidirectional_iterator< typename buffer_type::iterator >, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
+    static_assert( std::bidirectional_iterator< iterator > );
+#endif
 
     //!     Constructs a bitset of size zero.
     //!
