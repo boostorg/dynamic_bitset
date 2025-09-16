@@ -2224,10 +2224,9 @@ dynamic_bitset< Block, AllocatorOrContainer >::bit_appender::get_count() const
 
 // std::hash support
 #if defined( BOOST_DYNAMIC_BITSET_SPECIALIZE_STD_HASH )
-namespace std {
 
 template< typename Block, typename AllocatorOrContainer >
-struct hash< boost::dynamic_bitset< Block, AllocatorOrContainer > >
+struct std::hash< boost::dynamic_bitset< Block, AllocatorOrContainer > >
 {
     typedef boost::dynamic_bitset< Block, AllocatorOrContainer > argument_type;
     typedef std::size_t                               result_type;
@@ -2239,5 +2238,4 @@ struct hash< boost::dynamic_bitset< Block, AllocatorOrContainer > >
     }
 };
 
-}
 #endif

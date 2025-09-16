@@ -30,7 +30,6 @@
 
 #if defined( BOOST_DYNAMIC_BITSET_SPECIALIZE_STD_HASH )
 #    include <functional>
-namespace std {
 
 //!     Support for std::hash.
 //!
@@ -38,9 +37,8 @@ namespace std {
 //!     `BOOST_DYNAMIC_BITSET_NO_STD_HASH`.
 // -----------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
-struct hash< boost::dynamic_bitset< Block, AllocatorOrContainer > >;
+struct std::hash< boost::dynamic_bitset< Block, AllocatorOrContainer > >;
 
-}
 #endif
 
 namespace boost {
