@@ -16,7 +16,6 @@
 #include "boost/archive/xml_iarchive.hpp"
 #include "boost/archive/xml_oarchive.hpp"
 #include "boost/config.hpp"
-#include "boost/config/workaround.hpp"
 #include "boost/dynamic_bitset/serialization.hpp"
 #include "boost/serialization/vector.hpp"
 

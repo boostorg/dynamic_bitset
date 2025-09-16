@@ -10,7 +10,6 @@
 
 #include "bitset_test.hpp"
 #include "boost/config.hpp"
-#include "boost/config/workaround.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
 #include <assert.h>
 #include <cstddef>
