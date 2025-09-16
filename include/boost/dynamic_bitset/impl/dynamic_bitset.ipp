@@ -903,7 +903,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::operator<<=( size_type n )
             b[ div ] = b[ 0 ];
         }
 
-        // zero out div blocks at the less significant end
+        // zero out div blocks at the least significant end
         std::fill_n( m_bits.begin(), div, static_cast< block_type >( 0 ) );
 
         // zero out any 1 bit that flowed into the unused part
@@ -1665,7 +1665,7 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
 
     bool                                     exceptions_are_from_vector = false;
     ios_base::iostate                        err                        = ios_base::goodbit;
-    typename basic_istream< Ch, Tr >::sentry cerberos( is ); // skips whitespaces
+    typename basic_istream< Ch, Tr >::sentry cerberos( is ); // skips whitespace
     if ( cerberos ) {
         // in accordance with the resolution of library issue 303
         BOOST_DYNAMIC_BITSET_CTYPE_FACET( Ch, fac, is.getloc() );
