@@ -86,37 +86,36 @@ class dynamic_bitset
 public:
     //!     The same type as `Block`.
     // -----------------------------------------------------------------------
-    typedef Block                           block_type;
+    typedef Block block_type;
 
     //!     The allocator used for all memory allocations.
     // -----------------------------------------------------------------------
     typedef typename detail::dynamic_bitset_impl::allocator_type_extractor< AllocatorOrContainer, Block >::type
-                                            allocator_type;
+                        allocator_type;
 
     //!     An unsigned integral type that can represent the size of the
     //!     bitset. See \ref size().
     // -----------------------------------------------------------------------
-    typedef std::size_t                     size_type;
+    typedef std::size_t size_type;
 
     //!     Note: Made public to cope with failures from many GCC and
     //!     Clang versions which seem to ignore the friend declarations
     //!     of `bit_iterator` and `const_bit_iterator`.
     // -----------------------------------------------------------------------
     typedef typename std::conditional<
-            detail::dynamic_bitset_impl::is_container< AllocatorOrContainer, Block >::value,
-            AllocatorOrContainer,
-            std::vector< Block, AllocatorOrContainer >
-        >::type                             buffer_type;
+        detail::dynamic_bitset_impl::is_container< AllocatorOrContainer, Block >::value,
+        AllocatorOrContainer,
+        std::vector< Block, AllocatorOrContainer > >::type buffer_type;
 
     //!     The number of bits the type `Block` uses to represent
     //!     values, excluding any padding bits. Numerically equal to
     //!     `std::numeric_limits< Block >::digits`.
     // -----------------------------------------------------------------------
-    static constexpr int bits_per_block = std::numeric_limits< Block >::digits;
+    static constexpr int                                   bits_per_block = std::numeric_limits< Block >::digits;
 
     //!     The maximum value of `size_type`.
     // -----------------------------------------------------------------------
-    static constexpr size_type npos = static_cast< size_type >( -1 );
+    static constexpr size_type                             npos           = static_cast< size_type >( -1 );
 
     //!     A proxy class to simulate lvalues of bit type.
     //!
@@ -279,17 +278,17 @@ public:
     //!     container provides LegacyBidirectionalIterators, this is a
     //!     BidirectionalIterator.
     // -----------------------------------------------------------------------
-    typedef bit_iterator< dynamic_bitset > iterator;
+    typedef bit_iterator< dynamic_bitset >          iterator;
 
     //!     A read-only iterator into the bitset.
     //!
     //!     \copydetails iterator
     // -----------------------------------------------------------------------
-    typedef const_bit_iterator< dynamic_bitset > const_iterator;
+    typedef const_bit_iterator< dynamic_bitset >    const_iterator;
 
     //!     A reverse read/write reverse iterator into the bitset.
     // -----------------------------------------------------------------------
-    typedef std::reverse_iterator< iterator > reverse_iterator;
+    typedef std::reverse_iterator< iterator >       reverse_iterator;
 
     //!     A reverse read-only iterator into the bitset.
     // -----------------------------------------------------------------------
@@ -377,7 +376,7 @@ public:
     //!     \param alloc The allocator to use.
     // -----------------------------------------------------------------------
     template< typename CharT, typename Traits, typename Alloc >
-    explicit dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = (std::basic_string<CharT, Traits, Alloc>::npos), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+    explicit dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = ( std::basic_string< CharT, Traits, Alloc >::npos ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
     //!     Similar to the constructor from a `basic_string`, but takes
     //!     a pointer to a C-style string (and doesn't take a `pos`).
@@ -610,7 +609,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    void             swap( dynamic_bitset & b ) noexcept;
+    void                   swap( dynamic_bitset & b ) noexcept;
 
     //!     Move constructor.
     //!
@@ -642,7 +641,7 @@ public:
     //!
     //!     \return A copy of the said allocator.
     // -----------------------------------------------------------------------
-    allocator_type get_allocator() const;
+    allocator_type   get_allocator() const;
 
     //!     Changes the number of bits of the bitset to `num_bits`.
     //!
@@ -655,14 +654,14 @@ public:
     //!     \param num_bits The new size of the bitset.
     //!     \param value The value to set any new bit to.
     // -----------------------------------------------------------------------
-    void           resize( size_type num_bits, bool value = false );
+    void             resize( size_type num_bits, bool value = false );
 
     //!     Clears the bitset, i.e. makes its size zero.
     //!
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    void           clear();
+    void             clear();
 
     //!     Increases the size of the bitset by one, and sets the value
     //!     of the new most significant bit to `bit`.
@@ -673,7 +672,7 @@ public:
     //!
     //!     \param bit The value to set the most significant bit to.
     // -----------------------------------------------------------------------
-    void           push_back( bool bit );
+    void             push_back( bool bit );
 
     //!     Increases the size of the bitset by one, and sets the value
     //!     of the new least significant bit to `bit`.
@@ -684,7 +683,7 @@ public:
     //!
     //!     \param bit The value to set the least significant bit to.
     // -----------------------------------------------------------------------
-    void           push_front( bool bit );
+    void             push_front( bool bit );
 
     //!     Decreases the size of the bitset by one, removing the most
     //!     significant bit.
@@ -692,7 +691,7 @@ public:
     //!     \pre
     //!     `! this->empty()`.
     // -----------------------------------------------------------------------
-    void           pop_back();
+    void             pop_back();
 
     //!     Decreases the size of the bitset by one, removing the least
     //!     significant bit.
@@ -700,7 +699,7 @@ public:
     //!     \pre
     //!     `! this->empty()`.
     // -----------------------------------------------------------------------
-    void           pop_front();
+    void             pop_front();
 
     //!     Appends the bits in `block` to this bitset (appends to the
     //!     most significant end). This increases the size of the bitset
@@ -710,7 +709,7 @@ public:
     //!
     //!     \param block The block to append.
     // -----------------------------------------------------------------------
-    void           append( Block block );
+    void             append( Block block );
 
     //!     Appends a range of blocks to `*this`.
     //!
@@ -1333,28 +1332,28 @@ public:
 private:
     static constexpr int ulong_width = std::numeric_limits< unsigned long >::digits;
 
-    dynamic_bitset &        range_operation( size_type pos, size_type len, Block ( *partial_block_operation )( Block, size_type, size_type ), Block ( *full_block_operation )( Block ) );
-    void                    m_zero_unused_bits();
-    bool                    m_check_invariants() const;
+    dynamic_bitset &     range_operation( size_type pos, size_type len, Block ( *partial_block_operation )( Block, size_type, size_type ), Block ( *full_block_operation )( Block ) );
+    void                 m_zero_unused_bits();
+    bool                 m_check_invariants() const;
 
-    static bool             m_not_empty( Block x );
-    static bool             m_not_full( Block x );
-    size_type               m_do_find_from( size_type first_block, bool value ) const;
+    static bool          m_not_empty( Block x );
+    static bool          m_not_full( Block x );
+    size_type            m_do_find_from( size_type first_block, bool value ) const;
 
-    int                     count_extra_bits() const noexcept;
-    static size_type        block_index( size_type pos ) noexcept;
-    static int              bit_index( size_type pos ) noexcept;
-    static Block            bit_mask( size_type pos ) noexcept;
-    static Block            bit_mask( size_type first, size_type last ) noexcept;
-    static Block            set_block_bits( Block block, size_type first, size_type last, bool val ) noexcept;
+    int                  count_extra_bits() const noexcept;
+    static size_type     block_index( size_type pos ) noexcept;
+    static int           bit_index( size_type pos ) noexcept;
+    static Block         bit_mask( size_type pos ) noexcept;
+    static Block         bit_mask( size_type first, size_type last ) noexcept;
+    static Block         set_block_bits( Block block, size_type first, size_type last, bool val ) noexcept;
 
     // Functions for operations on ranges
-    static Block            set_block_partial( Block block, size_type first, size_type last ) noexcept;
-    static Block            set_block_full( Block ) noexcept;
-    static Block            reset_block_partial( Block block, size_type first, size_type last ) noexcept;
-    static Block            reset_block_full( Block ) noexcept;
-    static Block            flip_block_partial( Block block, size_type first, size_type last ) noexcept;
-    static Block            flip_block_full( Block block ) noexcept;
+    static Block         set_block_partial( Block block, size_type first, size_type last ) noexcept;
+    static Block         set_block_full( Block ) noexcept;
+    static Block         reset_block_partial( Block block, size_type first, size_type last ) noexcept;
+    static Block         reset_block_full( Block ) noexcept;
+    static Block         flip_block_partial( Block block, size_type first, size_type last ) noexcept;
+    static Block         flip_block_full( Block block ) noexcept;
 
     template< typename T >
     void dispatch_init( T num_bits, unsigned long value, detail::dynamic_bitset_impl::value_to_type< true > );
@@ -1413,8 +1412,8 @@ private:
     public:
         bit_appender( dynamic_bitset & r );
         ~bit_appender();
-        void do_append( bool value );
-        size_type   get_count() const;
+        void      do_append( bool value );
+        size_type get_count() const;
     };
 };
 
@@ -1428,19 +1427,19 @@ public:
     typedef value_type *                         pointer;
     typedef value_type &                         reference;
 
-    static constexpr int bits_per_block = std::numeric_limits< typename Iterator::value_type >::digits;
+    static constexpr int                         bits_per_block = std::numeric_limits< typename Iterator::value_type >::digits;
 
     bit_iterator_base( Iterator block_iterator, int bit_index );
 
     template< typename Iter >
     friend bool operator==( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
     template< typename Iter >
-    friend bool operator< ( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
+    friend bool operator<( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
 
 protected:
-    void increment();
-    void decrement();
-    void add( typename Iterator::difference_type n );
+    void     increment();
+    void     decrement();
+    void     add( typename Iterator::difference_type n );
 
     Iterator m_block_iterator;
     int      m_bit_index = 0;
@@ -1451,8 +1450,8 @@ class bit_iterator
     : public bit_iterator_base< typename DynamicBitset::buffer_type::iterator >
 {
 public:
-    typedef typename DynamicBitset::reference reference;
-    typedef reference * pointer;
+    typedef typename DynamicBitset::reference                                                            reference;
+    typedef reference *                                                                                  pointer;
     typedef typename bit_iterator_base< typename DynamicBitset::buffer_type::iterator >::difference_type difference_type;
 
     bit_iterator();
@@ -1473,9 +1472,9 @@ class const_bit_iterator
     : public bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >
 {
 public:
-    typedef bool reference;
-    typedef bool const_reference;
-    typedef const bool * pointer;
+    typedef bool                                                                                               reference;
+    typedef bool                                                                                               const_reference;
+    typedef const bool *                                                                                       pointer;
     typedef typename bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >::difference_type difference_type;
 
     const_bit_iterator( typename DynamicBitset::buffer_type::const_iterator block_iterator, int bit_index );

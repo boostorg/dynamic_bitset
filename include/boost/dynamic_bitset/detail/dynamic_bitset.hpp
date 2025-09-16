@@ -32,13 +32,7 @@ class is_container
 {
 private:
     template< typename U >
-    static decltype(
-            std::declval< U >().resize( std::size_t{} ),
-            std::declval< U >()[ 0 ],
-            typename U::value_type(),
-            std::is_same< typename U::value_type, Block >{},
-            std::true_type{}
-        ) test( int );
+    static decltype( std::declval< U >().resize( std::size_t{} ), std::declval< U >()[ 0 ], typename U::value_type(), std::is_same< typename U::value_type, Block >{}, std::true_type{} ) test( int );
 
     template< typename >
     static std::false_type test( ... );
@@ -71,8 +65,7 @@ public:
     typedef typename allocator_type_extractor_impl<
         AllocatorOrContainer,
         Block,
-        is_container< AllocatorOrContainer, Block >::value
-    >::type type;
+        is_container< AllocatorOrContainer, Block >::value >::type type;
 };
 
 template< typename T, int amount, int width /* = default */ >
@@ -101,8 +94,7 @@ struct value_to_type
 //
 template< typename T >
 typename T::size_type
-vector_max_size_workaround( const T & v )
-    noexcept
+vector_max_size_workaround( const T & v ) noexcept
 {
     typedef typename T::allocator_type                          allocator_type;
 

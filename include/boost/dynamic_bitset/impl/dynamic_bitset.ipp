@@ -210,7 +210,7 @@ template< typename Iterator >
 bool
 operator!=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
 {
-    return !( lhs == rhs );
+    return ! ( lhs == rhs );
 }
 
 template< typename Iterator >
@@ -225,7 +225,7 @@ template< typename Iterator >
 bool
 operator<=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
 {
-    return !( rhs < lhs );
+    return ! ( rhs < lhs );
 }
 
 template< typename Iterator >
@@ -239,7 +239,7 @@ template< typename Iterator >
 bool
 operator>=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
 {
-    return !( lhs < rhs );
+    return ! ( lhs < rhs );
 }
 
 template< typename Iterator >
@@ -250,7 +250,7 @@ operator-( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< I
          + lhs.m_bit_index - rhs.m_bit_index;
 }
 
-template< typename DynamicBitset>
+template< typename DynamicBitset >
 bit_iterator< DynamicBitset >::bit_iterator()
     : bit_iterator_base< typename DynamicBitset::buffer_type::iterator >()
 {
@@ -266,7 +266,7 @@ template< typename DynamicBitset >
 typename DynamicBitset::reference
 bit_iterator< DynamicBitset >::operator*() const
 {
-    return reference( *(this->m_block_iterator), this->m_bit_index );
+    return reference( *( this->m_block_iterator ), this->m_bit_index );
 }
 
 template< typename DynamicBitset >
@@ -369,7 +369,7 @@ const_bit_iterator< DynamicBitset >::operator*() const
     return ( *( this->m_block_iterator ) & ( typename DynamicBitset::block_type( 1 ) << this->m_bit_index ) ) != 0;
 }
 
-template< typename DynamicBitset  >
+template< typename DynamicBitset >
 const_bit_iterator< DynamicBitset > &
 const_bit_iterator< DynamicBitset >::const_bit_iterator::operator++()
 {
@@ -421,8 +421,7 @@ const_bit_iterator< DynamicBitset >::operator-=( difference_type n )
 
 template< typename DynamicBitset >
 const_bit_iterator< DynamicBitset >
-operator+( const const_bit_iterator< DynamicBitset > & it,
-           typename const_bit_iterator< DynamicBitset >::difference_type n )
+operator+( const const_bit_iterator< DynamicBitset > & it, typename const_bit_iterator< DynamicBitset >::difference_type n )
 {
     const_bit_iterator< DynamicBitset > temp = it;
     temp += n;
@@ -431,16 +430,14 @@ operator+( const const_bit_iterator< DynamicBitset > & it,
 
 template< typename DynamicBitset >
 const_bit_iterator< DynamicBitset >
-operator+( typename const_bit_iterator< DynamicBitset >::difference_type n,
-           const const_bit_iterator< DynamicBitset > & it )
+operator+( typename const_bit_iterator< DynamicBitset >::difference_type n, const const_bit_iterator< DynamicBitset > & it )
 {
     return it + n;
 }
 
 template< typename DynamicBitset >
 const_bit_iterator< DynamicBitset >
-operator-( const const_bit_iterator< DynamicBitset > & it,
-           typename const_bit_iterator< DynamicBitset >::difference_type n )
+operator-( const const_bit_iterator< DynamicBitset > & it, typename const_bit_iterator< DynamicBitset >::difference_type n )
 {
     const_bit_iterator< DynamicBitset > temp = it;
     temp -= n;
@@ -453,7 +450,6 @@ const_bit_iterator< DynamicBitset >::operator[]( difference_type n ) const
 {
     return *( *this + n );
 }
-
 
 template< typename BlockIterator, typename B, typename A >
 void
@@ -500,9 +496,9 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
 template< typename Block, typename AllocatorOrContainer >
 template< typename CharT >
 dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
-    const CharT * s,
-    std::size_t   n,
-    size_type     num_bits,
+    const CharT *          s,
+    std::size_t            n,
+    size_type              num_bits,
     const allocator_type & alloc )
     : m_bits( alloc ), m_num_bits( 0 )
 {
@@ -527,9 +523,9 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
 template< typename Block, typename AllocatorOrContainer >
 template< typename BlockInputIterator >
 dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
-    BlockInputIterator first,
-    BlockInputIterator last,
-    const allocator_type &  alloc )
+    BlockInputIterator     first,
+    BlockInputIterator     last,
+    const allocator_type & alloc )
     : m_bits( alloc ), m_num_bits( 0 )
 {
     using boost::detail::dynamic_bitset_impl::is_numeric;
@@ -791,7 +787,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::
     pop_front()
 {
     BOOST_ASSERT( ! empty() );
-        
+
     *this >>= 1;
     resize( size() - 1 );
 }
@@ -887,10 +883,10 @@ dynamic_bitset< Block, AllocatorOrContainer >::operator<<=( size_type n )
     }
     // else
     if ( n > 0 ) {
-        const size_type        last = num_blocks() - 1;   // num_blocks() is >= 1
-        const size_type        div  = n / bits_per_block; // div is <= last
-        const int              r    = bit_index( n );
-        block_type * const     b    = &m_bits[ 0 ];
+        const size_type    last = num_blocks() - 1;   // num_blocks() is >= 1
+        const size_type    div  = n / bits_per_block; // div is <= last
+        const int          r    = bit_index( n );
+        block_type * const b    = &m_bits[ 0 ];
 
         if ( r != 0 ) {
             const int rs = bits_per_block - r;
@@ -930,10 +926,10 @@ dynamic_bitset< B, A >::operator>>=( size_type n )
     }
     // else
     if ( n > 0 ) {
-        const size_type        last = num_blocks() - 1;   // num_blocks() is >= 1
-        const size_type        div  = n / bits_per_block; // div is <= last
-        const int              r    = bit_index( n );
-        block_type * const     b    = &m_bits[ 0 ];
+        const size_type    last = num_blocks() - 1;   // num_blocks() is >= 1
+        const size_type    div  = n / bits_per_block; // div is <= last
+        const int          r    = bit_index( n );
+        block_type * const b    = &m_bits[ 0 ];
 
         if ( r != 0 ) {
             const int ls = bits_per_block - r;
@@ -985,8 +981,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::set( size_type pos, size_type len
 {
     if ( val ) {
         return range_operation( pos, len, set_block_partial, set_block_full );
-    }
-    else {
+    } else {
         return range_operation( pos, len, reset_block_partial, reset_block_full );
     }
 }
@@ -999,8 +994,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::set( size_type pos, bool val )
 
     if ( val ) {
         m_bits[ block_index( pos ) ] |= bit_mask( pos );
-    }
-    else {
+    } else {
         reset( pos );
     }
 
@@ -1112,9 +1106,9 @@ template< typename Block, typename AllocatorOrContainer >
 bool
 dynamic_bitset< Block, AllocatorOrContainer >::all() const
 {
-    const int              extra_bits = count_extra_bits();
-    const block_type       all_ones   = Block( -1 );
-    const size_type        num_normal_blocks = num_blocks() - ( extra_bits != 0 ? 1 : 0 );
+    const int        extra_bits        = count_extra_bits();
+    const block_type all_ones          = Block( -1 );
+    const size_type  num_normal_blocks = num_blocks() - ( extra_bits != 0 ? 1 : 0 );
 
     for ( size_type i = 0; i < num_normal_blocks; ++i ) {
         if ( m_bits[ i ] != all_ones ) {
@@ -1352,8 +1346,8 @@ bool
 dynamic_bitset< Block, AllocatorOrContainer >::intersects( const dynamic_bitset & b ) const
 {
     const size_type common_blocks = num_blocks() < b.num_blocks()
-                                ? num_blocks()
-                                : b.num_blocks();
+                                      ? num_blocks()
+                                      : b.num_blocks();
 
     for ( size_type i = 0; i < common_blocks; ++i ) {
         if ( m_bits[ i ] & b.m_bits[ i ] ) {
@@ -1372,18 +1366,15 @@ template< typename Block, typename AllocatorOrContainer >
 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::m_do_find_from( size_type first_block, bool value ) const
 {
-    size_type i = std::distance( m_bits.begin(), std::find_if( m_bits.begin() + first_block, m_bits.end(),
-                                 value
-                                 ? m_not_empty
-                                 : m_not_full ) );
+    size_type i = std::distance( m_bits.begin(), std::find_if( m_bits.begin() + first_block, m_bits.end(), value ? m_not_empty : m_not_full ) );
 
     if ( i >= num_blocks() ) {
         return npos; // not found
     }
 
     const Block b = value
-                    ? m_bits[ i ]
-                    : m_bits[ i ] ^ Block( -1 );
+                      ? m_bits[ i ]
+                      : m_bits[ i ] ^ Block( -1 );
     return i * bits_per_block + static_cast< size_type >( detail::lowest_bit( b ) );
 }
 
@@ -1396,13 +1387,13 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_first( size_type pos ) const
         return npos;
     }
 
-    const size_type        blk  = block_index( pos );
-    const int              ind  = bit_index( pos );
+    const size_type blk   = block_index( pos );
+    const int       ind   = bit_index( pos );
 
     // shift bits upto one immediately after current
-    const Block            fore = m_bits[ blk ] >> ind;
+    const Block     fore  = m_bits[ blk ] >> ind;
 
-    const bool found = m_not_empty( fore );
+    const bool      found = m_not_empty( fore );
     return found ? pos + static_cast< size_type >( detail::lowest_bit( fore ) )
                  : m_do_find_from( blk + 1, true );
 }
@@ -1415,23 +1406,23 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_first_off( size_type pos ) c
         return npos;
     }
 
-    const size_type blk = block_index( pos );
-    const int       ind = bit_index( pos );
-    const Block     fore = m_bits[ blk ] >> ind;
-    bool found = false;
-    int lowest_off_bit_pos = -1;
+    const size_type blk                = block_index( pos );
+    const int       ind                = bit_index( pos );
+    const Block     fore               = m_bits[ blk ] >> ind;
+    bool            found              = false;
+    int             lowest_off_bit_pos = -1;
     if ( m_not_full( fore ) ) {
         lowest_off_bit_pos = detail::lowest_bit( fore ^ Block( -1 ) );
         // don't consider a zero introduced by m_bits[ blk ] >> ind as found
-        found = lowest_off_bit_pos <= ( bits_per_block - 1 - ind );
+        found              = lowest_off_bit_pos <= ( bits_per_block - 1 - ind );
     }
-    
+
     const size_type zero_pos = found
-        ? pos + lowest_off_bit_pos
-        : m_do_find_from( blk + 1, false );
+                                 ? pos + lowest_off_bit_pos
+                                 : m_do_find_from( blk + 1, false );
     return zero_pos >= size()
-        ? npos
-        : zero_pos;
+             ? npos
+             : zero_pos;
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -1449,8 +1440,8 @@ typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::find_next_off( size_type pos ) const
 {
     return pos == npos
-        ? npos
-        : find_first_off( pos + 1 );
+             ? npos
+             : find_first_off( pos + 1 );
 }
 
 //-----------------------------------------------------------------------------
@@ -1477,8 +1468,8 @@ operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynami
 {
     typedef BOOST_DEDUCED_TYPENAME dynamic_bitset< Block, AllocatorOrContainer >::size_type size_type;
 
-    size_type                                                                    asize( a.size() );
-    size_type                                                                    bsize( b.size() );
+    size_type                                                                               asize( a.size() );
+    size_type                                                                               bsize( b.size() );
 
     if ( ! bsize ) {
         return false;
@@ -1489,8 +1480,7 @@ operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynami
             size_type i = ii - 1;
             if ( a.m_bits[ i ] < b.m_bits[ i ] ) {
                 return true;
-            }
-            else if ( a.m_bits[ i ] > b.m_bits[ i ] ) {
+            } else if ( a.m_bits[ i ] > b.m_bits[ i ] ) {
                 return false;
             }
         }
@@ -1503,8 +1493,7 @@ operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynami
             size_type j = bsize - 1;
             if ( a[ i ] < b[ j ] ) {
                 return true;
-            }
-            else if ( a[ i ] > b[ j ] ) {
+            } else if ( a[ i ] > b[ j ] ) {
                 return false;
             }
         }
@@ -1671,11 +1660,11 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
     typedef dynamic_bitset< Block, Alloc >   bitset_type;
     typedef typename bitset_type::size_type  size_type;
 
-    const streamsize                         w     = is.width();
-    const size_type                          limit = 0 < w && static_cast< size_type >( w ) < b.max_size() ? static_cast< size_type >( w ) : b.max_size();
+    const streamsize                         w                          = is.width();
+    const size_type                          limit                      = 0 < w && static_cast< size_type >( w ) < b.max_size() ? static_cast< size_type >( w ) : b.max_size();
 
     bool                                     exceptions_are_from_vector = false;
-    ios_base::iostate                        err   = ios_base::goodbit;
+    ios_base::iostate                        err                        = ios_base::goodbit;
     typename basic_istream< Ch, Tr >::sentry cerberos( is ); // skips whitespaces
     if ( cerberos ) {
         // in accordance with prop. resol. of lib DR 303 [last checked 4 Feb 2004]
@@ -1983,8 +1972,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::set_block_bits(
 {
     if ( val ) {
         return block | bit_mask( first, last );
-    }
-    else {
+    } else {
         return block & static_cast< Block >( ~bit_mask( first, last ) );
     }
 }
@@ -2077,7 +2065,7 @@ template< typename Block, typename AllocatorOrContainer >
 template< typename CharT, typename Traits >
 void
 dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
-    const CharT * s,    // caution: not necessarily null-terminated
+    const CharT * s, // caution: not necessarily null-terminated
     std::size_t   string_length,
     std::size_t   pos,
     std::size_t   n,
@@ -2085,16 +2073,15 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
 {
     BOOST_ASSERT( pos <= string_length );
 
-
     const std::size_t rlen = (std::min)( n, string_length - pos );
     const size_type   sz   = ( num_bits != npos ? num_bits : rlen );
     m_bits.resize( calc_num_blocks( sz ) );
     m_num_bits = sz;
 
     BOOST_DYNAMIC_BITSET_CTYPE_FACET( CharT, fac, std::locale() );
-    const CharT              one = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '1' );
+    const CharT     one = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '1' );
 
-    const size_type          m   = num_bits < rlen ? num_bits : rlen;
+    const size_type m   = num_bits < rlen ? num_bits : rlen;
     for ( std::size_t i = 0; i < m; ++i ) {
         const CharT c = s[ ( pos + m - 1 ) - i ];
 
@@ -2154,8 +2141,8 @@ void
 dynamic_bitset< Block, AllocatorOrContainer >::m_append( BlockInputIterator first, BlockInputIterator last, std::forward_iterator_tag )
 {
     if ( first != last ) {
-        const int r = count_extra_bits();
-        const std::size_t      d = std::distance( first, last );
+        const int         r = count_extra_bits();
+        const std::size_t d = std::distance( first, last );
         m_bits.reserve( num_blocks() + d );
         if ( r == 0 ) {
             do {
@@ -2231,7 +2218,7 @@ template< typename Block, typename AllocatorOrContainer >
 struct hash< boost::dynamic_bitset< Block, AllocatorOrContainer > >
 {
     typedef boost::dynamic_bitset< Block, AllocatorOrContainer > argument_type;
-    typedef std::size_t                               result_type;
+    typedef std::size_t                                          result_type;
     result_type
     operator()( const argument_type & a ) const noexcept
     {
