@@ -2154,8 +2154,8 @@ void
 dynamic_bitset< Block, AllocatorOrContainer >::m_append( BlockInputIterator first, BlockInputIterator last, std::forward_iterator_tag )
 {
     if ( first != last ) {
-        int r = count_extra_bits();
-        std::size_t      d = std::distance( first, last );
+        const int r = count_extra_bits();
+        const std::size_t      d = std::distance( first, last );
         m_bits.reserve( num_blocks() + d );
         if ( r == 0 ) {
             do {
