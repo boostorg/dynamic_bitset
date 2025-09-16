@@ -820,10 +820,8 @@ template< typename BlockInputIterator >
 void
 dynamic_bitset< Block, AllocatorOrContainer >::append( BlockInputIterator first, BlockInputIterator last ) // strong guarantee
 {
-    if ( first != last ) {
-        typename std::iterator_traits< BlockInputIterator >::iterator_category cat;
-        m_append( first, last, cat );
-    }
+    typename std::iterator_traits< BlockInputIterator >::iterator_category cat;
+    m_append( first, last, cat );
 }
 
 //-----------------------------------------------------------------------------
@@ -2155,23 +2153,25 @@ template< typename BlockInputIterator >
 void
 dynamic_bitset< Block, AllocatorOrContainer >::m_append( BlockInputIterator first, BlockInputIterator last, std::forward_iterator_tag )
 {
-    BOOST_ASSERT( first != last );
-    int r = count_extra_bits();
-    std::size_t      d = std::distance( first, last );
-    m_bits.reserve( num_blocks() + d );
-    if ( r == 0 ) {
-        for ( ; first != last; ++first ) {
-            m_bits.push_back( *first ); // could use vector<>::insert()
+    if ( first != last ) {
+        int r = count_extra_bits();
+        std::size_t      d = std::distance( first, last );
+        m_bits.reserve( num_blocks() + d );
+        if ( r == 0 ) {
+            do {
+                m_bits.push_back( *first ); // could use vector<>::insert()
+                ++first;
+            } while ( first != last );
+        } else {
+            m_highest_block() |= ( *first << r );
+            do {
+                Block b = *first >> ( bits_per_block - r );
+                ++first;
+                m_bits.push_back( b | ( first == last ? 0 : *first << r ) );
+            } while ( first != last );
         }
-    } else {
-        m_highest_block() |= ( *first << r );
-        do {
-            Block b = *first >> ( bits_per_block - r );
-            ++first;
-            m_bits.push_back( b | ( first == last ? 0 : *first << r ) );
-        } while ( first != last );
+        m_num_bits += bits_per_block * d;
     }
-    m_num_bits += bits_per_block * d;
 }
 
 // bit appender
