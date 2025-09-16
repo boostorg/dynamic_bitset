@@ -1667,7 +1667,7 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
     ios_base::iostate                        err                        = ios_base::goodbit;
     typename basic_istream< Ch, Tr >::sentry cerberos( is ); // skips whitespaces
     if ( cerberos ) {
-        // in accordance with prop. resol. of lib DR 303 [last checked 4 Feb 2004]
+        // in accordance with the resolution of library issue 303
         BOOST_DYNAMIC_BITSET_CTYPE_FACET( Ch, fac, is.getloc() );
         const Ch zero = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' );
         const Ch one  = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '1' );
