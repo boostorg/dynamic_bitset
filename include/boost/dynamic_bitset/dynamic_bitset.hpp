@@ -296,7 +296,7 @@ public:
     // -----------------------------------------------------------------------
     typedef std::reverse_iterator< const_iterator > const_reverse_iterator;
 
-#if __cplusplus >= 202002L
+#if defined( __cpp_lib_ranges )
     static_assert( std::bidirectional_iterator< typename buffer_type::iterator >, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
     static_assert( std::bidirectional_iterator< iterator > );
 #endif
