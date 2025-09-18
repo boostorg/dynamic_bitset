@@ -303,7 +303,7 @@ public:
 
     //!     Constructs a bitset of size zero.
     //!
-    //!     \par Postconditions
+    //!     \post
     //!     `this->size() == 0`.
     //!
     //!     (Required by <a href="https://en.cppreference.com/w/cpp/named_req/DefaultConstructible">DefaultConstructible</a>.)
@@ -315,7 +315,7 @@ public:
     //!     \param alloc An allocator, a copy of which will be used to
     //!     allocate memory when needed.
     //!
-    //!     \par Postconditions
+    //!     \post
     //!     `this->size() == 0`
     // -----------------------------------------------------------------------
     explicit dynamic_bitset( const allocator_type & alloc );
@@ -343,7 +343,7 @@ public:
     //!     \param value The value to initialize the bitset from.
     //!     \param alloc The allocator to use.
     //!
-    //!     \par Postconditions:
+    //!     \post
     //!     - `this->size() == num_bits`
     //!     - For all i in the range `[0, M)`, `( *this )[ i ] == (
     //!       value >> i ) & 1`.
@@ -512,7 +512,7 @@ public:
     //!     Constructs a bitset that is a copy of the bitset `b`. The
     //!     allocator for this bitset is a copy of the allocator of `b`.
     //!
-    //!     \par Postconditions
+    //!     \post
     //!     For all i in the range `[0, b.size())`, `( *this )[ i ] ==
     //!     b[ i ]`.
     //!
@@ -528,7 +528,7 @@ public:
     //!
     //!     This bitset becomes a copy of the bitset `b`.
     //!
-    //!     \par Postconditions
+    //!     \post
     //!     For all `i` in the range `[0, x.size())`, `( *this )[ i ] ==
     //!     b[ i ]`.
     //!
