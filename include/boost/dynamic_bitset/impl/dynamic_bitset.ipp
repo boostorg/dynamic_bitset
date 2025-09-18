@@ -750,8 +750,13 @@ void
 dynamic_bitset< Block, AllocatorOrContainer >::
     push_back( bool bit )
 {
-    const size_type sz = size();
-    resize( sz + 1, bit );
+    const int extra_bits = count_extra_bits();
+    if ( extra_bits == 0 ) {
+        m_bits.push_back( Block( bit ) );
+    } else {
+        m_bits.back() |= ( Block( bit ) << extra_bits );
+    }
+    ++ m_num_bits;
 }
 
 template< typename Block, typename AllocatorOrContainer >
