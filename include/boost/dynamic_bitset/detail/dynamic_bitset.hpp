@@ -41,18 +41,18 @@ public:
     static constexpr bool value = decltype( test< AllocatorOrContainer >( 0 ) )::value;
 };
 
-template< typename AllocatorOrContainer, typename Block, bool IsContainer >
+template< typename AllocatorOrContainer, bool IsContainer >
 class allocator_type_extractor_impl;
 
-template< typename AllocatorOrContainer, typename Block >
-class allocator_type_extractor_impl< AllocatorOrContainer, Block, false >
+template< typename AllocatorOrContainer >
+class allocator_type_extractor_impl< AllocatorOrContainer, false >
 {
 public:
     typedef AllocatorOrContainer type;
 };
 
-template< typename AllocatorOrContainer, typename Block >
-class allocator_type_extractor_impl< AllocatorOrContainer, Block, true >
+template< typename AllocatorOrContainer >
+class allocator_type_extractor_impl< AllocatorOrContainer, true >
 {
 public:
     typedef typename AllocatorOrContainer::allocator_type type;
@@ -64,7 +64,6 @@ class allocator_type_extractor
 public:
     typedef typename allocator_type_extractor_impl<
         AllocatorOrContainer,
-        Block,
         is_container< AllocatorOrContainer, Block >::value >::type type;
 };
 
