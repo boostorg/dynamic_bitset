@@ -1265,6 +1265,9 @@ public:
     //!     Finds the first unset bit in `*this` with an index >= `pos`,
     //!     if any.
     //!
+    //!     \param pos The lower bound (inclusively) to start the search
+    //!     from.
+    //!
     //!     \return
     //!     The lowest index `i` greater than or equal to `pos` such
     //!     that bit `i` is unset in `*this`, or `npos` if no such index
