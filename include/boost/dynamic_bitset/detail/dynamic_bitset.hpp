@@ -70,7 +70,7 @@ public:
 template< typename T, int amount, int width /* = default */ >
 struct shifter
 {
-    static void
+    static BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
     left_shift( T & v )
     {
         amount >= width ? ( v = 0 )
@@ -92,7 +92,7 @@ struct value_to_type
 // meaningful info.
 //
 template< typename T >
-typename T::size_type
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename T::size_type
 vector_max_size_workaround( const T & v ) noexcept
 {
     typedef typename T::allocator_type                          allocator_type;
