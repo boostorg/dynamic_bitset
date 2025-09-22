@@ -1411,11 +1411,10 @@ private:
         Block            mask;
         Block *          current;
 
-        // not implemented
-        bit_appender( const bit_appender & );
-        bit_appender & operator=( const bit_appender & );
-
     public:
+        bit_appender( const bit_appender & )             = delete;
+        bit_appender & operator=( const bit_appender & ) = delete;
+
         bit_appender( dynamic_bitset & r );
         ~bit_appender();
         void      do_append( bool value );
