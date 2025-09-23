@@ -1487,8 +1487,6 @@ struct bitset_test
         } else {
             if ( ! did_throw )
                 BOOST_TEST( s.width() == 0 );
-            // This test require that os be an output _and_ input stream.
-            // Of course dynamic_bitset's operator << doesn't require that.
 
             size_type         total_len = w <= 0 || static_cast< size_type >( w ) < b.size() ? b.size() : static_cast< size_type >( w );
             const string_type padding( total_len - b.size(), fill_char );
