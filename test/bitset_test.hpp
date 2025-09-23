@@ -1187,7 +1187,7 @@ struct bitset_test
                     return false;
                 // if (a[i] = b[j]) skip to next
             }
-            return ( a.size() < b.size() );
+            return a.size() < b.size();
         }
     }
 
