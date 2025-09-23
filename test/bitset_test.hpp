@@ -1607,27 +1607,7 @@ struct bitset_test
                 BOOST_TEST( ! has_flags( is, std::ios::failbit ) );
 
             if ( num_digits == 0 && after_digits == len ) {
-                // The VC6 library has a bug/non-conformity in the sentry
-                // constructor. It uses code like
-                //  // skip whitespaces...
-                //  int_type _C = rdbuf()->sgetc();
-                //  while (!_Tr::eq_int_type(_Tr::eof(), _C) ...
-                //
-                // For an empty file the while statement is never "entered"
-                // and the stream remains in good() state; thus the sentry
-                // object gives "true" when converted to bool. This is worse
-                // than the case above, because not only failbit is not set,
-                // but no bit is set at all, end we end up clearing the
-                // bitset though there's nothing in the file to be extracted.
-                // Note that the dynamic_bitset docs say a sentry object is
-                // constructed and then converted to bool, thus we rely on
-                // what the underlying library does.
-                //
-#if ! defined( BOOST_DINKUMWARE_STDLIB ) || ( BOOST_DINKUMWARE_STDLIB >= 306 )
                 BOOST_TEST( b == a_copy );
-#else
-                BOOST_TEST( b.empty() == true );
-#endif
             } else {
                 String sub = str.substr( after_spaces, num_digits );
                 BOOST_TEST( b == Bitset( sub ) );
