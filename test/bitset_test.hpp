@@ -1154,6 +1154,7 @@ struct bitset_test
                 BOOST_TEST( diff );
             }
         } else {
+            BOOST_TEST( a.size() == b.size() );
             for ( std::size_t I = 0; I < a.size(); ++I )
                 BOOST_TEST( a[ I ] == b[ I ] );
         }
