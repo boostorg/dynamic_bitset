@@ -809,6 +809,7 @@ struct bitset_test
         std::size_t N = lhs.size();
         Bitset      prev( lhs );
         lhs.flip();
+        BOOST_TEST( lhs.size() == N );
         // Toggles all the bits in lhs
         for ( std::size_t I = 0; I < N; ++I )
             BOOST_TEST( lhs[ I ] == ! prev[ I ] );
@@ -822,6 +823,7 @@ struct bitset_test
         if ( pos < N ) {
             Bitset prev( lhs );
             lhs.flip( pos );
+            BOOST_TEST( lhs.size() == N );
             // Toggles the bit at position pos in lhs
             BOOST_TEST( lhs[ pos ] == ! prev[ pos ] );
 
