@@ -2113,9 +2113,7 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::init_from_unsigned_long(
     size_type     num_bits,
-    unsigned long value /*,
-     const allocator_type & alloc*/
-)
+    unsigned long value )
 {
     BOOST_ASSERT( m_bits.size() == 0 );
 

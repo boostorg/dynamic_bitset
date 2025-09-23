@@ -895,7 +895,6 @@ struct bitset_test
         }
     }
 
-    // to_string()
     static void
     to_string( const Bitset & b )
     {
