@@ -899,10 +899,10 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
     }
     // else
     if ( n > 0 ) {
-        const size_type    last = num_blocks() - 1;   // num_blocks() is >= 1
-        const size_type    div  = n / bits_per_block; // div is <= last
-        const int          r    = bit_index( n );
-        block_type * const b    = &m_bits[ 0 ];
+        const size_type last = num_blocks() - 1;   // num_blocks() is >= 1
+        const size_type div  = n / bits_per_block; // div is <= last
+        const int       r    = bit_index( n );
+        buffer_type &   b    = m_bits;
 
         if ( r != 0 ) {
             const int rs = bits_per_block - r;
@@ -942,10 +942,10 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< B, A > &
     }
     // else
     if ( n > 0 ) {
-        const size_type    last = num_blocks() - 1;   // num_blocks() is >= 1
-        const size_type    div  = n / bits_per_block; // div is <= last
-        const int          r    = bit_index( n );
-        block_type * const b    = &m_bits[ 0 ];
+        const size_type last = num_blocks() - 1;   // num_blocks() is >= 1
+        const size_type div  = n / bits_per_block; // div is <= last
+        const int       r    = bit_index( n );
+        buffer_type &   b    = m_bits;
 
         if ( r != 0 ) {
             const int ls = bits_per_block - r;
