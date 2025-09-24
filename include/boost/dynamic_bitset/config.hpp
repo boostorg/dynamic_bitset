@@ -37,9 +37,9 @@ make_non_const( T t )
 // A couple of macros to cope with libraries without locale
 // support. The first macro must be used to declare a reference
 // to a ctype facet. The second one to widen a char by using
-// that ctype object. If facets and locales aren't available
+// that ctype object. If facets and locales aren't available,
 // the first macro is a no-op and the second one just expands
-// to its parameter c.
+// to its argument c (in parentheses).
 //
 #if defined( BOOST_USE_FACET )
 
