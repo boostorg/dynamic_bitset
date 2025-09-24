@@ -390,17 +390,16 @@ struct bitset_test
         BOOST_TEST( copy1 == rhs );
         BOOST_TEST( copy2 == lhs );
 
-        // references must be stable under a swap
         for ( typename Bitset::size_type i = 0; i < lhs.size(); ++i ) {
             Bitset                     b1( lhs );
             Bitset                     b2( rhs );
             typename Bitset::reference ref = b1[ i ];
-            bool                       x   = ref;
+            const bool                 x   = ref;
             if ( i < b2.size() )
                 b2[ i ] = ! x; // make sure b2[i] is different
             b1.swap( b2 );
-            BOOST_TEST( b2[ i ] == x ); // now it must be equal..
-            b2.flip( i );
+            BOOST_TEST( b2[ i ] == x ); // now it must be equal
+            // b2.flip( i );
             // Since we transformed the Allocator parameter into
             // AllocatorOrContainer, the following is no longer true (think e.g.
             // of boost::container::small_vector).
