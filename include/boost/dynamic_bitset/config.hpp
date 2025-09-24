@@ -41,7 +41,7 @@ make_non_const( T t )
 // the first macro is a no-op and the second one just expands
 // to its argument c (in parentheses).
 //
-#if defined( BOOST_USE_FACET )
+#if ! defined( BOOST_NO_STD_LOCALE )
 
 #    define BOOST_DYNAMIC_BITSET_CTYPE_FACET( ch, name, loc ) \
         const std::ctype< ch > & name =                       \
