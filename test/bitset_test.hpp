@@ -414,11 +414,14 @@ struct bitset_test
         Bitset b( lhs );
 
         // Test no change in size
-        b.resize( lhs.size() );
+        b.resize( lhs.size(), true);
+        BOOST_TEST( b == lhs );
+        b.resize( lhs.size(), false );
         BOOST_TEST( b == lhs );
 
-        // Test increase in size
+        // Test increase in size with new bits to true
         b.resize( lhs.size() * 2, true );
+        BOOST_TEST( b.size() == lhs.size() * 2 );
 
         std::size_t i;
         for ( i = 0; i < lhs.size(); ++i )
@@ -428,8 +431,17 @@ struct bitset_test
 
         // Test decrease in size
         b.resize( lhs.size() );
+        BOOST_TEST( b.size() == lhs.size() );
         for ( i = 0; i < lhs.size(); ++i )
             BOOST_TEST( b[ i ] == lhs[ i ] );
+
+        // Test increase in size with new bits to false
+        b.resize( lhs.size() * 2, false );
+        BOOST_TEST( b.size() == lhs.size() * 2 );
+        for ( i = 0; i < lhs.size(); ++i )
+            BOOST_TEST( b[ i ] == lhs[ i ] );
+        for ( ; i < b.size(); ++i )
+            BOOST_TEST( b[ i ] == false );
     }
 
     static void
