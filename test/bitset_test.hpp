@@ -525,7 +525,7 @@ struct bitset_test
         b.append( value );
         BOOST_TEST( b.size() == lhs.size() + bits_per_block );
         for ( int i = 0; i < bits_per_block; ++i )
-            BOOST_TEST( b[ lhs.size() + i ] == bool( ( value >> i ) & 1 ) );
+            BOOST_TEST( b[ lhs.size() + i ] == nth_bit( value, i ) );
     }
 
     static void
