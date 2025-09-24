@@ -23,7 +23,7 @@
 #    include <sstream>
 #endif
 
-#if defined BOOST_NO_STD_WSTRING || defined BOOST_NO_STD_LOCALE
+#if defined BOOST_NO_STD_WSTRING
 #    define BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
 #endif
 

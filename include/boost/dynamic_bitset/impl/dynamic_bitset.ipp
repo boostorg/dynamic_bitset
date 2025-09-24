@@ -25,13 +25,10 @@
 #include <algorithm>
 #include <climits>
 #include <istream>
+#include <locale>
 #include <ostream>
 #include <stdexcept>
 #include <utility>
-
-#ifndef BOOST_NO_STD_LOCALE
-#    include <locale>
-#endif
 
 namespace boost {
 
@@ -1542,12 +1539,12 @@ template< typename B, typename A, typename StringT >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all )
 {
-    typedef typename StringT::traits_type Tr;
-    typedef typename StringT::value_type  Ch;
+    typedef typename StringT::traits_type              Tr;
+    typedef typename StringT::value_type               Ch;
 
-    BOOST_DYNAMIC_BITSET_CTYPE_FACET( Ch, fac, std::locale() );
-    const Ch                                           zero = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' );
-    const Ch                                           one  = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '1' );
+    const std::ctype< Ch > &                           fac  = std::use_facet< std::ctype< Ch > >( std::locale() );
+    const Ch                                           zero = fac.widen( '0' );
+    const Ch                                           one  = fac.widen( '1' );
 
     // Note that this function may access (when
     // dump_all == true) bits beyond position size() - 1
@@ -1590,9 +1587,8 @@ operator<<( std::basic_ostream< Ch, Tr > & os, const dynamic_bitset< Block, Allo
 
     typename basic_ostream< Ch, Tr >::sentry cerberos( os );
     if ( cerberos ) {
-        BOOST_DYNAMIC_BITSET_CTYPE_FACET( Ch, fac, os.getloc() );
-        const Ch zero = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' );
-        const Ch one  = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '1' );
+        const Ch zero = os.widen( '0' );
+        const Ch one  = os.widen( '1' );
 
         BOOST_TRY
         {
@@ -1684,9 +1680,8 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & 
     typename basic_istream< Ch, Tr >::sentry cerberos( is ); // skips whitespace
     if ( cerberos ) {
         // in accordance with the resolution of library issue 303
-        BOOST_DYNAMIC_BITSET_CTYPE_FACET( Ch, fac, is.getloc() );
-        const Ch zero = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' );
-        const Ch one  = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '1' );
+        const Ch zero = is.widen( '0' );
+        const Ch one  = is.widen( '1' );
 
         b.clear();
         BOOST_TRY
@@ -2092,19 +2087,19 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
     const std::size_t rlen = (std::min)( n, string_length - pos );
     const size_type   sz   = ( num_bits != npos ? num_bits : rlen );
     m_bits.resize( calc_num_blocks( sz ) );
-    m_num_bits = sz;
+    m_num_bits                      = sz;
 
-    BOOST_DYNAMIC_BITSET_CTYPE_FACET( CharT, fac, std::locale() );
-    const CharT     one = BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '1' );
+    const std::ctype< CharT > & fac = std::use_facet< std::ctype< CharT > >( std::locale() );
+    const CharT                 one = fac.widen( '1' );
 
-    const size_type m   = num_bits < rlen ? num_bits : rlen;
+    const size_type             m   = num_bits < rlen ? num_bits : rlen;
     for ( std::size_t i = 0; i < m; ++i ) {
         const CharT c = s[ ( pos + m - 1 ) - i ];
 
         if ( Traits::eq( c, one ) ) {
             set( i );
         } else {
-            BOOST_ASSERT( Traits::eq( c, BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, '0' ) ) );
+            BOOST_ASSERT( Traits::eq( c, fac.widen( '0' ) ) );
         }
     }
 }

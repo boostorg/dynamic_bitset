@@ -21,7 +21,7 @@
 #    include <sstream>
 #endif
 
-#if defined BOOST_NO_STD_WSTRING || defined BOOST_NO_STD_LOCALE
+#if defined BOOST_NO_STD_WSTRING
 #    define BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
 #endif
 
@@ -34,7 +34,7 @@ widen_string( const std::string & str, const std::locale & loc = std::locale() )
     if ( len != 0 ) {
         typedef std::ctype< wchar_t >     ct_type;
         typedef std::wstring::traits_type tr_type;
-        const ct_type &                   ct = BOOST_USE_FACET( ct_type, loc );
+        const ct_type &                   ct = std::use_facet< ct_type >( loc );
 
         result.resize( len );
         for ( std::size_t i = 0; i < len; ++i )

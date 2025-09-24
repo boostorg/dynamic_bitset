@@ -23,15 +23,11 @@
 #include <algorithm>
 #include <assert.h> // <cassert> is sometimes macro-guarded :-(
 #include <iterator>
+#include <locale>
 #include <sstream>
 #include <string>
 #include <type_traits>
 #include <vector>
-
-#if ! defined( BOOST_NO_STD_LOCALE )
-#    include <locale>
-#endif
-
 
 template< typename T >
 using small_vector = boost::container::small_vector< T, 8 >;
@@ -91,20 +87,6 @@ private:
     boost::filesystem::path m_path;
 };
 
-#if defined BOOST_NO_STD_LOCALE
-template< typename Stream >
-bool
-is_one_or_zero( const Stream & /*s*/, char c )
-{
-    return c == '1' || c == '0';
-}
-template< typename Stream >
-bool
-is_white_space( const Stream & /*s*/, char c )
-{
-    return std::isspace( c );
-}
-#else
 template< typename Stream, typename Ch >
 bool
 is_one_or_zero( const Stream & s, Ch c )
@@ -121,7 +103,6 @@ is_white_space( const Stream & s, Ch c )
 {
     return std::isspace( c, s.getloc() );
 }
-#endif
 
 template< typename Stream >
 bool
