@@ -291,8 +291,6 @@ struct bitset_test
     }
 
     // TODO from_block_range (below) should be splitted
-
-    // PRE: std::equal(first1, last1, first2) == true
     static void
     from_block_range( const std::vector< Block > & blocks )
     {
