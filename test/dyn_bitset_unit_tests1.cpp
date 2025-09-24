@@ -171,16 +171,13 @@ run_test_cases()
         run_numeric_ctor_tests< Tests, short int >();
         run_numeric_ctor_tests< Tests, int >();
         run_numeric_ctor_tests< Tests, long int >();
+        run_numeric_ctor_tests< Tests, long long >();
 
         run_numeric_ctor_tests< Tests, unsigned char >();
         run_numeric_ctor_tests< Tests, unsigned short >();
         run_numeric_ctor_tests< Tests, unsigned int >();
         run_numeric_ctor_tests< Tests, unsigned long >();
-
-#if defined( BOOST_HAS_LONG_LONG )
-        run_numeric_ctor_tests< Tests, ::boost::long_long_type >();
-        run_numeric_ctor_tests< Tests, ::boost::ulong_long_type >();
-#endif
+        run_numeric_ctor_tests< Tests, unsigned long long >();
     }
     //=====================================================================
     // Test construction from a string
@@ -624,10 +621,8 @@ main()
     run_test_cases< unsigned int, small_vector< unsigned int > >();
     run_test_cases< unsigned long >();
     run_test_cases< unsigned long, small_vector< unsigned long > >();
-#ifdef BOOST_HAS_LONG_LONG
-    run_test_cases< ::boost::ulong_long_type >();
-    run_test_cases< ::boost::ulong_long_type, small_vector< ::boost::ulong_long_type > >();
-#endif
+    run_test_cases< unsigned long long >();
+    run_test_cases< unsigned long long, small_vector< unsigned long long > >();
 
     return boost::report_errors();
 }

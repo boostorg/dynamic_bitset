@@ -11,7 +11,6 @@
 // -----------------------------------------------------------
 
 #include "bitset_test.hpp"
-#include "boost/config.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
 #include "boost/limits.hpp"
 #include <assert.h>
@@ -826,10 +825,8 @@ main()
     run_test_cases< unsigned int, small_vector< unsigned int > >();
     run_test_cases< unsigned long >();
     run_test_cases< unsigned long, small_vector< unsigned long > >();
-#ifdef BOOST_HAS_LONG_LONG
-    run_test_cases< ::boost::ulong_long_type >();
-    run_test_cases< ::boost::ulong_long_type, small_vector< ::boost::ulong_long_type > >();
-#endif
+    run_test_cases< unsigned long long >();
+    run_test_cases< unsigned long long, small_vector< unsigned long long > >();
 
     return boost::report_errors();
 }

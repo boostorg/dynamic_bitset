@@ -16,7 +16,6 @@
 #ifndef BOOST_DETAIL_DYNAMIC_BITSET_HPP
 #define BOOST_DETAIL_DYNAMIC_BITSET_HPP
 
-#include "boost/config.hpp"
 #include <cstddef>
 #include <memory>
 #include <type_traits>
@@ -155,16 +154,13 @@ BOOST_dynamic_bitset_is_numeric( signed char );
 BOOST_dynamic_bitset_is_numeric( short );
 BOOST_dynamic_bitset_is_numeric( int );
 BOOST_dynamic_bitset_is_numeric( long );
+BOOST_dynamic_bitset_is_numeric( long long );
 
 BOOST_dynamic_bitset_is_numeric( unsigned char );
 BOOST_dynamic_bitset_is_numeric( unsigned short );
 BOOST_dynamic_bitset_is_numeric( unsigned int );
 BOOST_dynamic_bitset_is_numeric( unsigned long );
-
-#if defined( BOOST_HAS_LONG_LONG )
-BOOST_dynamic_bitset_is_numeric( ::boost::long_long_type );
-BOOST_dynamic_bitset_is_numeric( ::boost::ulong_long_type );
-#endif
+BOOST_dynamic_bitset_is_numeric( unsigned long long );
 
 // intentionally omitted
 // BOOST_dynamic_bitset_is_numeric(float);

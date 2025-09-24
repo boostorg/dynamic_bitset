@@ -104,9 +104,7 @@ main()
     run_test_cases< unsigned short >();
     run_test_cases< unsigned int >();
     run_test_cases< unsigned long >();
-#ifdef BOOST_HAS_LONG_LONG
-    run_test_cases< ::boost::ulong_long_type >();
-#endif
+    run_test_cases< unsigned long long >();
 
     return boost::report_errors();
 }
