@@ -52,7 +52,7 @@ make_non_const( T t )
 #else
 
 #    define BOOST_DYNAMIC_BITSET_CTYPE_FACET( ch, name, loc ) /**/
-#    define BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, c )         c
+#    define BOOST_DYNAMIC_BITSET_WIDEN_CHAR( fac, c )        ( c )
 
 #endif
 
