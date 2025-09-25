@@ -22,7 +22,7 @@
 #    include <cstdlib>
 #    include <new>
 
-template< class T >
+template< typename T >
 class minimal_allocator
 {
 public:
