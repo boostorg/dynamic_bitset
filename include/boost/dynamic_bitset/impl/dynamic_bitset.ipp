@@ -1442,10 +1442,9 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::find_next( size_type pos ) const
 {
-    if ( pos == npos ) {
-        return npos;
-    }
-    return find_first( pos + 1 );
+    return pos == npos
+             ? npos
+             : find_first( pos + 1 );
 }
 
 template< typename Block, typename AllocatorOrContainer >
