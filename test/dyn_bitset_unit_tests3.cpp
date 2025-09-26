@@ -481,6 +481,11 @@ run_test_cases()
         Tests::operator_less_than( a, b );
     }
     {
+        bitset_type a;
+        bitset_type b( std::string( "1" ) );
+        Tests::operator_less_than( a, b );
+    }
+    {
         bitset_type a( std::string( "0" ) ), b( std::string( "0" ) );
         Tests::operator_less_than( a, b );
     }
@@ -498,6 +503,10 @@ run_test_cases()
     }
     {
         bitset_type a( std::string( "10" ) ), b( std::string( "111" ) );
+        Tests::operator_less_than( a, b );
+    }
+    {
+        bitset_type a( std::string( "11" ) ), b( std::string( "111" ) );
         Tests::operator_less_than( a, b );
     }
     {

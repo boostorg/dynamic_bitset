@@ -208,6 +208,13 @@ run_test_cases()
     }
     //=====================================================================
     // Test b.set(pos, len)
+
+      // case size is 0
+    {
+        bitset_type b( std::string( "10" ) ) ;
+        Tests::set_segment( b, 0, 0, true );
+        Tests::set_segment( b, 0, 0, false );
+    }
     { // case size is 1
         bitset_type b( std::string( "0" ) );
         Tests::set_segment( b, 0, 1, true );
