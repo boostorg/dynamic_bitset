@@ -227,6 +227,12 @@ struct bitset_test
             BOOST_TEST( b.begin() <= b.end() );
             BOOST_TEST( b.end() > b.begin() );
             BOOST_TEST( b.end() >= b.begin() );
+
+            BOOST_TEST( b.rbegin() < b.rend() );
+            BOOST_TEST( b.rbegin() <= b.rend() );
+            BOOST_TEST( b.rend() > b.rbegin() );
+            BOOST_TEST( b.rend() >= b.rbegin() );
+
             typename Bitset::const_iterator it = b.begin();
             it += b.size() / 2;
             BOOST_TEST( *it == b[ b.size() / 2 ] );
@@ -234,6 +240,7 @@ struct bitset_test
             BOOST_TEST( *it == b[ 0 ] );
         } else {
             BOOST_TEST( b.begin() == b.end() );
+            BOOST_TEST( b.rbegin() == b.rend() );
         }
 
         if ( b.size() > 1 ) {
