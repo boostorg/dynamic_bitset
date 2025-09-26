@@ -24,8 +24,8 @@ run_test_cases()
     typedef bitset_test< bitset_type >     Tests;
     // typedef typename bitset_type::size_type size_type; // unusable with Borland 5.5.1
 
-    std::string                            long_string = get_long_string();
-    std::size_t                            ul_width    = std::numeric_limits< unsigned long >::digits;
+    const std::string                      long_string = get_long_string();
+    const std::size_t                      ul_width    = std::numeric_limits< unsigned long >::digits;
 
     //=====================================================================
     // Test b.empty()

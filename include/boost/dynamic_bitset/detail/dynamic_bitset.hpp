@@ -94,11 +94,11 @@ template< typename T >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename T::size_type
 vector_max_size_workaround( const T & v ) noexcept
 {
-    typedef typename T::allocator_type                          allocator_type;
+    typedef typename T::allocator_type                                allocator_type;
 
-    const allocator_type &                                      alloc = v.get_allocator();
+    const allocator_type &                                            alloc = v.get_allocator();
 
-    typename std::allocator_traits< allocator_type >::size_type alloc_max =
+    const typename std::allocator_traits< allocator_type >::size_type alloc_max =
         std::allocator_traits< allocator_type >::max_size( alloc );
 
     const typename T::size_type container_max = v.max_size();

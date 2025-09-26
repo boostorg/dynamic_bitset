@@ -21,7 +21,7 @@ run_test_cases()
     typedef bitset_test< bitset_type >     Tests;
     const int                              bits_per_block = bitset_type::bits_per_block;
 
-    std::string                            long_string    = get_long_string();
+    const std::string                      long_string    = get_long_string();
 
     //=====================================================================
     // Test operator&=
