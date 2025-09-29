@@ -1283,7 +1283,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::max_size() const noexcept
     // allocator.
 
     const size_type m = detail::dynamic_bitset_impl::
-        vector_max_size_workaround( m_bits );
+        max_size_workaround( m_bits );
 
     return m <= ( size_type( -1 ) / bits_per_block ) ? m * bits_per_block : size_type( -1 );
 }

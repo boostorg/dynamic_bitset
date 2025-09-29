@@ -344,7 +344,6 @@ struct bitset_test
     {
         BOOST_TEST( b.max_size() > 0 );
         BOOST_TEST( b.max_size() >= b.size() );
-        BOOST_TEST( b.max_size() / bits_per_block <= std::allocator_traits< typename Bitset::allocator_type >::max_size( b.get_allocator() ) );
     }
 
     // move constructor (absent from std::bitset)

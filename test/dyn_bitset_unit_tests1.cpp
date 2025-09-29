@@ -603,6 +603,11 @@ run_test_cases()
         bitset_test< Bitset >::max_size( b );
     }
 #endif
+    {
+        typedef boost::dynamic_bitset< Block, small_vector< Block > > Bitset;
+        Bitset                                                        b;
+        bitset_test< Bitset >::max_size( b );
+    }
     // Test copy-initialize with default constructor
     {
         bitset_type b[ 1 ] = {};

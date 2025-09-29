@@ -20,6 +20,7 @@
 #include <memory>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 namespace boost {
 
@@ -90,19 +91,26 @@ struct value_to_type
 // from vector<>::max_size. This tries to get more
 // meaningful info.
 //
-template< typename T >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename T::size_type
-vector_max_size_workaround( const T & v ) noexcept
+template< typename T, typename Allocator >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename std::vector< T, Allocator >::size_type
+max_size_workaround( const std::vector< T, Allocator > & v ) noexcept
 {
-    typedef typename T::allocator_type                                allocator_type;
+    typedef typename std::vector< T, Allocator >::allocator_type      allocator_type;
 
     const allocator_type &                                            alloc = v.get_allocator();
 
     const typename std::allocator_traits< allocator_type >::size_type alloc_max =
         std::allocator_traits< allocator_type >::max_size( alloc );
 
-    const typename T::size_type container_max = v.max_size();
+    const typename std::vector< T, Allocator >::size_type container_max = v.max_size();
     return alloc_max < container_max ? alloc_max : container_max;
+}
+
+template< typename Container >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename Container::size_type
+max_size_workaround( const Container & c ) noexcept
+{
+    return c.max_size();
 }
 
 // for static_asserts
