@@ -1275,15 +1275,13 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrCont
 dynamic_bitset< Block, AllocatorOrContainer >::max_size() const noexcept
 {
     // The semantics of vector<>::max_size() aren't very clear (see lib
-    // issue 197) and many library implementations simply return dummy
-    // values, _unrelated_ to the underlying allocator.
+    // issue 197).
     //
-    // Given these problems, I was tempted to not provide this function
+    // Because of that, I was tempted to not provide this function
     // at all, but the user could need it if they provide their own
     // allocator.
 
-    const size_type m = detail::dynamic_bitset_impl::
-        max_size_workaround( m_bits );
+    const size_type m = m_bits.max_size();
 
     return m <= ( size_type( -1 ) / bits_per_block ) ? m * bits_per_block : size_type( -1 );
 }
