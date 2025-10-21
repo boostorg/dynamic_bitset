@@ -25,6 +25,9 @@ content:
       start_path: doc
       edit_url: 'https://github.com/boostorg/dynamic_bitset/edit/{refname}/{path}'
 
+output:
+  dir: html
+  
 ui:
   bundle:
     url: https://github.com/boostorg/website-v2-docs/releases/download/ui-master/ui-bundle.zip
