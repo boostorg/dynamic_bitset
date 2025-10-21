@@ -25,4 +25,5 @@ echo "Building docs in custom dir..."
 PATH="$(pwd)/node_modules/.bin:${PATH}"
 export PATH
 npx antora --clean --fetch "$PLAYBOOK" --stacktrace --log-level all
+cp -f html/index.html html/dynamic_bitset.html # redirects from pre-Antora docs location
 echo "Done"
