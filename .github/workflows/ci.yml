@@ -94,7 +94,7 @@ jobs:
 
           cd dynamic_bitset
           cd doc
-          bash ./build_docs.sh
+          bash ./build_antora.sh
 
           # Antora returns zero even if it fails, so we check if the site directory exists.
           if [ ! -d "html" ]
