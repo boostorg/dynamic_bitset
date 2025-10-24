@@ -5,7 +5,7 @@ import virtual-target ;
 
 path-constant HERE : . ;
 
-make html/index.html : build_docs.sh : @run-script ;
+make html/index.html : build_antora.sh : @run-script ;
 generate files-to-install : html/index.html : <generating-rule>@delayed-glob ;
 install install
   : files-to-install
