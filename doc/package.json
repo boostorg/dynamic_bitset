@@ -1,21 +1,15 @@
 {
-  "name": "doc",
-  "version": "1.0.0",
-  "description": "The documentation for the dynamic_bitset library is the top-level index.html file.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "devDependencies": {
+    "@antora/cli": "3.1.10",
+    "@antora/site-generator": "3.1.10",
+    "antora": "3.1.10"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@alandefreitas/antora-cpp-reference-extension": "^0.0.3",
-    "@antora/lunr-extension": "^1.0.0-alpha.10",
-    "@asciidoctor/tabs": "^1.0.0-beta.6",
-    "@cppalliance/antora-cpp-reference-extension": "^0.0.6",
-    "@cppalliance/antora-cpp-tagfiles-extension": "^0.0.4",
-    "@cppalliance/asciidoctor-boost-links": "^0.0.2",
-    "antora": "^3.1.10"
+    "@antora/expand-path-helper": "^2.0.0",
+    "@antora/lunr-extension": "^1.0.0-alpha.8",
+    "@asciidoctor/tabs": "^1.0.0-beta.3",
+    "@cppalliance/antora-cpp-reference-extension": "^0.0.8",
+    "@cppalliance/antora-cpp-tagfiles-extension": "^0.0.5",
+    "@cppalliance/asciidoctor-boost-links": "^0.0.2"
   }
 }
