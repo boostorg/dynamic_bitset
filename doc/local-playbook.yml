@@ -13,7 +13,6 @@
 
 site:
   title: Boost.DynamicBitset
-  url: https://antora.cppalliance.org/develop/lib/doc
   start_page: dynamic_bitset::index.adoc
   robots: allow
   keys:
