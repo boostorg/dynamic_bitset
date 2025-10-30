@@ -6,7 +6,6 @@
         "Chuck Allison"
     ],
     "description": "The dynamic_bitset template represents a set of bits. It provides access to the value of individual bits via operator[] and provides all of the bitwise operators that one can apply to builtin integers, such as operator& and operator<<. The number of bits in the set can change at runtime.",
-    "documentation": "dynamic_bitset.html",
     "category": [
         "Data structures"
     ],
