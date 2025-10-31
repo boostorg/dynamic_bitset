@@ -46,12 +46,11 @@ an unsigned long `n`, the bit at position `i` of the bitset has the same value
 as `(n >> i) & 1`.
 
 == Rationale
-Because of the proxy reference type, `dynamic_bitset` is not a <a
-href="https://en.cppreference.com/w/cpp/named_req/Container.html">Container</a>
-and its iterators do not satisfy the requirements for a LegacyForwardIterator.
-This means that its iterators are not usable with many standard algorithms.
-However, `dynamic_bitset` provides C++20 iterators which can be used with
-ranges.
+Because of the proxy reference type, `dynamic_bitset` is not a
+https://en.cppreference.com/w/cpp/named_req/Container.html[Container] and its
+iterators do not satisfy the requirements for a LegacyForwardIterator. This
+means that its iterators are not usable with many standard algorithms. However,
+`dynamic_bitset` provides C++20 iterators which can be used with ranges.
 
 Some people prefer the name "toggle" to "flip". The name "flip" was chosen
 because that is the name used in `std::bitset`. In fact, most of the function
