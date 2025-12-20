@@ -1440,6 +1440,8 @@ public:
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator==( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
     template< typename Iter >
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator<( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
+    template< typename Iter >
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 difference_type operator-( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
 
 protected:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void increment();
