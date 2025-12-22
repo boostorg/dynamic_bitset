@@ -248,6 +248,8 @@ struct bitset_test
             BOOST_TEST( *( 1 + b.begin() ) == b[ 1 ] );
             BOOST_TEST( *( b.end() - 1 ) == b[ b.size() - 1 ] );
         }
+
+        BOOST_TEST( b.end() - b.begin() == static_cast< std::ptrdiff_t >( b.size() ) );
     }
 
     static void
