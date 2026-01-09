@@ -1249,6 +1249,11 @@ public:
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             intersects( const dynamic_bitset & b ) const;
 
+    //!     A deprecated synonym for `find_first_one()`.
+    // -----------------------------------------------------------------------
+    BOOST_DEPRECATED( "Use find_first_one(), instead" )
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first( size_type pos = 0 ) const;
+
     //!     Finds the first set bit in `*this` with an index >= `pos`,
     //!     if any.
     //!
@@ -1260,8 +1265,13 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first( size_type pos = 0 ) const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first_one( size_type pos = 0 ) const;
 
+    //!     A deprecated synonym for `find_first_zero()`.
+    // -----------------------------------------------------------------------
+    BOOST_DEPRECATED( "Use find_first_zero(), instead" )
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first_off( size_type pos = 0 ) const;
+    
     //!     Finds the first unset bit in `*this` with an index >= `pos`,
     //!     if any.
     //!
@@ -1276,7 +1286,12 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first_off( size_type pos = 0 ) const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first_zero( size_type pos = 0 ) const;
+
+    //!     A deprecated synonym for `find_next_one()`.
+    // -----------------------------------------------------------------------
+    BOOST_DEPRECATED( "Use find_next_one(), instead" )
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next( size_type pos ) const;
 
     //!     Finds the first bit set in `*this` with an index > `pos`, if
     //!     any.
@@ -1291,7 +1306,12 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next( size_type pos ) const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next_one( size_type pos ) const;
+
+    //!     A deprecated synonym for `find_next_zero()`.
+    // -----------------------------------------------------------------------
+    BOOST_DEPRECATED( "Use find_next_zero(), instead" )
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next_off( size_type pos ) const;
 
     //!     Finds the first unset bit in `*this` with an index > `pos`,
     //!     if any.
@@ -1303,7 +1323,7 @@ public:
     //!     The lowest index `i` greater than `pos` such that bit `i` is
     //!     unset, or `npos` if no such index exists.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next_off( size_type pos ) const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next_zero( size_type pos ) const;
 
     template< typename B, typename A >
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator==( const dynamic_bitset< B, A > & a, const dynamic_bitset< B, A > & b );

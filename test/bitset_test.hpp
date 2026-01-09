@@ -1091,8 +1091,8 @@ struct bitset_test
     find_first( const Bitset & b, typename Bitset::size_type offset = 0, bool value = true )
     {
         const typename Bitset::size_type result = value
-            ? b.find_first( offset )
-            : b.find_first_off( offset );
+            ? b.find_first_one( offset )
+            : b.find_first_zero( offset );
 
         // find first bit with value `value` from offset onwards, if any
         typename Bitset::size_type i = offset;
@@ -1112,9 +1112,9 @@ struct bitset_test
     {
         find_first( b, pos, value);
         if ( value ) {
-            BOOST_TEST( next_bit_on( b, pos ) == b.find_next( pos ) );
+            BOOST_TEST( next_bit_on( b, pos ) == b.find_next_one( pos ) );
         } else {
-            BOOST_TEST( next_bit_off( b, pos ) == b.find_next_off( pos ) );
+            BOOST_TEST( next_bit_off( b, pos ) == b.find_next_zero( pos ) );
         }
     }
 

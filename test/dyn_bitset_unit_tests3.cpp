@@ -299,7 +299,7 @@ run_test_cases()
         Tests::intersects( a, b );
     }
     //=====================================================================
-    // Test find_first
+    // Test find_first_one/find_first_zero
     {
         // empty bitset
         bitset_type b;
@@ -334,7 +334,7 @@ run_test_cases()
         Tests::find_first( b, 0, false );
     }
     //=====================================================================
-    // Test find_next, find_next_off, offset find_first and offset find_first_off
+    // Test find_next_one, find_next_zero
     {
         // empty bitset
         bitset_type b;
@@ -350,7 +350,7 @@ run_test_cases()
         Tests::find_pos( b, b.npos, false );
     }
     {
-        // bitset of size 1 (find_next can never find)
+        // bitset of size 1 (find_next_one or find_next_zero can never find)
         bitset_type b( 1, 1ul );
 
         // check

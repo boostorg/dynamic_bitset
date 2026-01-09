@@ -1207,7 +1207,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::
 
     // Check for overflows. This may be a performance burden on very large
     // bitsets but is required by the specification, sorry.
-    if ( find_first( ulong_width ) != npos ) {
+    if ( find_first_one( ulong_width ) != npos ) {
         BOOST_THROW_EXCEPTION( std::overflow_error( "boost::dynamic_bitset::to_ulong overflow" ) );
     }
 
@@ -1393,6 +1393,13 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::find_first( size_type pos ) const
 {
+    return find_first_one( pos );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
+dynamic_bitset< Block, AllocatorOrContainer >::find_first_one( size_type pos ) const
+{
     const size_type sz = size();
     if ( pos >= sz ) {
         return npos;
@@ -1412,6 +1419,13 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_first( size_type pos ) const
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::find_first_off( size_type pos ) const
+{
+    return find_first_zero( pos );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
+dynamic_bitset< Block, AllocatorOrContainer >::find_first_zero( size_type pos ) const
 {
     if ( pos >= size() ) {
         return npos;
@@ -1440,18 +1454,32 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::find_next( size_type pos ) const
 {
+    return find_next_one( pos );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
+dynamic_bitset< Block, AllocatorOrContainer >::find_next_one( size_type pos ) const
+{
     return pos == npos
              ? npos
-             : find_first( pos + 1 );
+             : find_first_one( pos + 1 );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::find_next_off( size_type pos ) const
 {
+    return find_next_zero( pos );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
+dynamic_bitset< Block, AllocatorOrContainer >::find_next_zero( size_type pos ) const
+{
     return pos == npos
              ? npos
-             : find_first_off( pos + 1 );
+             : find_first_zero( pos + 1 );
 }
 
 //-----------------------------------------------------------------------------
