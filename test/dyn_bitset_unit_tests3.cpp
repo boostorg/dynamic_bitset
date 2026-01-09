@@ -1,6 +1,6 @@
 // -----------------------------------------------------------
 //              Copyright (c) 2001 Jeremy Siek
-//         Copyright (c) 2003-2006, 2025 Gennaro Prota
+//      Copyright (c) 2003-2006, 2025-2026 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
 //          Copyright (c) 2014 Riccardo Marcangelo
 //
@@ -333,6 +333,31 @@ run_test_cases()
         b.set( b.size() - 1, false );
         Tests::find_first( b, 0, false );
     }
+
+    //=====================================================================
+    // Test find_last_one
+    {
+        // empty bitset
+        bitset_type b;
+        Tests::find_last_one( b );
+    }
+    {
+        // bitset of size 1
+        bitset_type b( 1, 1ul );
+        Tests::find_last_one( b );
+        b.flip();
+        Tests::find_last_one( b );
+    }
+    {
+        // multi-block bitset
+        bitset_type b( 4 * bitset_type::bits_per_block, 1ul );
+        Tests::find_last_one( b );
+        b.set( 3 * bitset_type::bits_per_block );
+        Tests::find_last_one( b );
+        b.set( 3 * bitset_type::bits_per_block - 1 );
+        Tests::find_last_one( b );
+    }
+
     //=====================================================================
     // Test find_next_one, find_next_zero
     {
@@ -417,6 +442,38 @@ run_test_cases()
         }
         Tests::find_pos( b, b.npos );
         Tests::find_pos( b, b.npos, false );
+    }
+
+    //=====================================================================
+    // Test find_previous_one
+    {
+        bitset_type b;
+        Tests::find_previous_one( b, b.npos);
+        Tests::find_previous_one( b, 2);
+        Tests::find_previous_one( b, 1);
+        Tests::find_previous_one( b, 0);
+    }
+    {
+        bitset_type b( 1, 1ul );
+        Tests::find_previous_one( b, b.npos);
+        Tests::find_previous_one( b, 2);
+        Tests::find_previous_one( b, 1);
+        Tests::find_previous_one( b, 0);
+    }
+    {
+        bitset_type b( 4 * bitset_type::bits_per_block, 0ul );
+        b.set( 4 );
+        Tests::find_previous_one( b, b.npos);
+        Tests::find_previous_one( b, 4 * bitset_type::bits_per_block );
+        Tests::find_previous_one( b, 4 * bitset_type::bits_per_block - 1 );
+        Tests::find_previous_one( b, 3 * bitset_type::bits_per_block );
+        Tests::find_previous_one( b, 3 * bitset_type::bits_per_block - 1 );
+        Tests::find_previous_one( b, bitset_type::bits_per_block );
+        Tests::find_previous_one( b, bitset_type::bits_per_block - 1 );
+        Tests::find_previous_one( b, 6);
+        Tests::find_previous_one( b, 5);
+        Tests::find_previous_one( b, 4);
+        Tests::find_previous_one( b, 0);
     }
     //=====================================================================
     // Test operator==

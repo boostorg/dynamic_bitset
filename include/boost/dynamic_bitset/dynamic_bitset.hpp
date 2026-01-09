@@ -1,7 +1,7 @@
 // -----------------------------------------------------------
 //
 //   Copyright (c) 2001-2002 Chuck Allison and Jeremy Siek
-//      Copyright (c) 2003-2006, 2008, 2025 Gennaro Prota
+//   Copyright (c) 2003-2006, 2008, 2025-2026 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
 //
 // Copyright (c) 2014 Glen Joseph Fernandes
@@ -1288,6 +1288,14 @@ public:
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first_zero( size_type pos = 0 ) const;
 
+    //!     Finds the last (highest-index) set bit in `*this`, if any; or
+    //!     `npos`.
+    //!
+    //!     \par Throws
+    //!     Nothing.
+    // -----------------------------------------------------------------------
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_last_one() const;
+
     //!     A deprecated synonym for `find_next_one()`.
     // -----------------------------------------------------------------------
     BOOST_DEPRECATED( "Use find_next_one(), instead" )
@@ -1307,6 +1315,21 @@ public:
     //!     Nothing.
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next_one( size_type pos ) const;
+
+    //!     Finds the last set bit in `*this` with an index < `pos`, if
+    //!     any.
+    //!
+    //!     \param pos The upper bound (exclusively) to start the search
+    //!     from.
+    //!
+    //!     \return
+    //!     The highest index `i` less than `pos` such that bit `i` is
+    //!     set, or `npos` if no such index exists.
+    //!
+    //!     \par Throws
+    //!     Nothing.
+    // -----------------------------------------------------------------------
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_previous_one( size_type pos ) const;
 
     //!     A deprecated synonym for `find_next_zero()`.
     // -----------------------------------------------------------------------

@@ -26,7 +26,7 @@ test-suite dynamic_bitset :
     [ run dyn_bitset_unit_tests4.cpp : : : <library>/boost/filesystem//boost_filesystem
                                            <library>/boost/system//boost_system ]
     [ run test_ambiguous_set.cpp ]
-    [ run test_lowest_bit.cpp ]
+    [ run test_lowest_highest_bit.cpp ]
 
     [ run test_boost_hash.cpp ]
     [ run test_std_hash.cpp          : : : [ requires cxx11_hdr_unordered_set ] ]

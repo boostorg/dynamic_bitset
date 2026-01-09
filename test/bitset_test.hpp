@@ -1,6 +1,6 @@
 // -----------------------------------------------------------
 //              Copyright (c) 2001 Jeremy Siek
-//      Copyright (c) 2003-2006, 2008, 2025 Gennaro Prota
+//   Copyright (c) 2003-2006, 2008, 2025-2026 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
 //            Copyright (c) 2014 Riccardo Marcangelo
 //             Copyright (c) 2018 Evgeny Shulgin
@@ -1108,6 +1108,23 @@ struct bitset_test
     }
 
     static void
+    find_last_one( const Bitset & b )
+    {
+        const typename Bitset::size_type result = b.find_last_one();
+
+        if ( b.none() ) {
+            BOOST_TEST( result == Bitset::npos );
+        } else {
+            typename Bitset::size_type i = b.size() - 1;
+            while ( i > 0 && ! b[ i ] ) {
+                --i;
+            }
+            BOOST_TEST( result == i );
+            BOOST_TEST( b.test( i ) );
+        }
+    }
+
+    static void
     find_pos( const Bitset & b, typename Bitset::size_type pos, bool value = true )
     {
         find_first( b, pos, value);
@@ -1115,6 +1132,26 @@ struct bitset_test
             BOOST_TEST( next_bit_on( b, pos ) == b.find_next_one( pos ) );
         } else {
             BOOST_TEST( next_bit_off( b, pos ) == b.find_next_zero( pos ) );
+        }
+    }
+
+    static void
+    find_previous_one( const Bitset & b, typename Bitset::size_type pos )
+    {
+        const typename Bitset::size_type result = b.find_previous_one( pos );
+        if ( b.none() || pos == 0 ) {
+            BOOST_TEST( result == Bitset::npos );
+        } else {
+            typename Bitset::size_type i = (std::min)(pos - 1, b.size() - 1);
+            while ( i > 0 && ! b[ i ] ) {
+                --i;
+            }
+            if ( i == 0 && ! b[ i ] ) {
+                BOOST_TEST( result == Bitset::npos );
+            } else {
+                BOOST_TEST( result == i );
+                BOOST_TEST( b.test( i ) );
+            }
         }
     }
 

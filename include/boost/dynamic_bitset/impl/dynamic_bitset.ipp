@@ -1,7 +1,7 @@
 // -----------------------------------------------------------
 //
 //   Copyright (c) 2001-2002 Chuck Allison and Jeremy Siek
-//      Copyright (c) 2003-2006, 2008, 2025 Gennaro Prota
+//   Copyright (c) 2003-2006, 2008, 2025-2026 Gennaro Prota
 //             Copyright (c) 2014 Ahmed Charles
 //
 // Copyright (c) 2014 Glen Joseph Fernandes
@@ -19,7 +19,7 @@
 #include "boost/assert.hpp"
 #include "boost/core/bit.hpp"
 #include "boost/core/no_exceptions_support.hpp"
-#include "boost/dynamic_bitset/detail/lowest_bit.hpp"
+#include "boost/dynamic_bitset/detail/lowest_highest_bit.hpp"
 #include "boost/functional/hash/hash.hpp"
 #include "boost/throw_exception.hpp"
 #include <algorithm>
@@ -1452,6 +1452,23 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_first_zero( size_type pos ) 
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
+dynamic_bitset< Block, AllocatorOrContainer >::find_last_one() const
+{
+    size_type result = npos;
+
+    size_type i = num_blocks();
+    while ( i > 0 ) {
+        --i;
+        if ( m_not_empty( m_bits[ i ] ) ) {
+            result = i * bits_per_block + detail::highest_bit( m_bits[ i ] );
+            break;
+        }
+    }
+    return result;
+}
+
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::find_next( size_type pos ) const
 {
     return find_next_one( pos );
@@ -1464,6 +1481,39 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_next_one( size_type pos ) co
     return pos == npos
              ? npos
              : find_first_one( pos + 1 );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
+dynamic_bitset< Block, AllocatorOrContainer >::find_previous_one( size_type pos ) const
+{
+    if ( pos == 0 || empty() ) {
+        return npos;
+    }
+
+    if ( pos >= size() ) {
+        return find_last_one();
+    }
+
+    const size_type blk = block_index( pos );
+    const int       ind = bit_index( pos );
+    // mask out bits from ind upwards
+    Block           back = m_bits[ blk ] & ( ( Block( 1 ) << ind ) - 1 );
+    bool            found = m_not_empty( back );
+    size_type       i = blk;
+    if ( ! found ) {
+        while ( i > 0 ) {
+            --i;
+            back = m_bits[ i ];
+            if ( m_not_empty( back ) ) {
+                found = true;
+                break;
+            }
+        }
+    }
+    return found
+             ? i * bits_per_block + detail::highest_bit( back )
+             : npos;
 }
 
 template< typename Block, typename AllocatorOrContainer >
