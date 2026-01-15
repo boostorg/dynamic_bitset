@@ -1432,7 +1432,7 @@ public:
     typedef value_type *                         pointer;
     typedef value_type &                         reference;
 
-    static constexpr int                         bits_per_block = std::numeric_limits< typename Iterator::value_type >::digits;
+    static constexpr int                         bits_per_block = std::numeric_limits< typename std::iterator_traits<Iterator>::value_type >::digits;
 
     BOOST_DYNAMIC_BITSET_CONSTEXPR20             bit_iterator_base( Iterator block_iterator, int bit_index );
 
