@@ -1426,7 +1426,7 @@ template< typename Iterator >
 class bit_iterator_base
 {
 public:
-    typedef typename Iterator::iterator_category iterator_category;
+    typedef typename std::iterator_traits<Iterator>::iterator_category iterator_category;
     typedef bool                                 value_type;
     typedef std::ptrdiff_t                       difference_type;
     typedef value_type *                         pointer;
@@ -1446,7 +1446,7 @@ public:
 protected:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void increment();
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void decrement();
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void add( typename Iterator::difference_type n );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void add( typename std::iterator_traits<Iterator>::difference_type n );
 
     Iterator                              m_block_iterator;
     int                                   m_bit_index = 0;
