@@ -185,7 +185,7 @@ bit_iterator_base< Iterator >::decrement()
 
 template< typename Iterator >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-bit_iterator_base< Iterator >::add( typename Iterator::difference_type n )
+bit_iterator_base< Iterator >::add( typename std::iterator_traits<Iterator>::difference_type n )
 {
     typename Iterator::difference_type d = m_bit_index + n;
     m_block_iterator += d / bits_per_block;
