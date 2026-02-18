@@ -458,7 +458,11 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< B, A > & result )
 {
     // PRE: distance(first, last) <= numblocks()
-    std::copy( first, last, result.m_bits.begin() );
+    const auto it = std::copy( first, last, result.m_bits.begin() );
+    if ( it == result.m_bits.end() )
+    {
+        result.m_zero_unused_bits();
+    }
 }
 
 template< typename Block, typename AllocatorOrContainer >

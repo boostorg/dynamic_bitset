@@ -1773,7 +1773,8 @@ to_block_range( const dynamic_bitset< Block, AllocatorOrContainer > & b, BlockOu
 //!     <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
 //!     and its `value_type` must be the same type as `Block`. The size
 //!     of the iterator range must be less than or equal to
-//!     `b.num_blocks()`.
+//!     `b.num_blocks()`. Excess bits are not copied into the bitset,
+//!     which doesn't change its size.
 //!
 //!     \param first The start of the range.
 //!     \param last The end of the range.
