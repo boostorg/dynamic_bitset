@@ -17,7 +17,6 @@
 #define BOOST_DETAIL_DYNAMIC_BITSET_HPP
 
 #include <cstddef>
-#include <memory>
 #include <type_traits>
 #include <utility>
 
