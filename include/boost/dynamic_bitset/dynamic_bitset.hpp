@@ -917,7 +917,7 @@ public:
     //!     \pre
     //!     `pos + len <= this->size()`.
     //!
-    //!     \oaram pos The position of the lowest bit to reset.
+    //!     \param pos The position of the lowest bit to reset.
     //!     \param len The number of bits to reset.
     //!
     //!     \return
