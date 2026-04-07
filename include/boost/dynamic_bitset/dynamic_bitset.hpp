@@ -1107,7 +1107,7 @@ public:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             operator[]( size_type pos ) const;
 
     //!     Returns the numeric value corresponding to the bits in
-    //!     `*this`.
+    //!     `*this` (zero if `*this` is empty).
     //!
     //!     \par Type requirements
     //!     `T` is a cv-unqualified unsigned integer type other than
@@ -1125,7 +1125,7 @@ public:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 T               to_number() const;
 
     //!     Returns the numeric value corresponding to the bits in
-    //!     `*this`.
+    //!     `*this` (zero if `*this` is empty).
     //!
     //!     Equivalent to `to_number< unsigned long >()`.
     //!
