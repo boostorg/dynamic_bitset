@@ -892,6 +892,43 @@ struct bitset_test
         }
     }
 
+    // to_number<T>()
+    template< typename T >
+    static void
+    to_number( const Bitset & lhs )
+    {
+        std::size_t n              = std::numeric_limits< T >::digits;
+        std::size_t sz             = lhs.size();
+
+        bool        will_overflow  = false;
+        for ( std::size_t i = n; i < sz; ++i ) {
+            if ( lhs.test( i ) != 0 ) {
+                will_overflow = true;
+                break;
+            }
+        }
+        if ( will_overflow ) {
+            try {
+                (void)lhs.template to_number< T >();
+                BOOST_TEST( false ); // It should have thrown an exception
+            } catch ( std::overflow_error & ex ) {
+                // Good!
+                BOOST_TEST( ! ! ex.what() );
+            } catch ( ... ) {
+                BOOST_TEST( false ); // threw the wrong exception
+            }
+        } else {
+            T num = lhs.template to_number< T >();
+            // Be sure the number is right
+            if ( sz == 0 )
+                BOOST_TEST( num == 0 );
+            else {
+                for ( std::size_t i = 0; i < sz; ++i )
+                    BOOST_TEST( lhs[ i ] == ( i < n ? nth_bit( num, i ) : 0 ) );
+            }
+        }
+    }
+
     static void
     to_string( const Bitset & b )
     {

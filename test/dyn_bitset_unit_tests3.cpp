@@ -70,6 +70,55 @@ run_test_cases()
         Tests::to_ulong( b );
     }
     //=====================================================================
+    // Test b.to_number<T>()
+    {
+        bitset_type b;
+        Tests::template to_number< unsigned char >( b );
+        Tests::template to_number< unsigned short >( b );
+        Tests::template to_number< unsigned int >( b );
+        Tests::template to_number< unsigned long >( b );
+        Tests::template to_number< unsigned long long >( b );
+    }
+    {
+        bitset_type b( std::string( "1" ) );
+        Tests::template to_number< unsigned char >( b );
+        Tests::template to_number< unsigned short >( b );
+        Tests::template to_number< unsigned int >( b );
+        Tests::template to_number< unsigned long >( b );
+        Tests::template to_number< unsigned long long >( b );
+    }
+    {
+        bitset_type b( bitset_type::bits_per_block, static_cast< unsigned long >( -1 ) );
+        Tests::template to_number< unsigned long >( b );
+        Tests::template to_number< unsigned long long >( b );
+    }
+    {
+        std::string str( ul_width - 1, '1' );
+        bitset_type b( str );
+        Tests::template to_number< unsigned long >( b );
+        Tests::template to_number< unsigned long long >( b );
+    }
+    {
+        std::string ul_str( ul_width, '1' );
+        bitset_type b( ul_str );
+        Tests::template to_number< unsigned long >( b );
+        Tests::template to_number< unsigned long long >( b );
+    }
+    {
+        bitset_type b( 8, 255ul );
+        Tests::template to_number< unsigned char >( b );
+    }
+    {
+        bitset_type b( 16, 256ul );
+        Tests::template to_number< unsigned char >( b );
+    }
+    { // Overflow case
+        bitset_type b( long_string );
+        Tests::template to_number< unsigned char >( b );
+        Tests::template to_number< unsigned short >( b );
+        Tests::template to_number< unsigned long long >( b );
+    }
+    //=====================================================================
     // Test to_string(b, str)
     {
         bitset_type b;

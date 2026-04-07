@@ -1109,6 +1109,26 @@ public:
     //!     Returns the numeric value corresponding to the bits in
     //!     `*this`.
     //!
+    //!     \par Type requirements
+    //!     `T` is a cv-unqualified unsigned integer type other than
+    //!     `bool`.
+    //!
+    //!     \par Throws
+    //!     `std::overflow_error` if that value is too large to be
+    //!     represented in `T`, i.e. if `*this` has any non-zero bit at a
+    //!     position >= `std::numeric_limits< T >::digits`.
+    //!
+    //!     \return
+    //!     The numeric value corresponding to the bits in `*this`.
+    // -----------------------------------------------------------------------
+    template< typename T >
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 T               to_number() const;
+
+    //!     Returns the numeric value corresponding to the bits in
+    //!     `*this`.
+    //!
+    //!     Equivalent to `to_number< unsigned long >()`.
+    //!
     //!     \par Throws
     //!     `std::overflow_error` if that value is too large to be
     //!     represented in an `unsigned long`, i.e. if `*this` has any
