@@ -1339,7 +1339,7 @@ public:
     class serialize_impl;
     friend class serialize_impl;
 
-private:
+protected:
     static constexpr int                              ulong_width = std::numeric_limits< unsigned long >::digits;
 
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & range_operation( size_type pos, size_type len, Block ( *partial_block_operation )( Block, size_type, size_type ), Block ( *full_block_operation )( Block ) );
