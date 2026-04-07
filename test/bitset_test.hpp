@@ -1159,10 +1159,10 @@ struct bitset_test
     static bool
     less_than( const Bitset & a, const Bitset & b )
     {
-        typedef BOOST_DEDUCED_TYPENAME Bitset::size_type size_type;
+        typedef typename Bitset::size_type size_type;
 
-        size_type                                        asize( a.size() );
-        size_type                                        bsize( b.size() );
+        size_type                          asize( a.size() );
+        size_type                          bsize( b.size() );
 
         if ( ! bsize ) {
             return false;

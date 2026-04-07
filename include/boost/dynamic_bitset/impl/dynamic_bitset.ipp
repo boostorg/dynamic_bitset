@@ -1480,10 +1480,10 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
 operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b )
 {
-    typedef BOOST_DEDUCED_TYPENAME dynamic_bitset< Block, AllocatorOrContainer >::size_type size_type;
+    typedef typename dynamic_bitset< Block, AllocatorOrContainer >::size_type size_type;
 
-    size_type                                                                               asize( a.size() );
-    size_type                                                                               bsize( b.size() );
+    size_type                                                                 asize( a.size() );
+    size_type                                                                 bsize( b.size() );
 
     if ( ! bsize ) {
         return false;
