@@ -22,9 +22,9 @@
 #include "boost/dynamic_bitset/config.hpp"
 #include "boost/dynamic_bitset/detail/dynamic_bitset.hpp"
 #include "boost/dynamic_bitset_fwd.hpp"
-#include "boost/limits.hpp"
 #include <iosfwd>
 #include <iterator>
+#include <limits>
 #include <string>
 #include <type_traits>
 #include <vector>

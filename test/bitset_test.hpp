@@ -19,10 +19,10 @@
 #include "boost/core/lightweight_test.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
 #include "boost/filesystem.hpp"
-#include "boost/limits.hpp"
 #include <algorithm>
 #include <assert.h> // <cassert> is sometimes macro-guarded :-(
 #include <iterator>
+#include <limits>
 #include <locale>
 #include <sstream>
 #include <string>
