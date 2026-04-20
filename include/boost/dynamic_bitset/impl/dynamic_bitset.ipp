@@ -2142,7 +2142,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_unsigned_long(
     }
 
     typename buffer_type::iterator it = m_bits.begin();
-    for ( ; value; shifter::left_shift( value ), ++it ) {
+    for ( ; value; shifter::right_shift( value ), ++it ) {
         *it = static_cast< block_type >( value );
     }
 }

@@ -69,7 +69,7 @@ template< typename T, int amount, int width /* = default */ >
 struct shifter
 {
     static BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-    left_shift( T & v )
+    right_shift( T & v )
     {
         amount >= width ? ( v = 0 )
                         : ( v >>= BOOST_DYNAMIC_BITSET_WRAP_CONSTANT( amount ) );
