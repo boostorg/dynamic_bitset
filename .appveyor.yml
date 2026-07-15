@@ -35,7 +35,7 @@ branches:
 
 skip_commits:
   files:
-    - LICENSE
+    - LICENSE_1_0.txt
     - meta/*
     - README.md
 

@@ -28,7 +28,7 @@ on:
       - fix/**
       - pr/**
     paths-ignore:
-      - LICENSE
+      - LICENSE_1_0.txt
       - meta/**
       - README.md
 
