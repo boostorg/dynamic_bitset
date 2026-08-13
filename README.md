@@ -1,4 +1,4 @@
-DynamicBitset, part of the [Boost C++ Libraries](https://github.com/boostorg), is a bit vector similar to std::bitset but dynamically resizable.
+DynamicBitset, part of the [Boost C++ Libraries](https://github.com/boostorg), is a bit vector similar to `std::bitset` but dynamically resizable.
 
 ### License
 
