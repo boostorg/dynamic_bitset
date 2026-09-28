@@ -295,6 +295,32 @@ run_test_cases()
         b[ long_string.size() / 2 ].flip();
         Tests::subset( a, b );
     }
+    {
+        // neither is a subset of the other
+        bitset_type a( std::string( "01" ) ), b( std::string( "10" ) );
+        Tests::subset( a, b );
+        Tests::subset( b, a );
+    }
+    {
+        bitset_type a( std::string( "01" ) ), b( std::string( "11" ) );
+        Tests::subset( a, b );
+        Tests::subset( b, a );
+    }
+    {
+        const bitset_type a( long_string );
+        const bitset_type b = ~a;
+        Tests::subset( a, b );
+        Tests::subset( b, a );
+    }
+    {
+        // neither is a subset of the other, but they share most bits
+        bitset_type       a( long_string ), b( long_string );
+        const std::size_t first_off = a.find_first_off();
+        a.set( first_off );
+        b.set( b.find_next_off( first_off ) );
+        Tests::subset( a, b );
+        Tests::subset( b, a );
+    }
     //=====================================================================
     // Test a.is_proper_subset_of(b)
     {
@@ -322,6 +348,32 @@ run_test_cases()
         bitset_type a( long_string ), b( long_string );
         b[ long_string.size() / 2 ].flip();
         Tests::proper_subset( a, b );
+    }
+    {
+        // neither is a subset of the other
+        bitset_type a( std::string( "01" ) ), b( std::string( "10" ) );
+        Tests::proper_subset( a, b );
+        Tests::proper_subset( b, a );
+    }
+    {
+        bitset_type a( std::string( "01" ) ), b( std::string( "11" ) );
+        Tests::proper_subset( a, b );
+        Tests::proper_subset( b, a );
+    }
+    {
+        const bitset_type a( long_string );
+        const bitset_type b = ~a;
+        Tests::proper_subset( a, b );
+        Tests::proper_subset( b, a );
+    }
+    {
+        // neither is a subset of the other, but they share most bits
+        bitset_type       a( long_string ), b( long_string );
+        const std::size_t first_off = a.find_first_off();
+        a.set( first_off );
+        b.set( b.find_next_off( first_off ) );
+        Tests::proper_subset( a, b );
+        Tests::proper_subset( b, a );
     }
     //=====================================================================
     // Test intersects

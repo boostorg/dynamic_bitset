@@ -111,6 +111,19 @@ has_flags( const Stream & s, std::ios::iostate flags )
     return ( s.rdstate() & flags ) != std::ios::goodbit;
 }
 
+// Tells whether a is a subset of b, by testing each bit.
+template< typename Bitset >
+bool
+is_subset_bitwise( const Bitset & a, const Bitset & b )
+{
+    for ( std::size_t i = 0; i < a.size(); ++i ) {
+        if ( a.test( i ) && ! b.test( i ) ) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // constructors
 //   default (can't do this generically)
 
@@ -1061,23 +1074,13 @@ struct bitset_test
     {
         BOOST_TEST( a.size() == b.size() ); // PRE
 
-        bool is_subset = true;
-        if ( b.size() ) { // could use b.any() but let's be safe
-            for ( std::size_t i = 0; i < a.size(); ++i ) {
-                if ( a.test( i ) && ! b.test( i ) ) {
-                    is_subset = false;
-                    break;
-                }
-            }
-        } else {
+        if ( b.size() == 0 ) {
             // sanity
             BOOST_TEST( a.count() == 0 );
             BOOST_TEST( a.any() == false );
-
-            // is_subset = (a.any() == false);
         }
 
-        BOOST_TEST( a.is_subset_of( b ) == is_subset );
+        BOOST_TEST( a.is_subset_of( b ) == is_subset_bitwise( a, b ) );
     }
 
     static void
@@ -1086,21 +1089,13 @@ struct bitset_test
         // PRE: a.size() == b.size()
         BOOST_TEST( a.size() == b.size() );
 
-        bool is_proper = false;
-
-        if ( b.size() != 0 ) {
-            // check it's a subset
-            subset( a, b );
-
-            // is it proper?
-            for ( std::size_t i = 0; i < a.size(); ++i ) {
-                if ( ! a.test( i ) && b.test( i ) ) {
-                    is_proper = true;
-                    // sanity
-                    BOOST_TEST( a.count() < b.count() );
-                    BOOST_TEST( b.any() );
-                }
-            }
+        // a is a proper subset of b iff it is a subset of b and b has
+        // some bit that a doesn't have, i.e. b isn't a subset of a.
+        const bool is_proper = is_subset_bitwise( a, b ) && ! is_subset_bitwise( b, a );
+        if ( is_proper ) {
+            // sanity
+            BOOST_TEST( a.count() < b.count() );
+            BOOST_TEST( b.any() );
         }
 
         BOOST_TEST( a.is_proper_subset_of( b ) == is_proper );
