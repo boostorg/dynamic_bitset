@@ -176,12 +176,9 @@ struct bitset_test
     // test the correct working of those defaults here (except for the
     // default of num_bits). I'm not sure what to do in this regard.
     //
-    // Note2: the default argument expression for num_bits doesn't use
-    //        static_cast, to avoid a gcc 2.95.3 'sorry, not implemented'
-    //
     template< typename Ch, typename Tr, typename Al >
     static void
-    from_string( const std::basic_string< Ch, Tr, Al > & str, std::size_t pos, std::size_t max_char, std::size_t num_bits = (std::size_t)( -1 ) )
+    from_string( const std::basic_string< Ch, Tr, Al > & str, std::size_t pos, std::size_t max_char, std::size_t num_bits = static_cast< std::size_t >( -1 ) )
     {
         std::size_t       rlen             = (std::min)( max_char, str.size() - pos );
 
@@ -192,7 +189,7 @@ struct bitset_test
         // Subsequent decreasing character positions correspond to
         // increasing bit positions.
 
-        const bool        size_upon_string = num_bits == (std::size_t)( -1 );
+        const bool        size_upon_string = num_bits == static_cast< std::size_t >( -1 );
         Bitset            b                = size_upon_string ? Bitset( str, pos, max_char )
                                                               : Bitset( str, pos, max_char, num_bits );
 
@@ -1402,24 +1399,14 @@ struct bitset_test
         }
 
         // b.at(b.size())
-        bool will_out_of_range = false;
-        for ( i = 0; i <= b.size(); ++i ) {
-            if ( i == b.size() ) {
-                will_out_of_range = true;
-                break;
-            }
-            b.at( i );
-        }
-        if ( will_out_of_range ) {
-            try {
-                b.at( b.size() );
-                BOOST_TEST( false ); // It should have thrown an exception
-            } catch ( const std::out_of_range & ex ) {
-                // Good!
-                BOOST_TEST( ! ! ex.what() );
-            } catch ( ... ) {
-                BOOST_TEST( false ); // threw the wrong exception
-            }
+        try {
+            b.at( b.size() );
+            BOOST_TEST( false ); // It should have thrown an exception
+        } catch ( const std::out_of_range & ex ) {
+            // Good!
+            BOOST_TEST( ! ! ex.what() );
+        } catch ( ... ) {
+            BOOST_TEST( false ); // threw the wrong exception
         }
     }
 
@@ -1550,7 +1537,6 @@ struct bitset_test
         bool                    did_throw             = false;
 
         const std::ios::iostate except                = is.exceptions();
-        bool                    has_stream_exceptions = true;
         try {
             is >> b;
         } catch ( const std::ios::failure & ) {
@@ -1567,10 +1553,8 @@ struct bitset_test
             BOOST_TEST( b.size() <= static_cast< typename Bitset::size_type >( w ) );
 
         // throw if and only if required
-        if ( has_stream_exceptions ) {
-            const bool exceptional_state = has_flags( is, is.exceptions() );
-            BOOST_TEST( exceptional_state == did_throw );
-        }
+        const bool exceptional_state = has_flags( is, is.exceptions() );
+        BOOST_TEST( exceptional_state == did_throw );
 
         typedef typename String::size_type  size_type;
         typedef typename String::value_type Ch;
@@ -1618,7 +1602,7 @@ struct bitset_test
             // issue explained below.
             //
             if ( num_digits == 0 ) {
-                if ( after_digits == len && has_stream_exceptions && ( is.exceptions() & std::ios::eofbit ) != std::ios::goodbit ) {
+                if ( after_digits == len && ( is.exceptions() & std::ios::eofbit ) != std::ios::goodbit ) {
                     // This is a special case related to library issue 195:
                     // reaching eof when skipping whitespaces in the sentry ctor.
                     // The resolution says the sentry constructor should set *both*

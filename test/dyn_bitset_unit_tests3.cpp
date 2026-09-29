@@ -22,7 +22,6 @@ run_test_cases()
     // a bunch of typedefs which will be handy later on
     typedef boost::dynamic_bitset< Block, AllocatorOrContainer > bitset_type;
     typedef bitset_test< bitset_type >     Tests;
-    // typedef typename bitset_type::size_type size_type; // unusable with Borland 5.5.1
 
     const std::string                      long_string = get_long_string();
     const std::size_t                      ul_width    = std::numeric_limits< unsigned long >::digits;
@@ -745,7 +744,7 @@ run_test_cases()
         BOOST_TEST( a > b );
     }
     //=====================================================================
-    // Test operator<=
+    // Test operator>=
     {
         bitset_type a, b;
         Tests::operator_greater_than_eq( a, b );
