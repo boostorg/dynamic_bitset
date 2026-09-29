@@ -337,9 +337,10 @@ struct bitset_test
     static void
     copy_assignment_operator( const Bitset & lhs, const Bitset & rhs )
     {
-        Bitset b( lhs );
+        Bitset         b( lhs );
+        const Bitset & self( b ); // an alias, to avoid a self-assignment warning
         b = rhs;
-        b = b; // self assignment check
+        b = self; // self assignment check
         BOOST_TEST( b == rhs );
 
         // Changes to the copy do not affect the original
@@ -370,10 +371,11 @@ struct bitset_test
     static void
     move_assignment_operator( const Bitset & lhs, const Bitset & rhs )
     {
-        Bitset b( lhs );
-        Bitset c( rhs );
+        Bitset   b( lhs );
+        Bitset   c( rhs );
+        Bitset & self( b ); // an alias, to avoid a self-move warning
         b = std::move( c );
-        b = std::move( b ); // self assignment check
+        b = std::move( self ); // self assignment check
         BOOST_TEST( b == rhs );
     }
 
