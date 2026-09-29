@@ -1357,7 +1357,6 @@ public:
     //!     Optional zero-copy serialization support.
     // -----------------------------------------------------------------------
     class serialize_impl;
-    friend class serialize_impl;
 
 private:
     static constexpr int                              ulong_width = std::numeric_limits< unsigned long >::digits;

@@ -63,6 +63,46 @@ with this, the documentation of the member functions doesn't use the term
 "precondition" for conditions that cause an exception to be emitted (the C++
 standard uses the term "requires" in such cases).
 
+== Serialization
+
+`dynamic_bitset` can be serialized with Boost.Serialization (see also
+xref:reference:boost/dynamic_bitset/serialize_impl.adoc[serialize_impl]). To do
+so, include `<boost/dynamic_bitset/serialization.hpp>` and make the underlying
+buffer serializable, too. For the default buffer (a `std::vector`), this means
+including `<boost/serialization/vector.hpp>`:
+
+[source,cpp]
+----
+#include <boost/dynamic_bitset/serialization.hpp>
+#include <boost/serialization/vector.hpp>
+----
+
+`<boost/dynamic_bitset/serialization.hpp>` doesn't include any
+Boost.Serialization header itself, so that this library doesn't depend on
+Boost.Serialization. If the second template argument of `dynamic_bitset` is a
+container, the Boost.Serialization support for that container must be visible
+instead. Boost.Serialization doesn't provide it for every container (e.g., it
+doesn't provide it for `boost::container::small_vector`): in that case, you have
+to write it yourself.
+
+An archive holds the size of the bitset followed by its blocks, so it must be
+loaded into a `dynamic_bitset` with the same `Block` type as the saved one (a
+mismatch is not always detected). In particular, text and XML archives are
+portable only between platforms where `Block` has the same width: for portable
+archives, use a fixed-width type such as `std::uint32_t` rather than the default
+`unsigned long`.
+
+Loading checks that the archive holds a valid bitset, and throws
+`std::invalid_argument` if it doesn't. If loading throws, for this or any other
+reason, the bitset being loaded keeps its previous value, unless the archive
+throws after reading all of the data of the bitset (e.g., because an XML end tag
+is missing): then, it holds the loaded value.
+
+Because loading validates the archive, a non-empty `dynamic_bitset` can't be
+transmitted as a Boost.MPI skeleton (with `boost::mpi::skeleton()`): the
+skeleton holds the number of blocks, but not the size of the bitset, so loading
+it on the receiving side throws `std::invalid_argument`.
+
 == Acknowledgments
 
 We would like to thank the Boost community for putting in the time to review and
