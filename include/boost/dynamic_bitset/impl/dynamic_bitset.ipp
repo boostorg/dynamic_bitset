@@ -967,7 +967,8 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< B, A > &
         }
 
         // div blocks are zero filled at the most significant end
-        std::fill_n( m_bits.begin() + ( num_blocks() - div ), div, static_cast< block_type >( 0 ) );
+        typedef typename std::iterator_traits< typename buffer_type::iterator >::difference_type block_difference_type;
+        std::fill_n( std::next( m_bits.begin(), static_cast< block_difference_type >( num_blocks() - div ) ), div, static_cast< block_type >( 0 ) );
     }
 
     return *this;
@@ -1393,7 +1394,8 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::m_do_find_from( size_type first_block, bool value ) const
 {
-    size_type i = std::distance( m_bits.begin(), std::find_if( m_bits.begin() + first_block, m_bits.end(), value ? m_not_empty : m_not_full ) );
+    typedef typename std::iterator_traits< typename buffer_type::const_iterator >::difference_type block_difference_type;
+    size_type i = std::distance( m_bits.begin(), std::find_if( std::next( m_bits.begin(), static_cast< block_difference_type >( first_block ) ), m_bits.end(), value ? m_not_empty : m_not_full ) );
 
     if ( i >= num_blocks() ) {
         return npos; // not found
@@ -1926,7 +1928,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::m_check_invariants() const
             return false;
         }
     }
-    if ( m_bits.size() > m_bits.capacity() || num_blocks() != calc_num_blocks( size() ) ) {
+    if ( num_blocks() != calc_num_blocks( size() ) ) {
         return false;
     }
 

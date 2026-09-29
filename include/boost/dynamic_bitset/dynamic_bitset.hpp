@@ -73,23 +73,57 @@ class const_bit_iterator;
 //!
 //!     \par Type requirements
 //!     `Block` is a cv-unqualified unsigned integer type other than
-//!     `bool`. `AllocatorOrContainer` satisfies the standard requirements for an
+//!     `bool`.
+//!
+//!     `AllocatorOrContainer` is taken as a container if it has a
+//!     nested `value_type` which is `Block`, a member `resize()` taking
+//!     a size, and an `operator[]` taking an index; otherwise, it is taken
+//!     as an allocator. A type which is neither (for instance,
+//!     `std::list< Block >`, which has no `operator[]`) is rejected by
+//!     a `static_assert`.
+//!
+//!     If `AllocatorOrContainer` is an allocator, it satisfies the
+//!     standard requirements for an
 //!     <a href="https://en.cppreference.com/w/cpp/named_req/Allocator.html">allocator</a>
-//!     or is a container-like type which provides at least bidirectional
-//!     iterators.
+//!     of `Block`, and the bits are stored in a
+//!     `std::vector< Block, AllocatorOrContainer >`.
+//!
+//!     If `AllocatorOrContainer` is a container (for instance, a
+//!     `boost::container::small_vector< Block, N >` or a
+//!     `std::deque< Block >`), the bits are stored in an object of that
+//!     type, which must provide, with the same semantics as for
+//!     `std::vector`: the nested types `allocator_type`, `iterator` and
+//!     `const_iterator`, the latter two being at least
+//!     <a href="https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator">LegacyBidirectionalIterators</a>;
+//!     default, copy and move construction, construction from an
+//!     `allocator_type`, and copy and move assignment; the members
+//!     `begin()`, `end()`, `cbegin()`, `cend()`, `size()`, `max_size()`,
+//!     `empty()`, `get_allocator()`, `operator[]`, `back()`,
+//!     `resize( n )`, `resize( n, value )`, `push_back()`, `pop_back()`,
+//!     `insert( pos, first, last )` and `clear()`; and `operator==`. In
+//!     addition, `capacity()`, `reserve()`, `shrink_to_fit()` and
+//!     `append()` of a range of forward iterators use the `capacity()`,
+//!     `reserve()` or member `swap()` of the container, as documented
+//!     for each of them, and can't be used with a container which
+//!     lacks them (such as `std::deque`). Many members access the
+//!     blocks through `operator[]`, so they are efficient only if it
+//!     takes constant time.
 // ---------------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
 class dynamic_bitset
 {
     static_assert( (bool)detail::dynamic_bitset_impl::allowed_block_type< Block >::value, "Block type not allowed" );
     static_assert( std::is_same< Block, typename AllocatorOrContainer::value_type >::value, "Block is not the same type as AllocatorOrContainer::value_type" );
+    static_assert( detail::dynamic_bitset_impl::is_container< AllocatorOrContainer, Block >::value || detail::dynamic_bitset_impl::is_allocator< AllocatorOrContainer >::value, "AllocatorOrContainer must be either an allocator or a container of Block with resize() and operator[]" );
 
 public:
     //!     The same type as `Block`.
     // -----------------------------------------------------------------------
     typedef Block block_type;
 
-    //!     The allocator used for all memory allocations.
+    //!     The allocator used for all memory allocations:
+    //!     `AllocatorOrContainer` if it is an allocator, otherwise
+    //!     `AllocatorOrContainer::allocator_type`.
     // -----------------------------------------------------------------------
     typedef typename detail::dynamic_bitset_impl::allocator_type_extractor< AllocatorOrContainer, Block >::type
                         allocator_type;
@@ -299,6 +333,8 @@ public:
 #if defined( __cpp_lib_ranges )
     static_assert( std::bidirectional_iterator< typename buffer_type::iterator >, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
     static_assert( std::bidirectional_iterator< iterator > );
+#else
+    static_assert( std::is_base_of< std::bidirectional_iterator_tag, typename std::iterator_traits< typename buffer_type::iterator >::iterator_category >::value, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
 #endif
 
     //!     Constructs a bitset of size zero.
@@ -733,6 +769,12 @@ public:
     //!     The `BlockInputIterator` type must be a model of
     //!     <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
     //!     and its value_type must be the same type as Block.
+    //!
+    //!     \par Type requirements
+    //!     If `AllocatorOrContainer` is a container and
+    //!     `BlockInputIterator` is a
+    //!     <a href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">LegacyForwardIterator</a>,
+    //!     the container provides `reserve()`.
     //!
     //!     \param first The start of the range.
     //!     \param last The end of the range.
@@ -1187,6 +1229,10 @@ public:
     //!     Returns the total number of elements that `*this` can hold
     //!     without requiring reallocation.
     //!
+    //!     \par Type requirements
+    //!     If `AllocatorOrContainer` is a container, it provides
+    //!     `capacity()`.
+    //!
     //!     \return The abovementioned number of elements.
     //!
     //!     \par Throws
@@ -1203,6 +1249,10 @@ public:
     //!     Reallocation happens at this point if and only if the
     //!     current capacity is less than the argument of `reserve()`.
     //!
+    //!     \par Type requirements
+    //!     If `AllocatorOrContainer` is a container, it provides
+    //!     `reserve()`.
+    //!
     //!     \param num_bits The number of bits the bitset should be able
     //!     to store without reallocation.
     //!
@@ -1213,6 +1263,10 @@ public:
 
     //!     Requests the bitset to reduce memory use by removing unused
     //!     capacity.
+    //!
+    //!     \par Type requirements
+    //!     If `AllocatorOrContainer` is a container, it provides
+    //!     `capacity()` and a member `swap()`.
     //!
     //!     \par Note
     //!     It does not change the size of the bitset.

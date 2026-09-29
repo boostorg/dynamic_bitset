@@ -25,18 +25,39 @@ namespace boost {
 namespace detail {
 namespace dynamic_bitset_impl {
 
+// A type is taken as a container of Block, to be used as the underlying
+// buffer, if its value_type is Block and it has resize( n ) and
+// operator[]( n ).
 template< typename AllocatorOrContainer, typename Block >
 class is_container
 {
 private:
-    template< typename U >
-    static decltype( std::declval< U >().resize( std::size_t{} ), std::declval< U >()[ 0 ], typename U::value_type(), std::is_same< typename U::value_type, Block >{}, std::true_type{} ) test( int );
+    template< typename U, typename = typename std::enable_if< std::is_same< typename U::value_type, Block >::value >::type >
+    static decltype( std::declval< U & >().resize( std::size_t{} ), std::declval< U & >()[ std::size_t{} ], std::true_type{} ) test( int );
 
     template< typename >
     static std::false_type test( ... );
 
 public:
     static constexpr bool value = decltype( test< AllocatorOrContainer >( 0 ) )::value;
+};
+
+// Detects the allocate() and deallocate() members that every allocator
+// has. Used only to reject, with a clear message, an AllocatorOrContainer
+// which is neither an allocator nor a suitable container of Block (e.g. a
+// std::list).
+template< typename T >
+class is_allocator
+{
+private:
+    template< typename U >
+    static decltype( std::declval< U & >().deallocate( std::declval< U & >().allocate( std::size_t{} ), std::size_t{} ), std::true_type{} ) test( int );
+
+    template< typename >
+    static std::false_type test( ... );
+
+public:
+    static constexpr bool value = decltype( test< T >( 0 ) )::value;
 };
 
 template< typename AllocatorOrContainer, bool IsContainer >

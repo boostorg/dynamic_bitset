@@ -26,6 +26,7 @@ test-suite dynamic_bitset :
     [ run dyn_bitset_unit_tests4.cpp : : : <library>/boost/filesystem//boost_filesystem
                                            <library>/boost/system//boost_system ]
     [ run test_ambiguous_set.cpp ]
+    [ run test_container_mode.cpp ]
     [ run test_lowest_bit.cpp ]
 
     [ run test_boost_hash.cpp ]
