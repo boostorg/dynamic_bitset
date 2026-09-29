@@ -39,5 +39,13 @@ main( int, char *[] )
     // if any hash is identical to another there will be less than 5
     BOOST_TEST_EQ( results.size(), 5 );
 
+    // Equal bitsets must have equal hash values, also when they are
+    // built in different ways.
+    bitset_type stuff_too( std::string( 70, '1' ) + long_string );
+    stuff_too.resize( long_string.size() );
+
+    BOOST_TEST( stuff_too == stuff );
+    BOOST_TEST_EQ( bitset_hasher( stuff_too ), bitset_hasher( stuff ) );
+
     return boost::report_errors();
 }
