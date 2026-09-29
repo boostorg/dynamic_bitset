@@ -14,13 +14,10 @@
 // -----------------------------------------------------------
 
 #include "bitset_test.hpp"
-#include "boost/config.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
+#include <cstdlib>
 #include <limits>
-
-#if ! defined( BOOST_NO_CXX11_ALLOCATOR )
-#    include <cstdlib>
-#    include <new>
+#include <new>
 
 template< typename T >
 class minimal_allocator
@@ -53,7 +50,6 @@ public:
         std::free( p );
     }
 };
-#endif
 
 #define BOOST_BITSET_TEST_COUNT( x ) ( sizeof( x ) / sizeof( x[ 0 ] ) )
 
@@ -162,10 +158,7 @@ run_test_cases()
         }
 
         run_numeric_ctor_tests< Tests, char >();
-
-#if ! defined( BOOST_NO_INTRINSIC_WCHAR_T )
         run_numeric_ctor_tests< Tests, wchar_t >();
-#endif
 
         run_numeric_ctor_tests< Tests, signed char >();
         run_numeric_ctor_tests< Tests, short int >();
@@ -187,7 +180,6 @@ run_test_cases()
 
         run_string_tests< Tests >( long_string );
 
-#if ! defined BOOST_NO_STD_WSTRING
         // I need to decide what to do for non "C" locales here. On
         // one hand I should have better tests. On the other one
         // I don't want tests for dynamic_bitset to cope with locales,
@@ -196,7 +188,6 @@ run_test_cases()
         //
         run_string_tests< Tests >(
             std::wstring( L"11111000000111111111010101010101010101010111111" ) );
-#endif
 
         // Note that these are _valid_ arguments
         Tests::from_string( std::string( "x11y" ), 1, 2 );
@@ -596,13 +587,11 @@ run_test_cases()
     }
     //=====================================================================
     // Test max_size
-#if ! defined( BOOST_NO_CXX11_ALLOCATOR )
     {
         typedef boost::dynamic_bitset< Block, minimal_allocator< Block > > Bitset;
         Bitset                                                             b;
         bitset_test< Bitset >::max_size( b );
     }
-#endif
     {
         typedef boost::dynamic_bitset< Block, small_vector< Block > > Bitset;
         Bitset                                                        b;

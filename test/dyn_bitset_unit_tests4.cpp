@@ -9,23 +9,14 @@
 // -----------------------------------------------------------
 
 #include "bitset_test.hpp"
-#include "boost/config.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
 #include <assert.h>
 #include <cstddef>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
-#if ! defined( BOOST_NO_STRINGSTREAM )
-#    include <sstream>
-#endif
-
-#if defined BOOST_NO_STD_WSTRING
-#    define BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
-#endif
-
-#if ! defined BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
 std::wstring
 widen_string( const std::string & str, const std::locale & loc = std::locale() )
 {
@@ -42,7 +33,6 @@ widen_string( const std::string & str, const std::locale & loc = std::locale() )
     }
     return result;
 }
-#endif
 
 template< typename Block, typename AllocatorOrContainer = std::allocator< Block > >
 void
@@ -121,7 +111,6 @@ run_test_cases()
                         {
                             // NOTE: there are NO string stream tests
                         }
-#if ! defined( BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS )
                         {
                             // test 1b - wide file stream
                             scoped_temp_file stf;
@@ -132,7 +121,6 @@ run_test_cases()
                             file.exceptions( masks[ mi ] );
                             Tests::stream_inserter( b, file, stf.path().string().c_str() );
                         }
-#endif
                     }
                 }
             }
@@ -247,7 +235,6 @@ run_test_cases()
                         f.exceptions( masks[ mi ] );
                         Tests::stream_extractor( b, f, strings[ si ] );
                     }
-#if ! defined( BOOST_NO_STRINGSTREAM )
                     // test 2a - stringstream
                     {
                         bitset_type        b( 1, 255ul );
@@ -256,9 +243,7 @@ run_test_cases()
                         stream.exceptions( masks[ mi ] );
                         Tests::stream_extractor( b, stream, strings[ si ] );
                     }
-#endif
 
-#if ! defined( BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS )
                     // test 1b - wchar_t file stream
                     {
                         scoped_temp_file stf;
@@ -284,7 +269,6 @@ run_test_cases()
                         wstream.exceptions( masks[ mi ] );
                         Tests::stream_extractor( b, wstream, wstr );
                     }
-#endif // BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
                 }
             }
 

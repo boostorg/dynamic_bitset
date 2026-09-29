@@ -15,17 +15,9 @@
 #include "boost/archive/binary_oarchive.hpp"
 #include "boost/archive/xml_iarchive.hpp"
 #include "boost/archive/xml_oarchive.hpp"
-#include "boost/config.hpp"
 #include "boost/dynamic_bitset/serialization.hpp"
 #include "boost/serialization/vector.hpp"
-
-#if ! defined( BOOST_NO_STRINGSTREAM )
-#    include <sstream>
-#endif
-
-#if defined BOOST_NO_STD_WSTRING
-#    define BOOST_DYNAMIC_BITSET_NO_WCHAR_T_TESTS
-#endif
+#include <sstream>
 
 namespace {
 template< typename Block >
@@ -52,7 +44,6 @@ test_serialization()
     for ( int i = 0; i < 128; ++i )
         a.x.resize( 11 * i, i % 2 );
 
-#if ! defined( BOOST_NO_STRINGSTREAM )
     std::stringstream ss;
 
     // test serialization
@@ -69,9 +60,6 @@ test_serialization()
 
         BOOST_TEST( a.x == b.x );
     }
-#else
-#    error "TODO implement file-based test path?"
-#endif
 }
 
 template< typename Block >
