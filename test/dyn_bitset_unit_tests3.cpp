@@ -794,9 +794,18 @@ run_test_cases()
         bitset_type b( std::string( "0" ) );
         Tests::test_bit( b, 0 );
     }
+    { // case pos < b.size(), with the bit set
+        bitset_type b( std::string( "1" ) );
+        Tests::test_bit( b, 0 );
+    }
     { // case pos == b.size() / 2
         bitset_type b( long_string );
         Tests::test_bit( b, long_string.size() / 2 );
+    }
+    { // case every pos < b.size()
+        bitset_type b( long_string );
+        for ( std::size_t pos = 0; pos < b.size(); ++pos )
+            Tests::test_bit( b, pos );
     }
     //=====================================================================
     // Test b.test_set(pos)

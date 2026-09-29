@@ -1304,10 +1304,12 @@ struct bitset_test
     static void
     test_bit( const Bitset & b, std::size_t pos )
     {
-        Bitset      lhs( b );
-        std::size_t N = lhs.size();
-        if ( pos < N ) {
-            BOOST_TEST( lhs.test( pos ) == lhs[ pos ] );
+        if ( pos < b.size() ) {
+            // Compare against the underlying blocks.
+            std::vector< Block > blocks( b.num_blocks() );
+            boost::to_block_range( b, blocks.begin() );
+            const Block block = blocks[ pos / bits_per_block ];
+            BOOST_TEST( b.test( pos ) == nth_bit( block, pos % bits_per_block ) );
         } else {
             // Not in range, doesn't satisfy precondition.
         }
