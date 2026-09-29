@@ -833,8 +833,21 @@ template< typename BlockInputIterator >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::append( BlockInputIterator first, BlockInputIterator last ) // strong guarantee
 {
-    typename std::iterator_traits< BlockInputIterator >::iterator_category cat;
-    m_append( first, last, cat );
+    const size_type old_size = size();
+    BOOST_TRY
+    {
+        typename std::iterator_traits< BlockInputIterator >::iterator_category cat;
+        m_append( first, last, cat );
+    }
+    BOOST_CATCH( ... )
+    {
+        // This only shrinks the buffer, so it doesn't throw. It also
+        // clears any bit that m_append() set beyond old_size in the old
+        // highest block.
+        resize( old_size );
+        BOOST_RETHROW
+    }
+    BOOST_CATCH_END
 }
 
 //-----------------------------------------------------------------------------

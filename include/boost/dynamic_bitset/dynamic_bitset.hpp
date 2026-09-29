@@ -791,11 +791,18 @@ public:
     //!     <a href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">LegacyForwardIterator</a>,
     //!     the container provides `reserve()`.
     //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`), or any exception
+    //!     thrown by an operation of `BlockInputIterator`. If an
+    //!     exception is thrown, `*this` is left unchanged, except that
+    //!     its capacity may have increased.
+    //!
     //!     \param first The start of the range.
     //!     \param last The end of the range.
     // -----------------------------------------------------------------------
     template< typename BlockInputIterator >
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void             append( BlockInputIterator first, BlockInputIterator last ); // strong guarantee
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void             append( BlockInputIterator first, BlockInputIterator last );
 
     //!     Bitwise-ANDs all the bits in this bitset with the bits in
     //!     `b`.
