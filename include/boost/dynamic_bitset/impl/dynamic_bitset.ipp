@@ -657,9 +657,9 @@ dynamic_bitset< Block, AllocatorOrContainer >::crend() const
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::
-    swap( dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept
+    swap( dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept( detail::dynamic_bitset_impl::is_nothrow_swappable< buffer_type >::value )
 {
-    std::swap( m_bits, b.m_bits );
+    detail::dynamic_bitset_impl::adl_swap( m_bits, b.m_bits );
     std::swap( m_num_bits, b.m_num_bits );
 }
 
@@ -1803,7 +1803,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-swap( dynamic_bitset< Block, AllocatorOrContainer > & a, dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept
+swap( dynamic_bitset< Block, AllocatorOrContainer > & a, dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept( noexcept( a.swap( b ) ) )
 {
     a.swap( b );
 }

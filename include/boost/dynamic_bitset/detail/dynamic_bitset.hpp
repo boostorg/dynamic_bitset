@@ -60,6 +60,31 @@ public:
     static constexpr bool value = decltype( test< T >( 0 ) )::value;
 };
 
+// Swaps with an unqualified call, with std::swap() visible, so that a
+// swap() found by ADL (for instance, one provided for a user container)
+// takes part in overload resolution.
+namespace adl_swap_impl {
+
+using std::swap;
+
+template< typename T >
+struct is_nothrow_swappable
+{
+    static constexpr bool value = noexcept( swap( std::declval< T & >(), std::declval< T & >() ) );
+};
+
+template< typename T >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
+adl_swap( T & a, T & b ) noexcept( is_nothrow_swappable< T >::value )
+{
+    swap( a, b );
+}
+
+} // adl_swap_impl
+
+using adl_swap_impl::adl_swap;
+using adl_swap_impl::is_nothrow_swappable;
+
 template< typename AllocatorOrContainer, bool IsContainer >
 class allocator_type_extractor_impl;
 

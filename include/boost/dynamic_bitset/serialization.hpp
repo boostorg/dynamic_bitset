@@ -68,7 +68,7 @@ private:
             BOOST_THROW_EXCEPTION( std::invalid_argument( "boost::dynamic_bitset: invalid bitset in archive" ) );
         }
 
-        bs.m_bits.swap( bits );
+        detail::dynamic_bitset_impl::adl_swap( bs.m_bits, bits );
         bs.m_num_bits = num_bits;
 
         // In case the archive tracks the buffer, tell it where the

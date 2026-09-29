@@ -16,6 +16,8 @@
 #include <iterator>
 #include <list>
 #include <memory>
+#include <utility>
+#include <vector>
 
 namespace {
 
@@ -66,7 +68,37 @@ test_container()
 
 }
 
+namespace user {
+
+int swap_calls = 0;
+
+// A container which provides its own swap(), to be found by ADL, and
+// doesn't declare it noexcept.
+template< typename T >
+class vector_with_swap
+    : public std::vector< T >
+{
+public:
+    vector_with_swap() = default;
+
+    explicit vector_with_swap( const std::allocator< T > & alloc )
+        : std::vector< T >( alloc )
+    {
+    }
+
+    friend void
+    swap( vector_with_swap & a, vector_with_swap & b )
+    {
+        ++swap_calls;
+        static_cast< std::vector< T > & >( a ).swap( b );
+    }
+};
+
+}
+
 namespace impl = boost::detail::dynamic_bitset_impl;
+
+static_assert( impl::is_container< user::vector_with_swap< unsigned >, unsigned >::value, "" );
 
 // std::list has no operator[] and is not an allocator, so
 // dynamic_bitset< unsigned, std::list< unsigned > > fails a
@@ -74,9 +106,56 @@ namespace impl = boost::detail::dynamic_bitset_impl;
 static_assert( ! impl::is_container< std::list< unsigned >, unsigned >::value, "" );
 static_assert( ! impl::is_allocator< std::list< unsigned > >::value, "" );
 
+typedef boost::dynamic_bitset< unsigned, std::deque< unsigned > >               deque_bitset;
+typedef boost::dynamic_bitset< unsigned, user::vector_with_swap< unsigned > >   user_bitset;
+
+template< typename Bitset >
+constexpr bool
+has_nothrow_member_swap()
+{
+    return noexcept( std::declval< Bitset & >().swap( std::declval< Bitset & >() ) );
+}
+
+template< typename T >
+constexpr bool
+has_nothrow_free_swap()
+{
+    return noexcept( swap( std::declval< T & >(), std::declval< T & >() ) );
+}
+
+// swap() is noexcept if and only if swapping the underlying containers
+// is, which, before C++17, the standard doesn't require for std::vector
+// and std::deque.
+static_assert( has_nothrow_member_swap< boost::dynamic_bitset<> >() == has_nothrow_free_swap< std::vector< unsigned long > >(), "" );
+static_assert( has_nothrow_free_swap< boost::dynamic_bitset<> >() == has_nothrow_free_swap< std::vector< unsigned long > >(), "" );
+static_assert( has_nothrow_member_swap< deque_bitset >() == has_nothrow_free_swap< std::deque< unsigned > >(), "" );
+static_assert( ! has_nothrow_member_swap< user_bitset >(), "" );
+static_assert( ! has_nothrow_free_swap< user_bitset >(), "" );
+
+void
+test_swap_uses_the_container_swap()
+{
+    user_bitset a( 10, 5ul );
+    user_bitset b( 70, 1ul );
+
+    user::swap_calls = 0;
+    a.swap( b );
+    BOOST_TEST_EQ( user::swap_calls, 1 );
+    BOOST_TEST_EQ( a.size(), 70u );
+    BOOST_TEST_EQ( a.to_ulong(), 1ul );
+    BOOST_TEST_EQ( b.size(), 10u );
+    BOOST_TEST_EQ( b.to_ulong(), 5ul );
+
+    swap( a, b );
+    BOOST_TEST_EQ( user::swap_calls, 2 );
+    BOOST_TEST_EQ( a.size(), 10u );
+    BOOST_TEST_EQ( a.to_ulong(), 5ul );
+}
+
 int
 main()
 {
+    test_swap_uses_the_container_swap();
     test_container< std::deque< unsigned > >();
     test_container< indexable_list< unsigned > >();
 

@@ -100,14 +100,15 @@ class const_bit_iterator;
 //!     `begin()`, `end()`, `cbegin()`, `cend()`, `size()`, `max_size()`,
 //!     `empty()`, `get_allocator()`, `operator[]`, `back()`,
 //!     `resize( n )`, `resize( n, value )`, `push_back()`, `pop_back()`,
-//!     `insert( pos, first, last )` and `clear()`; and `operator==`. In
-//!     addition, `capacity()`, `reserve()`, `shrink_to_fit()` and
-//!     `append()` of a range of forward iterators use the `capacity()`,
-//!     `reserve()` or member `swap()` of the container, as documented
-//!     for each of them, and can't be used with a container which
-//!     lacks them (such as `std::deque`). Many members access the
-//!     blocks through `operator[]`, so they are efficient only if it
-//!     takes constant time.
+//!     `insert( pos, first, last )` and `clear()`; `operator==`; and
+//!     swapping by an unqualified call to `swap()`, with `std::swap()`
+//!     visible. In addition, `capacity()`, `reserve()`,
+//!     `shrink_to_fit()` and `append()` of a range of forward iterators
+//!     use the `capacity()`, `reserve()` or member `swap()` of the
+//!     container, as documented for each of them, and can't be used
+//!     with a container which lacks them (such as `std::deque`). Many
+//!     members access the blocks through `operator[]`, so they are
+//!     efficient only if it takes constant time.
 // ---------------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
 class dynamic_bitset
@@ -647,12 +648,26 @@ public:
 
     //!     Swaps the contents of this bitset and bitset `b`.
     //!
+    //!     The underlying containers are swapped by an unqualified call
+    //!     to `swap()`, with `std::swap` visible, so that a `swap()`
+    //!     found by argument-dependent lookup takes part in overload
+    //!     resolution.
+    //!
+    //!     \pre
+    //!     If `AllocatorOrContainer` is an allocator,
+    //!     `std::allocator_traits< allocator_type >::propagate_on_container_swap::value`
+    //!     is `true` or `this->get_allocator() == b.get_allocator()`.
+    //!     Otherwise, the preconditions, if any, of swapping the two
+    //!     underlying containers hold.
+    //!
     //!     \param b The bitset to be swapped with `*this`.
     //!
     //!     \par Throws
-    //!     Nothing.
+    //!     Nothing if `AllocatorOrContainer` is an allocator; otherwise,
+    //!     any exception thrown by swapping the underlying containers.
+    //!     This function is `noexcept` if and only if that swap is.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void                   swap( dynamic_bitset & b ) noexcept;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void                   swap( dynamic_bitset & b ) noexcept( detail::dynamic_bitset_impl::is_nothrow_swappable< buffer_type >::value );
 
     //!     Move constructor.
     //!
@@ -1781,14 +1796,20 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
 
 //!     Exchanges the contents of `a` and `b`.
 //!
+//!     Equivalent to `a.swap( b )`.
+//!
+//!     \pre
+//!     The same as for `a.swap( b )`.
+//!
 //!     \param a The bitset to exchange the contents of with `b`.
 //!     \param b The bitset to exchange the contents of with `a`.
 //!
 //!     \par Throws
-//!     Nothing.
+//!     The same as `a.swap( b )`. This function is `noexcept` if and
+//!     only if `a.swap( b )` is.
 // -----------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 void swap( dynamic_bitset< Block, AllocatorOrContainer > & a, dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept;
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 void swap( dynamic_bitset< Block, AllocatorOrContainer > & a, dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept( noexcept( a.swap( b ) ) );
 
 //!     Copies a representation of `b` into the string `s`.
 //!
