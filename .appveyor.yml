@@ -47,14 +47,13 @@ matrix:
 
 environment:
   global:
-    B2_CI_VERSION: 1
     GIT_FETCH_JOBS: 4
     # see: http://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
     # to use the default for a given environment, comment it out; recommend you build debug and release however:
-    # on Windows it is important to exercise all the possibilities, especially shared vs static, however most
-    # libraries that care about this exercise it in their Jamfiles...
     B2_ADDRESS_MODEL: 32,64
-    B2_LINK: shared,static
+    # We don't set B2_LINK: the library is header-only, so building with
+    # both link=shared and link=static would only exercise the libraries
+    # that the tests depend on (Filesystem, System and Serialization).
     # B2_THREADING: threading=multi,single
     B2_VARIANT: release
 
