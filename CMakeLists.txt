@@ -32,19 +32,14 @@ if (BOOST_DYNAMIC_BITSET_IS_ROOT)
     endif ()
 
     # Validate BOOST_SRC_DIR
-    set(BOOST_SRC_DIR_IS_VALID ON)
     foreach (F "CMakeLists.txt" "Jamroot" "boost-build.jam" "bootstrap.sh" "libs")
         if (NOT EXISTS "${BOOST_SRC_DIR}/${F}")
-            message(STATUS "${BOOST_SRC_DIR}/${F} does not exist. Fallback to find_package.")
-            set(BOOST_SRC_DIR_IS_VALID OFF)
-            break()
+            message(FATAL_ERROR "${BOOST_SRC_DIR}/${F} does not exist, so BOOST_SRC_DIR is not valid. Please set it to the root of a Boost checkout.")
         endif ()
     endforeach ()
-    if (NOT BOOST_SRC_DIR_IS_VALID)
-        message(FATAL_ERROR "BOOST_SRC_DIR is not valid. Please set it to the root of a Boost checkout.")
-    endif ()
 
-    # If BOOST_SRC_DIR is valid, fallback to find_package
+    # Add the Boost superproject, restricted to our dependencies, so that
+    # the Boost:: targets we link against below are defined.
     set(CMAKE_FOLDER Dependencies)
     set(BOOST_INCLUDE_LIBRARIES assert config container_hash core throw_exception)
     set(BOOST_EXCLUDE_LIBRARIES dynamic_bitset)
