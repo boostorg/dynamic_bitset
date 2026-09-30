@@ -6,12 +6,37 @@
             <toolset name="*gnu98"/>
             <toolset name="*c++0x"/>
             <toolset name="*gnu0x"/>
+            <toolset name="gcc-3.*"/>
+            <toolset name="gcc-4.0*"/>
+            <toolset name="gcc-4.1*"/>
+            <toolset name="gcc-4.2*"/>
+            <toolset name="gcc-4.3*"/>
+            <toolset name="gcc-4.4*"/>
+            <toolset name="gcc-4.5*"/>
+            <toolset name="gcc-4.6*"/>
+            <toolset name="msvc-6.*"/>
+            <toolset name="msvc-7.0"/>
             <toolset name="msvc-7.1"/>
             <toolset name="msvc-8.*"/>
             <toolset name="msvc-9.*"/>
             <toolset name="msvc-10.*"/>
             <toolset name="msvc-11.*"/>
-            <note author="Gennaro Prota">DynamicBitset requires at least C++11.</note>
+            <toolset name="msvc-12.*"/>
+            <note author="Gennaro Prota">DynamicBitset requires at least C++11. These compilers, or language modes, lack some or all of the C++11 features that it uses.</note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="gcc-4.8*"/>
+            <toolset name="gcc-4.9*"/>
+            <toolset name="clang-linux-3.0*"/>
+            <toolset name="clang-linux-3.1*"/>
+            <toolset name="clang-linux-3.2*"/>
+            <toolset name="clang-linux-3.3*"/>
+            <toolset name="clang-linux-3.4*"/>
+            <toolset name="clang-linux-3.5*"/>
+            <toolset name="clang-linux-3.6*"/>
+            <toolset name="clang-linux-3.7*"/>
+            <toolset name="clang-linux-3.8*"/>
+            <note author="Gennaro Prota">GCC 4.8 and 4.9, and Clang 3.5 to 3.8, fail the tests, and CI excludes them. We don't expect older versions of Clang to do better.</note>
         </mark-unusable>
     </library>
 </explicit-failures-markup>
