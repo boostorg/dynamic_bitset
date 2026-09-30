@@ -35,10 +35,18 @@ on:
 jobs:
   call-boost-ci:
     name: Run Boost.CI
+    # Like most Boost libraries, we track master: that keeps the job matrix
+    # current. Pinning this reference to a commit would pin the workflow
+    # only, as it always fetches its scripts from the master branch of
+    # boost-ci.
     uses: boostorg/boost-ci/.github/workflows/reusable.yml@master
     with:
       # These compilers fail.
       exclude_compiler: 'clang-3.5,clang-3.6,clang-3.7,clang-3.8,gcc-4.8,gcc-4.9'
+      # This is the default, but we want release builds regardless of it:
+      # some bugs, like the MSVC /O2 miscompilation of
+      # bit_iterator_base::add(), only show up with optimizations on.
+      b2_variant: 'debug,release'
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       COVERITY_SCAN_NOTIFICATION_EMAIL: ${{ secrets.COVERITY_SCAN_NOTIFICATION_EMAIL }}
