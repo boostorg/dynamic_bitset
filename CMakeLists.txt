@@ -67,8 +67,6 @@ if(BUILD_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/test/CMakeLists.txt")
 endif()
 
 if (DYNAMIC_BITSET_MRDOCS_BUILD)
-    set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
-
     # Create a temporary source file that includes boost/dynamic_bitset.hpp.
     set(TEMP_CPP_FILE "${CMAKE_CURRENT_BINARY_DIR}/dynamic_bitset_for_mrdocs.cpp")
     file(WRITE ${TEMP_CPP_FILE} "// This file is generated automatically by CMake\n\n")
@@ -83,8 +81,6 @@ if (DYNAMIC_BITSET_MRDOCS_BUILD)
     # Set any other target properties here.
     target_include_directories(dynamic_bitset_mrdocs_target PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
     target_link_libraries(dynamic_bitset_mrdocs_target PRIVATE boost_dynamic_bitset)
-    file(GLOB BOOST_MODULE_PATHS "$ENV{BOOST_SRC_DIR}/libs/*/include")
-    target_include_directories(dynamic_bitset_mrdocs_target PRIVATE ${BOOST_MODULE_PATHS})
 
     # Don't create any other targets.
     return()
