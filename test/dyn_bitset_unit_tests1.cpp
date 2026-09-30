@@ -532,6 +532,32 @@ run_test_cases()
         blocks[ 2 ] = all_1s;
         Tests::append_block_range( a, blocks );
     }
+    {
+        // A range of unsigned char, which is narrower than Block unless
+        // Block is unsigned char.
+        const std::vector< unsigned char > chars( 3, ( std::numeric_limits< unsigned char >::max )() );
+        Tests::append_block_range( bitset_type( long_string ), chars );
+        Tests::append_block_range( bitset_type( bitset_type::bits_per_block - 1 ), chars );
+    }
+    {
+        // Repeated appends of small ranges must grow the buffer
+        // geometrically, as push_back() does, rather than reallocate it
+        // at each call. With a growth factor of 1.5, the 2000 blocks
+        // need about 20 allocations.
+        const Block blocks[] = { 1, 2 };
+        for ( std::size_t initial_size = 0; initial_size < 2; ++initial_size ) {
+            bitset_type b( initial_size );
+            int         allocation_count = 0;
+            for ( int i = 0; i < 1000; ++i ) {
+                const std::size_t capacity = b.capacity();
+                b.append( blocks, blocks + 2 );
+                if ( b.capacity() != capacity ) {
+                    ++allocation_count;
+                }
+            }
+            BOOST_TEST_LT( allocation_count, 40 );
+        }
+    }
     // Test with input iterators
     {
         bitset_type b;

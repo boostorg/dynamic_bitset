@@ -64,6 +64,11 @@ test_container()
     BOOST_TEST_EQ( b.find_next( 0 ), 66u );
     BOOST_TEST( b.find_next( 66 ) == bitset_type::npos );
     BOOST_TEST_EQ( b.find_first_off(), 1 );
+
+    const std::vector< unsigned > blocks( 2, 5u );
+    b.append( blocks.begin(), blocks.end() );
+    BOOST_TEST_EQ( b.size(), 70u + 2 * bitset_type::bits_per_block );
+    BOOST_TEST( b.test( 70 ) && ! b.test( 71 ) && b.test( 72 ) );
 }
 
 }

@@ -102,13 +102,13 @@ class const_bit_iterator;
 //!     `resize( n )`, `resize( n, value )`, `push_back()`, `pop_back()`,
 //!     `insert( pos, first, last )` and `clear()`; `operator==`; and
 //!     swapping by an unqualified call to `swap()`, with `std::swap()`
-//!     visible. In addition, `capacity()`, `reserve()`,
-//!     `shrink_to_fit()` and `append()` of a range of forward iterators
-//!     use the `capacity()`, `reserve()` or member `swap()` of the
-//!     container, as documented for each of them, and can't be used
-//!     with a container which lacks them (such as `std::deque`). Many
-//!     members access the blocks through `operator[]`, so they are
-//!     efficient only if it takes constant time.
+//!     visible. In addition, `capacity()`, `reserve()` and
+//!     `shrink_to_fit()` use the `capacity()`, `reserve()` or member
+//!     `swap()` of the container, as documented for each of them, and
+//!     can't be used with a container which lacks them (such as
+//!     `std::deque`). Many members access the blocks through
+//!     `operator[]`, so they are efficient only if it takes constant
+//!     time.
 // ---------------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
 class dynamic_bitset
@@ -784,12 +784,6 @@ public:
     //!     The `BlockInputIterator` type must be a model of
     //!     <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
     //!     and its value_type must be the same type as Block.
-    //!
-    //!     \par Type requirements
-    //!     If `AllocatorOrContainer` is a container and
-    //!     `BlockInputIterator` is a
-    //!     <a href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">LegacyForwardIterator</a>,
-    //!     the container provides `reserve()`.
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`

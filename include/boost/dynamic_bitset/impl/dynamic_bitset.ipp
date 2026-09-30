@@ -2177,25 +2177,25 @@ template< typename BlockInputIterator >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::m_append( BlockInputIterator first, BlockInputIterator last, std::forward_iterator_tag )
 {
-    if ( first != last ) {
-        const int         r = count_extra_bits();
-        const std::size_t d = std::distance( first, last );
-        m_bits.reserve( num_blocks() + d );
+    // We don't reserve() the exact number of blocks needed: that would
+    // make repeated appends quadratic, whereas resize() grows the buffer
+    // geometrically on the common implementations. And reserve() isn't
+    // required of a container.
+    const size_type d = static_cast< size_type >( std::distance( first, last ) );
+    size_type       i = num_blocks();
+    m_bits.resize( i + d );
+
+    const int r = count_extra_bits();
+    for ( ; first != last; ++first, ++i ) {
+        const Block value = *first; // convert before shifting
         if ( r == 0 ) {
-            do {
-                m_bits.push_back( *first ); // could use vector<>::insert()
-                ++first;
-            } while ( first != last );
+            m_bits[ i ] = value;
         } else {
-            m_highest_block() |= ( *first << r );
-            do {
-                Block b = *first >> ( bits_per_block - r );
-                ++first;
-                m_bits.push_back( b | ( first == last ? 0 : *first << r ) );
-            } while ( first != last );
+            m_bits[ i - 1 ] |= static_cast< Block >( value << r );
+            m_bits[ i ] = static_cast< Block >( value >> ( bits_per_block - r ) );
         }
-        m_num_bits += bits_per_block * d;
     }
+    m_num_bits += bits_per_block * d;
 }
 
 // bit appender

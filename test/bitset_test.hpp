@@ -528,13 +528,17 @@ struct bitset_test
             BOOST_TEST( b[ lhs.size() + i ] == nth_bit( value, i ) );
     }
 
+    // Compares append( first, last ) with a sequence of append( Block )
+    // calls. If T is not Block, this also tests that each element is
+    // converted to Block before being shifted.
+    template< typename T >
     static void
-    append_block_range( const Bitset & lhs, const std::vector< Block > & blocks )
+    append_block_range( const Bitset & lhs, const std::vector< T > & v )
     {
         Bitset b( lhs ), c( lhs );
-        b.append( blocks.begin(), blocks.end() );
-        for ( typename std::vector< Block >::const_iterator i = blocks.begin();
-              i != blocks.end();
+        b.append( v.begin(), v.end() );
+        for ( typename std::vector< T >::const_iterator i = v.begin();
+              i != v.end();
               ++i )
             c.append( *i );
         BOOST_TEST( b == c );
