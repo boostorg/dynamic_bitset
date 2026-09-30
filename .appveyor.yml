@@ -57,6 +57,9 @@ environment:
     # B2_THREADING: threading=multi,single
     B2_VARIANT: release
 
+  # GitHub Actions covers Visual Studio 2022 and later, and Cygwin with a
+  # recent GCC. So, here we test the older Visual Studio versions, and the
+  # Cygwin of the Visual Studio 2017 image, which comes with GCC 7.
   matrix:
     # Not "2a": b2 passes no /std option to MSVC for that.
     - FLAVOR: Visual Studio 2017 C++latest Strict
@@ -69,6 +72,12 @@ environment:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       B2_CXXSTD: 14,17
       B2_TOOLSET: msvc-14.1
+
+    # With this compiler, /std:c++20 implies /permissive-.
+    - FLAVOR: Visual Studio 2019 C++14/17/20
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      B2_CXXSTD: 14,17,20
+      B2_TOOLSET: msvc-14.2
 
     - FLAVOR: cygwin (32-bit)
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
