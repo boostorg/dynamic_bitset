@@ -18,7 +18,7 @@ else
     PLAYBOOK=$1
 fi
 
-SCRIPT_DIR=$( dirname -- "${BASH_SOURCE[0]}" )
+SCRIPT_DIR=$( dirname -- "$0" )
 cd "$SCRIPT_DIR"
 
 echo "Installing npm dependencies..."
