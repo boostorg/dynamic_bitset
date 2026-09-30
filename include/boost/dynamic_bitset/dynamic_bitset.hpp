@@ -1871,6 +1871,11 @@ to_block_range( const dynamic_bitset< Block, AllocatorOrContainer > & b, BlockOu
 //!     `b.num_blocks()`. Excess bits are not copied into the bitset,
 //!     which doesn't change its size.
 //!
+//!     \par Throws
+//!     Any exception thrown by an operation of `BlockIterator`. In that
+//!     case, `result` keeps its size, but some of its blocks may have
+//!     been overwritten.
+//!
 //!     \param first The start of the range.
 //!     \param last The end of the range.
 //!     \param result The resulting bitset.

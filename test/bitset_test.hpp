@@ -21,6 +21,7 @@
 #include "boost/filesystem.hpp"
 #include <algorithm>
 #include <assert.h> // <cassert> is sometimes macro-guarded :-(
+#include <cstddef>
 #include <iterator>
 #include <limits>
 #include <locale>
@@ -31,6 +32,61 @@
 
 template< typename T >
 using small_vector = boost::container::small_vector< T, 8 >;
+
+// The exception thrown by a throwing_iterator.
+class iterator_exception
+{
+};
+
+// An input iterator over an array of T, which throws an
+// iterator_exception when it is incremented to the end of the array,
+// i.e. after its last element has been read.
+template< typename T >
+class throwing_iterator
+{
+public:
+    typedef std::input_iterator_tag iterator_category;
+    typedef T                       value_type;
+    typedef std::ptrdiff_t          difference_type;
+    typedef const T *               pointer;
+    typedef const T &               reference;
+
+    throwing_iterator( const T * p, const T * end )
+        : m_p( p ), m_end( end )
+    {
+    }
+
+    reference
+    operator*() const
+    {
+        return *m_p;
+    }
+
+    throwing_iterator &
+    operator++()
+    {
+        if ( ++m_p == m_end ) {
+            throw iterator_exception();
+        }
+        return *this;
+    }
+
+    friend bool
+    operator==( const throwing_iterator & a, const throwing_iterator & b )
+    {
+        return a.m_p == b.m_p;
+    }
+
+    friend bool
+    operator!=( const throwing_iterator & a, const throwing_iterator & b )
+    {
+        return ! ( a == b );
+    }
+
+private:
+    const T * m_p;
+    const T * m_end;
+};
 
 template< typename Block >
 bool
@@ -316,6 +372,27 @@ struct bitset_test
             }
             BOOST_TEST( n <= bset.num_blocks() );
         }
+    }
+
+    // Copies blocks into a bitset which has as many blocks and one unused
+    // bit, through iterators which throw after the last block has been
+    // written, and checks that the unused bit is zero anyway.
+    // PRE: ! blocks.empty()
+    static void
+    from_block_range_throwing( const std::vector< Block > & blocks )
+    {
+        typedef throwing_iterator< Block > iterator;
+
+        const Block * const                first = blocks.data();
+        const Block * const                last  = first + blocks.size();
+        Bitset                             b( blocks.size() * bits_per_block - 1 );
+        Bitset                             expected( b.size() );
+        boost::from_block_range( blocks.begin(), blocks.end(), expected );
+        try {
+            boost::from_block_range( iterator( first, last ), iterator( last, last ), b );
+        } catch ( const iterator_exception & ) {
+        }
+        BOOST_TEST( b == expected );
     }
 
     // copy constructor (absent from std::bitset)

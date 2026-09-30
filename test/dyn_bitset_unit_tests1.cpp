@@ -214,6 +214,11 @@ run_test_cases()
             blocks[ i ] = static_cast< Block >( i );
         Tests::from_block_range( blocks );
     }
+    {
+        // Iterators which throw after the last block.
+        const std::vector< Block > blocks( 3, all_1s );
+        Tests::from_block_range_throwing( blocks );
+    }
 
     //=====================================================================
     // test iterators

@@ -458,11 +458,18 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< B, A > & result )
 {
     // PRE: distance(first, last) <= numblocks()
-    const auto it = std::copy( first, last, result.m_bits.begin() );
-    if ( it == result.m_bits.end() )
+    BOOST_TRY
     {
-        result.m_zero_unused_bits();
+        std::copy( first, last, result.m_bits.begin() );
     }
+    BOOST_CATCH( ... )
+    {
+        // The highest block may have been written.
+        result.m_zero_unused_bits();
+        BOOST_RETHROW
+    }
+    BOOST_CATCH_END
+    result.m_zero_unused_bits();
 }
 
 template< typename Block, typename AllocatorOrContainer >
