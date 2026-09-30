@@ -7,17 +7,14 @@
 #
 # -----------------------------------------------------------
 
+import testing ;
+
 project : requirements <library>/boost/dynamic_bitset//boost_dynamic_bitset ;
 
-exe example1
-    : example1.cpp
-    ;
-
-exe example2
-    : example2.cpp
-    ;
-
-exe example3
-    : example3.cpp
-    ;
+# test/Jamfile.v2 builds this project, so the examples run with the
+# tests. B2 gives no input to a test on stdin, so example3 reads the
+# bitset from a file.
+run example1.cpp ;
+run example2.cpp ;
+run example3.cpp : : example3_input.txt ;
 

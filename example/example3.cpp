@@ -4,6 +4,9 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
+// Reads a bitset from the file named on the command line or, if no file
+// name is given, from the standard input.
+//
 // Sample run:
 //
 // mask     = 101010101010
@@ -20,12 +23,20 @@
 // Shifted right by 1:       010010001
 
 #include "boost/dynamic_bitset.hpp"
+#include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 
 int
-main()
+main( int argc, char * argv[] )
 {
+    std::ifstream file;
+    if ( argc > 1 ) {
+        file.open( argv[ 1 ] );
+    }
+    std::istream &          in = argc > 1 ? file : std::cin;
+
     boost::dynamic_bitset<> mask( 12, 2730ul );
     std::cout << "mask     = " << mask << std::endl;
 
@@ -33,7 +44,7 @@ main()
     std::cout << "x.size() = " << x.size() << std::endl;
 
     std::cout << "Enter a bitset in binary: x = " << std::flush;
-    if ( std::cin >> x ) {
+    if ( in >> x ) {
         const std::size_t sz = x.size();
         std::cout << std::endl;
         std::cout << "Input number:             " << x << std::endl;
@@ -64,6 +75,9 @@ main()
         std::cout << "Or with mask:             " << ( x | mask ) << std::endl;
         std::cout << "Shifted left by 1:        " << ( x << 1 ) << std::endl;
         std::cout << "Shifted right by 1:       " << ( x >> 1 ) << std::endl;
+    } else {
+        std::cerr << "Couldn't read a bitset" << std::endl;
+        return EXIT_FAILURE;
     }
     return 0;
 }

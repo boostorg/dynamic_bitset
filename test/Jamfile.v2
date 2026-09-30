@@ -49,3 +49,6 @@ if ! [ os.environ UBSAN_OPTIONS ]
              <library>/boost/system//boost_system ]
     ;
 }
+
+# Run the examples, too.
+build-project ../example ;
