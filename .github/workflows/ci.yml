@@ -58,15 +58,15 @@ jobs:
         shell: bash
     steps:
       - name: Install packages
-        uses: alandefreitas/cpp-actions/package-install@v1.8.8
+        uses: alandefreitas/cpp-actions/package-install@v1.9.5
         with:
           apt-get: git cmake
 
       - name: Clone Boost.DynamicBitset
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Clone Boost
-        uses: alandefreitas/cpp-actions/boost-clone@v1.8.8
+        uses: alandefreitas/cpp-actions/boost-clone@v1.9.5
         id: boost-clone
         with:
           branch: ${{ (github.ref_name == 'master' && github.ref_name) || 'develop' }}
@@ -74,13 +74,11 @@ jobs:
           scan-modules-dir: .
           scan-modules-ignore: dynamic_bitset
 
-      - uses: actions/setup-node@v4
+      # Keep this in sync with NODE_VERSION in the build_docs scripts of
+      # boostorg/release-tools, which build the published documentation.
+      - uses: actions/setup-node@v7
         with:
-          node-version: 18
-
-      - name: Setup Ninja
-        if: runner.os == 'Windows'
-        uses: seanmiddleditch/gha-setup-ninja@v5
+          node-version: 22
 
       - name: Build Antora docs
         env:
@@ -104,7 +102,7 @@ jobs:
           fi
 
       - name: Create Antora docs artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: antora-docs-${{ matrix.name }}
           path: doc/html
