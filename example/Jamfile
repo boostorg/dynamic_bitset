@@ -17,4 +17,5 @@ project : requirements <library>/boost/dynamic_bitset//boost_dynamic_bitset ;
 run example1.cpp ;
 run example2.cpp ;
 run example3.cpp : : example3_input.txt ;
+run example4.cpp ;
 
