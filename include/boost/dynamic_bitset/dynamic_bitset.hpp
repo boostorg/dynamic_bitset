@@ -574,7 +574,9 @@ public:
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `allocator_type` is a `std::allocator`).
+    //!     if `allocator_type` is a `std::allocator`). If an exception
+    //!     is thrown, `*this` is left empty.
+    //!
     //!     (Required by <a href="https://en.cppreference.com/w/cpp/named_req/CopyAssignable">CopyAssignable</a>.)
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & operator=( const dynamic_bitset & b );
@@ -1458,7 +1460,8 @@ private:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & range_operation( size_type pos, size_type len, Block ( *partial_block_operation )( Block, size_type, size_type ), Block ( *full_block_operation )( Block ) );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void             m_zero_unused_bits();
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             m_check_invariants() const;
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void             m_assign_bits( buffer_type && bits );
+    template< typename Buffer >
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void             m_assign_bits( Buffer && bits );
 
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 static bool      m_not_empty( Block x );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 static bool      m_not_full( Block x );

@@ -675,7 +675,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
                                  dynamic_bitset< Block, AllocatorOrContainer >::
 operator=( const dynamic_bitset< Block, AllocatorOrContainer > & b )
 {
-    m_bits     = b.m_bits;
+    m_assign_bits( b.m_bits );
     m_num_bits = b.m_num_bits;
     return *this;
 }
@@ -1954,18 +1954,21 @@ dynamic_bitset< Block, AllocatorOrContainer >::m_check_invariants() const
     return true;
 }
 
-// Move-assigns bits to m_bits. If that throws, the state of m_bits is
-// unspecified, so this makes the bitset empty, to preserve the
-// invariant. (This is a separate function, and not part of the move
-// assignment operator, because the rethrow would trigger warnings in
-// a noexcept function.)
+// Copy-assigns (if bits is an lvalue) or move-assigns (if it is an
+// rvalue) bits to m_bits. If that throws, the state of m_bits is
+// unspecified (some std::vector implementations free the old blocks
+// before allocating the new ones), so this makes the bitset empty, to
+// preserve the invariant. (This is a separate function, and not part
+// of the move assignment operator, because the rethrow would trigger
+// warnings in a noexcept function.)
 template< typename Block, typename AllocatorOrContainer >
+template< typename Buffer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-dynamic_bitset< Block, AllocatorOrContainer >::m_assign_bits( buffer_type && bits )
+dynamic_bitset< Block, AllocatorOrContainer >::m_assign_bits( Buffer && bits )
 {
     BOOST_TRY
     {
-        m_bits = std::move( bits );
+        m_bits = std::forward< Buffer >( bits );
     }
     BOOST_CATCH( ... )
     {
