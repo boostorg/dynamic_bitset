@@ -657,6 +657,15 @@ run_test_cases()
         // A polymorphic_allocator is implicitly constructible from 0, a null
         // pointer constant, but ( size, 0 ) must still mean ( size, value ).
         BOOST_TEST( Bitset( b.size(), 0 ).get_allocator().resource() == std::pmr::get_default_resource() );
+
+        // A copy, and the result of an operator, get the allocator which
+        // select_on_container_copy_construction() gives, i.e. the default
+        // memory resource. A copy assignment keeps the allocator of the
+        // target, since a polymorphic_allocator doesn't propagate.
+        BOOST_TEST( Bitset( v[ 0 ] ).get_allocator().resource() == std::pmr::get_default_resource() );
+        BOOST_TEST( ( ~v[ 0 ] ).get_allocator().resource() == std::pmr::get_default_resource() );
+        v[ 1 ] = b;
+        BOOST_TEST( v[ 1 ].get_allocator().resource() == &resource );
     }
 #endif
 }

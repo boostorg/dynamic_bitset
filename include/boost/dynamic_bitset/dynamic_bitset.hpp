@@ -570,7 +570,15 @@ public:
     //!     Copy constructor.
     //!
     //!     Constructs a bitset that is a copy of the bitset `b`. The
-    //!     allocator for this bitset is a copy of the allocator of `b`.
+    //!     underlying buffer is copy constructed from that of `b`, so,
+    //!     if `AllocatorOrContainer` is an allocator, the allocator of
+    //!     this bitset is
+    //!     `std::allocator_traits< allocator_type >::select_on_container_copy_construction( b.get_allocator() )`.
+    //!     For most allocators, that's a copy of `b.get_allocator()`,
+    //!     but, e.g., for a `std::pmr::polymorphic_allocator`, it's an
+    //!     allocator which uses the default memory resource. To choose
+    //!     the allocator of the copy, use the allocator-extended copy
+    //!     constructor.
     //!
     //!     \post
     //!     For all i in the range `[0, b.size())`, `( *this )[ i ] ==
@@ -613,7 +621,13 @@ public:
 
     //!     Copy assignment operator.
     //!
-    //!     This bitset becomes a copy of the bitset `b`.
+    //!     This bitset becomes a copy of the bitset `b`. If the
+    //!     allocator propagates on copy assignment, `*this` takes the
+    //!     allocator of `b`; otherwise, it keeps its own. (That is what
+    //!     `std::vector`, the buffer used when `AllocatorOrContainer`
+    //!     is an allocator, does; if `AllocatorOrContainer` is a
+    //!     container, it depends on the copy assignment of that
+    //!     container.)
     //!
     //!     \post
     //!     For all `i` in the range `[0, x.size())`, `( *this )[ i ] ==
@@ -800,8 +814,12 @@ public:
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset &       operator=( dynamic_bitset && src ) noexcept( std::is_nothrow_move_assignable< buffer_type >::value );
 
-    //!     Returns a copy of the allocator object used to construct
-    //!     `*this`.
+    //!     Returns a copy of the allocator that this bitset currently
+    //!     uses.
+    //!
+    //!     That's not necessarily the allocator it got when it was
+    //!     constructed: an assignment or a `swap()` replaces it if it
+    //!     propagates on that operation.
     //!
     //!     \return A copy of the said allocator.
     // -----------------------------------------------------------------------
@@ -1007,6 +1025,9 @@ public:
 
     //!     Returns a shifted copy of `*this`.
     //!
+    //!     The allocator of the result is obtained from that of
+    //!     `*this` as by the copy constructor.
+    //!
     //!     \return
     //!     A copy of `*this` shifted to the left by `n` positions. For
     //!     each bit in the returned bitset, the bit at position `pos`
@@ -1020,6 +1041,9 @@ public:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset   operator<<( size_type n ) const;
 
     //!     Returns a shifted copy of `*this`.
+    //!
+    //!     The allocator of the result is obtained from that of
+    //!     `*this` as by the copy constructor.
     //!
     //!     \return
     //!     A copy of `*this` shifted to the right by `n` positions. For
@@ -1229,6 +1253,9 @@ public:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             none() const;
 
     //!     Returns a copy of `*this` with all of its bits toggled.
+    //!
+    //!     The allocator of the result is obtained from that of
+    //!     `*this` as by the copy constructor.
     //!
     //!     \return A copy of `*this` with all of its bits toggled.
     //!
@@ -1842,6 +1869,9 @@ operator>>( std::basic_istream< CharT, Traits > & is, dynamic_bitset< Block, All
 
 //!     Performs a bitwise-AND of two bitsets.
 //!
+//!     The allocator of the result is obtained from that of `a` as
+//!     by the copy constructor.
+//!
 //!     \pre
 //!     `a.size() == b.size()`.
 //!
@@ -1859,6 +1889,9 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
 
 //!     Performs a bitwise-OR of two bitsets.
 //!
+//!     The allocator of the result is obtained from that of `a` as
+//!     by the copy constructor.
+//!
 //!     \pre
 //!     `a.size() == b.size()`.
 //!
@@ -1874,6 +1907,9 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
                                  operator|( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Performs a bitwise-XOR of two bitsets.
+//!
+//!     The allocator of the result is obtained from that of `a` as
+//!     by the copy constructor.
 //!
 //!     \pre
 //!     `a.size() == b.size()`.
@@ -1891,6 +1927,9 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
                                  operator^( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
 
 //!     Calculates the set difference of two bitsets.
+//!
+//!     The allocator of the result is obtained from that of `a` as
+//!     by the copy constructor.
 //!
 //!     \pre
 //!     `a.size() == b.size()`.
