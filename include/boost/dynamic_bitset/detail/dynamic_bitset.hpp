@@ -17,6 +17,7 @@
 #define BOOST_DETAIL_DYNAMIC_BITSET_HPP
 
 #include <cstddef>
+#include <limits>
 #include <type_traits>
 #include <utility>
 
@@ -133,7 +134,7 @@ struct allowed_block_type
 {
     enum
     {
-        value = T( -1 ) > 0 // ensure T has no sign
+        value = std::numeric_limits< T >::is_integer && ! std::numeric_limits< T >::is_signed
     };
 };
 
