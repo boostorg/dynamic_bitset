@@ -1348,7 +1348,11 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::shrink_to_fit()
 {
     if ( m_bits.size() < m_bits.capacity() ) {
-        buffer_type( m_bits ).swap( m_bits );
+        // The copy must use our allocator: the one returned by
+        // select_on_container_copy_construction() may compare unequal
+        // to it (e.g. with std::pmr::polymorphic_allocator), and then
+        // the swap would have undefined behavior.
+        buffer_type( m_bits, m_bits.get_allocator() ).swap( m_bits );
     }
 }
 

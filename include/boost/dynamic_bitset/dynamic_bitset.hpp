@@ -103,10 +103,11 @@ class const_bit_iterator;
 //!     `insert( pos, first, last )` and `clear()`; `operator==`; and
 //!     swapping by an unqualified call to `swap()`, with `std::swap()`
 //!     visible. In addition, `capacity()`, `reserve()` and
-//!     `shrink_to_fit()` use the `capacity()`, `reserve()` or member
-//!     `swap()` of the container, as documented for each of them, and
-//!     can't be used with a container which lacks them (such as
-//!     `std::deque`). Many members access the blocks through
+//!     `shrink_to_fit()` use further members of the container
+//!     (`capacity()`, `reserve()`, a member `swap()` and an
+//!     allocator-extended copy constructor), as documented for each of
+//!     them, and can't be used with a container which lacks them (such
+//!     as `std::deque`). Many members access the blocks through
 //!     `operator[]`, so they are efficient only if it takes constant
 //!     time.
 // ---------------------------------------------------------------------------
@@ -1308,10 +1309,14 @@ public:
     //!
     //!     \par Type requirements
     //!     If `AllocatorOrContainer` is a container, it provides
-    //!     `capacity()` and a member `swap()`.
+    //!     `capacity()`, a member `swap()` and an allocator-extended
+    //!     copy constructor.
     //!
     //!     \par Note
-    //!     It does not change the size of the bitset.
+    //!     It does not change the size of the bitset, nor its
+    //!     allocator. If it reallocates, both the allocation of the
+    //!     new blocks and the deallocation of the old ones go through
+    //!     the allocator of the bitset.
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
