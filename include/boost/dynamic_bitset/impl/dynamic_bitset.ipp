@@ -1255,6 +1255,7 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::reference
 dynamic_bitset< Block, AllocatorOrContainer >::operator[]( size_type pos )
 {
+    BOOST_ASSERT( pos < m_num_bits );
     return reference( m_bits[ block_index( pos ) ], bit_index( pos ) );
 }
 
