@@ -675,22 +675,44 @@ public:
     //!     while using the resources from `src`. The allocator for this
     //!     bitset is moved from the allocator in `src`.
     //!
+    //!     \post
+    //!     `src.size() == 0` and `src.num_blocks() == 0`, i.e. `src` is
+    //!     left empty, and can be used like any other empty bitset.
+    //!
     //!     \par Throws
-    //!     An allocation error if memory is exhausted (`std::bad_alloc`
-    //!     if `allocator_type` is a `std::allocator`).
+    //!     Nothing, unless the move constructor of `buffer_type` throws
+    //!     (that of `std::vector`, the buffer used when
+    //!     `AllocatorOrContainer` is an allocator, doesn't).
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20                        dynamic_bitset( dynamic_bitset && src );
 
     //!     Move assignment operator.
     //!
-    //!     This bitset becomes the same as the bitset `src`, while
-    //!     using the resources from `src`.
+    //!     This bitset becomes the same as the bitset `src`. If the
+    //!     allocator propagates on move assignment, `*this` takes the
+    //!     allocator of `src`; otherwise, it keeps its own and, if the
+    //!     two allocators compare unequal, the blocks are copied into
+    //!     memory obtained from it, instead of being taken from `src`.
+    //!     (That is what `std::vector`, the buffer used when
+    //!     `AllocatorOrContainer` is an allocator, does; if
+    //!     `AllocatorOrContainer` is a container, it depends on the
+    //!     move assignment of that container.)
+    //!
+    //!     \post
+    //!     Unless `&src == this` (in which case the bitset is left
+    //!     unchanged), `src.size() == 0` and `src.num_blocks() == 0`,
+    //!     i.e. `src` is left empty, and can be used like any other empty
+    //!     bitset.
     //!
     //!     \return
     //!     `*this`.
     //!
     //!     \par Throws
-    //!     Nothing.
+    //!     Nothing, unless the move assignment of `buffer_type` throws.
+    //!     For `std::vector`, that can only happen when the blocks are
+    //!     copied (see above): then, an allocation error is thrown if
+    //!     memory is exhausted. If an exception is thrown, `*this` is
+    //!     left empty.
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset &       operator=( dynamic_bitset && src );
 

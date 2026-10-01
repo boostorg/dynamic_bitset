@@ -686,9 +686,8 @@ dynamic_bitset< Block, AllocatorOrContainer >::
     dynamic_bitset( dynamic_bitset< Block, AllocatorOrContainer > && b )
     : m_bits( std::move( b.m_bits ) ), m_num_bits( std::move( b.m_num_bits ) )
 {
-    // Required so that BOOST_ASSERT(m_check_invariants()); works.
-    BOOST_ASSERT( ( b.m_bits = buffer_type( get_allocator() ) ).empty() );
-    b.m_num_bits = 0;
+    // A moved-from buffer isn't necessarily empty.
+    b.clear();
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -700,11 +699,22 @@ operator=( dynamic_bitset< Block, AllocatorOrContainer > && b )
         return *this;
     }
 
-    m_bits     = std::move( b.m_bits );
+    BOOST_TRY
+    {
+        m_bits = std::move( b.m_bits );
+    }
+    BOOST_CATCH( ... )
+    {
+        // The state of m_bits is unspecified: restore the invariant.
+        clear();
+        BOOST_RETHROW
+    }
+    BOOST_CATCH_END
+
     m_num_bits = std::move( b.m_num_bits );
-    // Required so that BOOST_ASSERT(m_check_invariants()); works.
-    BOOST_ASSERT( ( b.m_bits = buffer_type( get_allocator() ) ).empty() );
-    b.m_num_bits = 0;
+    // A moved-from buffer isn't necessarily empty (e.g. if the
+    // allocators don't propagate and compare unequal).
+    b.clear();
     return *this;
 }
 

@@ -442,6 +442,7 @@ struct bitset_test
         Bitset copy( b );
         Bitset b2( std::move( copy ) );
         BOOST_TEST( b2 == b );
+        check_moved_from( copy );
     }
 
     // move assignment operator (absent from std::bitset)
@@ -454,6 +455,29 @@ struct bitset_test
         b = std::move( c );
         b = std::move( self ); // self assignment check
         BOOST_TEST( b == rhs );
+        check_moved_from( c );
+    }
+
+    // a moved-from bitset is empty, and usable as such
+    static void
+    check_moved_from( Bitset & b )
+    {
+        BOOST_TEST( b.size() == 0 );
+        BOOST_TEST( b.num_blocks() == 0 );
+        BOOST_TEST( b.count() == 0 );
+        BOOST_TEST( b == Bitset() );
+
+        b &= Bitset();
+        BOOST_TEST( b.size() == 0 );
+
+        b.push_back( true );
+        BOOST_TEST( b.size() == 1 );
+        BOOST_TEST( b.num_blocks() == 1 );
+        BOOST_TEST( b.count() == 1 );
+
+        b.resize( 3 * Bitset::bits_per_block );
+        BOOST_TEST( b.num_blocks() == 3 );
+        BOOST_TEST( b.count() == 1 );
     }
 
     static void
