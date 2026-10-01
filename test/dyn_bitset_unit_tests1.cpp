@@ -18,6 +18,9 @@
 #include <cstdlib>
 #include <limits>
 #include <new>
+#if ! defined( BOOST_NO_CXX17_HDR_MEMORY_RESOURCE )
+#    include <memory_resource>
+#endif
 
 template< typename T >
 class minimal_allocator
@@ -633,6 +636,22 @@ run_test_cases()
         bitset_type b[ 1 ] = {};
         (void)b;
     }
+#if ! defined( BOOST_NO_CXX17_HDR_MEMORY_RESOURCE )
+    //=====================================================================
+    // A std::pmr container passes its allocator to the bitsets it
+    // constructs, which requires the allocator-extended constructors.
+    {
+        typedef boost::dynamic_bitset< Block, std::pmr::polymorphic_allocator< Block > > Bitset;
+
+        std::pmr::monotonic_buffer_resource                                              resource;
+        std::pmr::vector< Bitset >                                                       v( &resource );
+        const Bitset                                                                     b( 70, 5ul );
+        v.push_back( b );
+        v.reserve( 2 * v.capacity() );
+        BOOST_TEST( v[ 0 ] == b );
+        BOOST_TEST( v[ 0 ].get_allocator().resource() == &resource );
+    }
+#endif
 }
 
 int
@@ -648,6 +667,7 @@ main()
     run_test_cases< unsigned long, small_vector< unsigned long > >();
     run_test_cases< unsigned long long >();
     run_test_cases< unsigned long long, small_vector< unsigned long long > >();
+
 
     return boost::report_errors();
 }

@@ -564,6 +564,14 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset( const dynamic_bit
 }
 
 template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
+dynamic_bitset< Block, AllocatorOrContainer >::
+    dynamic_bitset( const dynamic_bitset & b, const allocator_type & alloc )
+    : m_bits( b.m_bits, alloc ), m_num_bits( b.m_num_bits )
+{
+}
+
+template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >::~dynamic_bitset()
 {
     BOOST_ASSERT( m_check_invariants() );
@@ -687,6 +695,17 @@ dynamic_bitset< Block, AllocatorOrContainer >::
     : m_bits( std::move( b.m_bits ) ), m_num_bits( std::move( b.m_num_bits ) )
 {
     // A moved-from buffer isn't necessarily empty.
+    b.clear();
+}
+
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
+dynamic_bitset< Block, AllocatorOrContainer >::
+    dynamic_bitset( dynamic_bitset< Block, AllocatorOrContainer > && b, const allocator_type & alloc ) noexcept( std::is_nothrow_constructible< buffer_type, buffer_type &&, const allocator_type & >::value )
+    : m_bits( std::move( b.m_bits ), alloc ), m_num_bits( b.m_num_bits )
+{
+    // A moved-from buffer isn't necessarily empty (e.g. if the
+    // allocators compare unequal).
     b.clear();
 }
 

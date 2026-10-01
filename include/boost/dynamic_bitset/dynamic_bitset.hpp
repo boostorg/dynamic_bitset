@@ -102,14 +102,16 @@ class const_bit_iterator;
 //!     `resize( n )`, `resize( n, value )`, `push_back()`, `pop_back()`,
 //!     `insert( pos, first, last )` and `clear()`; `operator==`; and
 //!     swapping by an unqualified call to `swap()`, with `std::swap()`
-//!     visible. In addition, `capacity()`, `reserve()` and
-//!     `shrink_to_fit()` use further members of the container
-//!     (`capacity()`, `reserve()`, a member `swap()` and an
-//!     allocator-extended copy constructor), as documented for each of
-//!     them, and can't be used with a container which lacks them (such
-//!     as `std::deque`). Many members access the blocks through
-//!     `operator[]`, so they are efficient only if it takes constant
-//!     time.
+//!     visible. In addition, `capacity()`, `reserve()`,
+//!     `shrink_to_fit()` and the allocator-extended copy and move
+//!     constructors use further members of the container
+//!     (`capacity()`, `reserve()`, a member `swap()`, and
+//!     allocator-extended copy and move constructors), as documented
+//!     for each of them, and can't be used with a container which lacks
+//!     them (for instance, `std::deque` has no `capacity()`, so the
+//!     first three can't be used with it). Many members access the
+//!     blocks through `operator[]`, so they are efficient only if it
+//!     takes constant time.
 // ---------------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
 class dynamic_bitset
@@ -562,6 +564,33 @@ public:
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20                  dynamic_bitset( const dynamic_bitset & b );
 
+    //!     Allocator-extended copy constructor.
+    //!
+    //!     Constructs a bitset that is a copy of the bitset `b`, and
+    //!     which uses a copy of `alloc` to allocate memory. Together
+    //!     with the allocator-extended move constructor, this is what
+    //!     uses-allocator construction requires: for instance, it
+    //!     allows storing bitsets which use a
+    //!     `std::pmr::polymorphic_allocator` in a `std::pmr`
+    //!     container, or in a container which uses a
+    //!     `std::scoped_allocator_adaptor`.
+    //!
+    //!     If `AllocatorOrContainer` is a container, this constructor
+    //!     uses, and requires, the corresponding constructor of that
+    //!     container.
+    //!
+    //!     \param b The bitset to copy.
+    //!     \param alloc The allocator to use.
+    //!
+    //!     \post
+    //!     `*this == b`.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
+    // -----------------------------------------------------------------------
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20                  dynamic_bitset( const dynamic_bitset & b, const allocator_type & alloc );
+
     //!     Copy assignment operator.
     //!
     //!     This bitset becomes a copy of the bitset `b`.
@@ -689,6 +718,36 @@ public:
     //!     constructor is `noexcept` if that move constructor is.
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20                        dynamic_bitset( dynamic_bitset && src ) noexcept( std::is_nothrow_move_constructible< buffer_type >::value );
+
+    //!     Allocator-extended move constructor.
+    //!
+    //!     Constructs a bitset that is the same as the bitset `src`,
+    //!     and which uses a copy of `alloc` to allocate memory. If
+    //!     `alloc == src.get_allocator()`, the resources from `src` are
+    //!     used; otherwise, the blocks are copied into memory obtained
+    //!     from `alloc`. (That is what `std::vector`, the buffer used
+    //!     when `AllocatorOrContainer` is an allocator, does; if
+    //!     `AllocatorOrContainer` is a container, this constructor
+    //!     uses, and requires, the corresponding constructor of that
+    //!     container.) See also the allocator-extended copy
+    //!     constructor.
+    //!
+    //!     \param src The bitset to move from.
+    //!     \param alloc The allocator to use.
+    //!
+    //!     \post
+    //!     `src.size() == 0` and `src.num_blocks() == 0`, i.e. `src` is
+    //!     left empty, and can be used like any other empty bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing, unless the corresponding constructor of
+    //!     `buffer_type` throws. For `std::vector`, that can only
+    //!     happen when the blocks are copied (see above): then, an
+    //!     allocation error is thrown if memory is exhausted. This
+    //!     constructor is `noexcept` if that constructor of
+    //!     `buffer_type` is.
+    // -----------------------------------------------------------------------
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20                        dynamic_bitset( dynamic_bitset && src, const allocator_type & alloc ) noexcept( std::is_nothrow_constructible< buffer_type, buffer_type &&, const allocator_type & >::value );
 
     //!     Move assignment operator.
     //!
