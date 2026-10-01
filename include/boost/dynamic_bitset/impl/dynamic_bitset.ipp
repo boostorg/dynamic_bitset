@@ -496,6 +496,14 @@ dynamic_bitset< Block, AllocatorOrContainer >::
 }
 
 template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
+dynamic_bitset< Block, AllocatorOrContainer >::
+    dynamic_bitset( size_type num_bits, const allocator_type & alloc )
+    : dynamic_bitset( num_bits, 0ul, alloc )
+{
+}
+
+template< typename Block, typename AllocatorOrContainer >
 template< typename CharT, typename Traits, typename Alloc >
 dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
     const std::basic_string< CharT, Traits, Alloc > &             s,

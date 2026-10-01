@@ -647,9 +647,16 @@ run_test_cases()
         std::pmr::vector< Bitset >                                                       v( &resource );
         const Bitset                                                                     b( 70, 5ul );
         v.push_back( b );
+        v.emplace_back( 70 );
         v.reserve( 2 * v.capacity() );
         BOOST_TEST( v[ 0 ] == b );
+        BOOST_TEST( v[ 1 ] == Bitset( 70 ) );
         BOOST_TEST( v[ 0 ].get_allocator().resource() == &resource );
+        BOOST_TEST( v[ 1 ].get_allocator().resource() == &resource );
+
+        // A polymorphic_allocator is implicitly constructible from 0, a null
+        // pointer constant, but ( size, 0 ) must still mean ( size, value ).
+        BOOST_TEST( Bitset( b.size(), 0 ).get_allocator().resource() == std::pmr::get_default_resource() );
     }
 #endif
 }

@@ -396,6 +396,26 @@ public:
     // -----------------------------------------------------------------------
     explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( size_type num_bits, unsigned long value = 0, const allocator_type & alloc = allocator_type() );
 
+    //!     Constructs a bitset of `num_bits` zero bits, which uses a
+    //!     copy of `alloc` to allocate memory.
+    //!
+    //!     This is the same as `dynamic_bitset( num_bits, 0ul, alloc )`,
+    //!     but it allows uses-allocator construction from a size: for
+    //!     instance, `emplace_back( n )` on a `std::pmr` container of
+    //!     bitsets which use a `std::pmr::polymorphic_allocator`.
+    //!
+    //!     \param num_bits The size of the constructed bitset.
+    //!     \param alloc The allocator to use.
+    //!
+    //!     \post
+    //!     `this->size() == num_bits` and `this->none()`.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
+    // -----------------------------------------------------------------------
+    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( size_type num_bits, const allocator_type & alloc );
+
     //!     Constructs a bitset from a string of 0's and 1's.
     //!
     //!     The size of the bitset is `num_bits` if `num_bits != npos`,
