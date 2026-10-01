@@ -32,6 +32,27 @@
 
 namespace boost {
 
+// Before C++17, a static constexpr data member that is odr-used (for
+// instance, bound to a reference) must also be defined at namespace
+// scope. Since C++17, such a member is implicitly inline, and these
+// definitions would be redundant (and deprecated) redeclarations.
+#if defined( BOOST_NO_CXX17_INLINE_VARIABLES )
+
+template< typename Block, typename AllocatorOrContainer >
+constexpr int dynamic_bitset< Block, AllocatorOrContainer >::bits_per_block;
+
+template< typename Block, typename AllocatorOrContainer >
+constexpr typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
+    dynamic_bitset< Block, AllocatorOrContainer >::npos;
+
+template< typename Block, typename AllocatorOrContainer >
+constexpr int dynamic_bitset< Block, AllocatorOrContainer >::ulong_width;
+
+template< typename Iterator >
+constexpr int bit_iterator_base< Iterator >::bits_per_block;
+
+#endif
+
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20
 dynamic_bitset< Block, AllocatorOrContainer >::reference::reference( block_type & b, int pos )

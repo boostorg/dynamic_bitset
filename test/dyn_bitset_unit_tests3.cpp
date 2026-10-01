@@ -930,6 +930,20 @@ run_test_cases()
         bitset_type lhs( long_string.size(), 1 ), rhs( long_string );
         Tests::operator_sub( lhs, rhs );
     }
+    //=====================================================================
+    // Test the odr-use of the static data members
+    {
+        // Storing the address of a constant in a volatile object odr-uses
+        // it, even in an optimized build: before C++17, that requires a
+        // definition of the constant at namespace scope, without which
+        // this program doesn't link.
+        const int * volatile bits_address                             = &bitset_type::bits_per_block;
+        const typename bitset_type::size_type * volatile npos_address = &bitset_type::npos;
+        const int * volatile iterator_bits_address                    = &bitset_type::iterator::bits_per_block;
+        BOOST_TEST( *bits_address == bitset_type::bits_per_block );
+        BOOST_TEST( *npos_address == bitset_type::npos );
+        BOOST_TEST( *iterator_bits_address == bitset_type::bits_per_block );
+    }
 }
 
 int
