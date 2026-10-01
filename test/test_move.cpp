@@ -17,6 +17,7 @@
 #include <cstddef>
 #include <memory>
 #include <new>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -95,6 +96,57 @@ operator!=( const unequal_allocator< T > & a, const unequal_allocator< U > & b )
     return ! ( a == b );
 }
 
+// A stateless allocator which counts its allocations.
+template< typename T >
+class counting_allocator
+{
+public:
+    typedef T value_type;
+
+    counting_allocator()
+    {
+    }
+
+    template< typename U >
+    counting_allocator( const counting_allocator< U > & )
+    {
+    }
+
+    static std::size_t &
+    allocation_count()
+    {
+        static std::size_t count = 0;
+        return count;
+    }
+
+    T *
+    allocate( std::size_t n )
+    {
+        ++allocation_count();
+        return std::allocator< T >().allocate( n );
+    }
+
+    void
+    deallocate( T * p, std::size_t n )
+    {
+        std::allocator< T >().deallocate( p, n );
+    }
+};
+
+template< typename T, typename U >
+bool
+operator==( const counting_allocator< T > &, const counting_allocator< U > & )
+{
+    return true;
+}
+
+template< typename T, typename U >
+bool
+operator!=( const counting_allocator< T > &, const counting_allocator< U > & )
+{
+    return false;
+}
+
 // A container whose move operations copy, and thus leave the source
 // unchanged. That's allowed, as the state of a moved-from object is
 // unspecified.
@@ -111,6 +163,16 @@ public:
     {
     }
 };
+
+template< typename Bitset >
+void
+check_noexcept_specifications()
+{
+    typedef typename Bitset::buffer_type buffer_type;
+
+    static_assert( std::is_nothrow_move_constructible< Bitset >::value == std::is_nothrow_move_constructible< buffer_type >::value, "" );
+    static_assert( std::is_nothrow_move_assignable< Bitset >::value == std::is_nothrow_move_assignable< buffer_type >::value, "" );
+}
 
 // A moved-from bitset must be empty, and usable as such.
 template< typename Bitset >
@@ -227,6 +289,27 @@ test_copying_container()
     check_moved_from( dst );
 }
 
+// When a std::vector of bitsets grows, it must move the existing
+// bitsets, not copy them.
+template< typename Block >
+void
+test_vector_reallocation()
+{
+    typedef counting_allocator< Block >                    allocator_type;
+    typedef boost::dynamic_bitset< Block, allocator_type > bitset_type;
+
+    const std::size_t                                      initial_count = allocator_type::allocation_count();
+    const std::size_t                                      n             = 20;
+    std::vector< bitset_type >                             v;
+    for ( std::size_t i = 0; i < n; ++i ) {
+        v.push_back( bitset_type( 100 ) );
+    }
+
+    // One allocation per push_back() argument, and none for the
+    // reallocations of v.
+    BOOST_TEST_EQ( allocator_type::allocation_count() - initial_count, n );
+}
+
 #if ! defined( BOOST_NO_CXX17_HDR_MEMORY_RESOURCE )
 void
 test_pmr_move_assignment()
@@ -252,9 +335,16 @@ template< typename Block >
 void
 run_tests()
 {
+    check_noexcept_specifications< boost::dynamic_bitset< Block > >();
+    check_noexcept_specifications< boost::dynamic_bitset< Block, unequal_allocator< Block > > >();
+    check_noexcept_specifications< boost::dynamic_bitset< Block, copying_vector< Block > > >();
+    static_assert( std::is_nothrow_move_constructible< boost::dynamic_bitset< Block > >::value, "" );
+    static_assert( std::is_nothrow_move_assignable< boost::dynamic_bitset< Block > >::value, "" );
+
     test_unequal_allocators< Block >();
     test_throwing_move_assignment< Block >();
     test_copying_container< Block >();
+    test_vector_reallocation< Block >();
 }
 
 int

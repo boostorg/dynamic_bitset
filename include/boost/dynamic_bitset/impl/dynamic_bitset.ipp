@@ -683,7 +683,7 @@ operator=( const dynamic_bitset< Block, AllocatorOrContainer > & b )
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20
 dynamic_bitset< Block, AllocatorOrContainer >::
-    dynamic_bitset( dynamic_bitset< Block, AllocatorOrContainer > && b )
+    dynamic_bitset( dynamic_bitset< Block, AllocatorOrContainer > && b ) noexcept( std::is_nothrow_move_constructible< buffer_type >::value )
     : m_bits( std::move( b.m_bits ) ), m_num_bits( std::move( b.m_num_bits ) )
 {
     // A moved-from buffer isn't necessarily empty.
@@ -693,24 +693,13 @@ dynamic_bitset< Block, AllocatorOrContainer >::
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
                                  dynamic_bitset< Block, AllocatorOrContainer >::
-operator=( dynamic_bitset< Block, AllocatorOrContainer > && b )
+operator=( dynamic_bitset< Block, AllocatorOrContainer > && b ) noexcept( std::is_nothrow_move_assignable< buffer_type >::value )
 {
     if ( &b == this ) {
         return *this;
     }
 
-    BOOST_TRY
-    {
-        m_bits = std::move( b.m_bits );
-    }
-    BOOST_CATCH( ... )
-    {
-        // The state of m_bits is unspecified: restore the invariant.
-        clear();
-        BOOST_RETHROW
-    }
-    BOOST_CATCH_END
-
+    m_assign_bits( std::move( b.m_bits ) );
     m_num_bits = std::move( b.m_num_bits );
     // A moved-from buffer isn't necessarily empty (e.g. if the
     // allocators don't propagate and compare unequal).
@@ -1963,6 +1952,27 @@ dynamic_bitset< Block, AllocatorOrContainer >::m_check_invariants() const
     }
 
     return true;
+}
+
+// Move-assigns bits to m_bits. If that throws, the state of m_bits is
+// unspecified, so this makes the bitset empty, to preserve the
+// invariant. (This is a separate function, and not part of the move
+// assignment operator, because the rethrow would trigger warnings in
+// a noexcept function.)
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
+dynamic_bitset< Block, AllocatorOrContainer >::m_assign_bits( buffer_type && bits )
+{
+    BOOST_TRY
+    {
+        m_bits = std::move( bits );
+    }
+    BOOST_CATCH( ... )
+    {
+        clear();
+        BOOST_RETHROW
+    }
+    BOOST_CATCH_END
 }
 
 template< typename Block, typename AllocatorOrContainer >

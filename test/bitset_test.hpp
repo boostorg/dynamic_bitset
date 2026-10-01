@@ -439,6 +439,8 @@ struct bitset_test
     static void
     move_constructor( const Bitset & b )
     {
+        static_assert( std::is_nothrow_move_constructible< Bitset >::value == std::is_nothrow_move_constructible< typename Bitset::buffer_type >::value, "" );
+
         Bitset copy( b );
         Bitset b2( std::move( copy ) );
         BOOST_TEST( b2 == b );
@@ -449,6 +451,8 @@ struct bitset_test
     static void
     move_assignment_operator( const Bitset & lhs, const Bitset & rhs )
     {
+        static_assert( std::is_nothrow_move_assignable< Bitset >::value == std::is_nothrow_move_assignable< typename Bitset::buffer_type >::value, "" );
+
         Bitset   b( lhs );
         Bitset   c( rhs );
         Bitset & self( b ); // an alias, to avoid a self-move warning

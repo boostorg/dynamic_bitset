@@ -682,9 +682,10 @@ public:
     //!     \par Throws
     //!     Nothing, unless the move constructor of `buffer_type` throws
     //!     (that of `std::vector`, the buffer used when
-    //!     `AllocatorOrContainer` is an allocator, doesn't).
+    //!     `AllocatorOrContainer` is an allocator, doesn't). This
+    //!     constructor is `noexcept` if that move constructor is.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20                        dynamic_bitset( dynamic_bitset && src );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20                        dynamic_bitset( dynamic_bitset && src ) noexcept( std::is_nothrow_move_constructible< buffer_type >::value );
 
     //!     Move assignment operator.
     //!
@@ -712,9 +713,10 @@ public:
     //!     For `std::vector`, that can only happen when the blocks are
     //!     copied (see above): then, an allocation error is thrown if
     //!     memory is exhausted. If an exception is thrown, `*this` is
-    //!     left empty.
+    //!     left empty. This operator is `noexcept` if the move
+    //!     assignment of `buffer_type` is.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset &       operator=( dynamic_bitset && src );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset &       operator=( dynamic_bitset && src ) noexcept( std::is_nothrow_move_assignable< buffer_type >::value );
 
     //!     Returns a copy of the allocator object used to construct
     //!     `*this`.
@@ -1456,6 +1458,7 @@ private:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & range_operation( size_type pos, size_type len, Block ( *partial_block_operation )( Block, size_type, size_type ), Block ( *full_block_operation )( Block ) );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void             m_zero_unused_bits();
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             m_check_invariants() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void             m_assign_bits( buffer_type && bits );
 
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 static bool      m_not_empty( Block x );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 static bool      m_not_full( Block x );
