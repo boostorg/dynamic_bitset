@@ -11,8 +11,8 @@
 //
 // -----------------------------------------------------------
 
-#ifndef BOOST_LOWEST_BIT_HPP_GP_20030301
-#define BOOST_LOWEST_BIT_HPP_GP_20030301
+#ifndef BOOST_DYNAMIC_BITSET_DETAIL_LOWEST_BIT_HPP
+#define BOOST_DYNAMIC_BITSET_DETAIL_LOWEST_BIT_HPP
 
 #include "boost/assert.hpp"
 #include "boost/core/bit.hpp"
@@ -20,6 +20,7 @@
 
 namespace boost {
 namespace detail {
+namespace dynamic_bitset_impl {
 
 template< typename T >
 int
@@ -30,6 +31,7 @@ lowest_bit( T x )
     return boost::core::countr_zero( static_cast< typename std::make_unsigned< T >::type >( x ) );
 }
 
+}
 }
 }
 

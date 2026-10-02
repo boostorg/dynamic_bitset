@@ -14,11 +14,11 @@ int
 main( int, char *[] )
 {
     for ( boost::int32_t i = 0; i < 32; ++i ) {
-        BOOST_TEST_EQ( i, boost::detail::lowest_bit( 1u << i ) );
+        BOOST_TEST_EQ( i, boost::detail::dynamic_bitset_impl::lowest_bit( 1u << i ) );
     }
 
-    BOOST_TEST_EQ( 2, boost::detail::lowest_bit( 123456788 ) );
-    BOOST_TEST_EQ( 30, boost::detail::lowest_bit( static_cast< boost::int64_t >( 1507208177123328 ) ) );
+    BOOST_TEST_EQ( 2, boost::detail::dynamic_bitset_impl::lowest_bit( 123456788 ) );
+    BOOST_TEST_EQ( 30, boost::detail::dynamic_bitset_impl::lowest_bit( static_cast< boost::int64_t >( 1507208177123328 ) ) );
 
     return boost::report_errors();
 }

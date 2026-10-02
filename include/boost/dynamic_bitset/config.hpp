@@ -18,6 +18,7 @@
 //
 namespace boost {
 namespace detail {
+namespace dynamic_bitset_impl {
 template< typename T >
 T
 make_non_const( T t )
@@ -26,10 +27,11 @@ make_non_const( T t )
 }
 }
 }
+}
 
 #if defined( __GNUC__ )
 #    define BOOST_DYNAMIC_BITSET_WRAP_CONSTANT( expr ) \
-        ( boost::detail::make_non_const( expr ) )
+        ( boost::detail::dynamic_bitset_impl::make_non_const( expr ) )
 #else
 #    define BOOST_DYNAMIC_BITSET_WRAP_CONSTANT( expr ) ( expr )
 #endif

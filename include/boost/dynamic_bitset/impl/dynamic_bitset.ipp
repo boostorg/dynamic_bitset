@@ -1482,7 +1482,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::m_do_find_from( size_type first_b
     const Block b = value
                       ? m_bits[ i ]
                       : m_bits[ i ] ^ Block( -1 );
-    return i * bits_per_block + static_cast< size_type >( detail::lowest_bit( b ) );
+    return i * bits_per_block + static_cast< size_type >( detail::dynamic_bitset_impl::lowest_bit( b ) );
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -1501,7 +1501,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_first( size_type pos ) const
     const Block     fore  = m_bits[ blk ] >> ind;
 
     const bool      found = m_not_empty( fore );
-    return found ? pos + static_cast< size_type >( detail::lowest_bit( fore ) )
+    return found ? pos + static_cast< size_type >( detail::dynamic_bitset_impl::lowest_bit( fore ) )
                  : m_do_find_from( blk + 1, true );
 }
 
@@ -1519,7 +1519,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_first_off( size_type pos ) c
     bool            found              = false;
     int             lowest_off_bit_pos = -1;
     if ( m_not_full( fore ) ) {
-        lowest_off_bit_pos = detail::lowest_bit( fore ^ Block( -1 ) );
+        lowest_off_bit_pos = detail::dynamic_bitset_impl::lowest_bit( fore ^ Block( -1 ) );
         // don't consider a zero introduced by m_bits[ blk ] >> ind as found
         found              = lowest_off_bit_pos <= ( bits_per_block - 1 - ind );
     }
