@@ -16,6 +16,7 @@
 #ifndef BOOST_DETAIL_DYNAMIC_BITSET_HPP
 #define BOOST_DETAIL_DYNAMIC_BITSET_HPP
 
+#include "boost/dynamic_bitset/config.hpp"
 #include <cstddef>
 #include <limits>
 #include <type_traits>
