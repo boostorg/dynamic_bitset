@@ -23,7 +23,6 @@
 #include "boost/functional/hash/hash.hpp"
 #include "boost/throw_exception.hpp"
 #include <algorithm>
-#include <climits>
 #include <istream>
 #include <locale>
 #include <ostream>
