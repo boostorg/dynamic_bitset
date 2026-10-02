@@ -29,6 +29,10 @@
 #include <type_traits>
 #include <vector>
 
+#if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
+#    include <string_view>
+#endif
+
 #if defined( BOOST_DYNAMIC_BITSET_SPECIALIZE_STD_HASH )
 #    include <functional>
 namespace std {
@@ -478,12 +482,21 @@ public:
     template< typename CharT >
     explicit dynamic_bitset( const CharT * s, std::size_t n = std::size_t( -1 ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
-#if defined( BOOST_DYNAMIC_BITSET_USE_CPP17_OR_LATER )
+#if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
 
     //!     Similar to the constructor from a pointer to a C-style
     //!     string, but takes a `std::basic_string_view`. This
-    //!     constructor is only available if DynamicBitset is compiled
-    //!     as C++17 or later.
+    //!     constructor is only available if the standard library
+    //!     provides `std::basic_string_view`, i.e. if the Boost.Config
+    //!     macro `BOOST_NO_CXX17_HDR_STRING_VIEW` is not defined
+    //!     (typically, in C++17 or later).
+    //!
+    //!     Note that this makes the definition of `dynamic_bitset`
+    //!     depend on the C++ standard that a translation unit is
+    //!     compiled for, as happens with many class templates of the
+    //!     standard library. So, linking together translation units
+    //!     compiled for different standards is only safe if your
+    //!     implementation supports doing so for its standard library.
     //!
     //!     \pre
     //!     The characters in `sv` that are use to initialize the bits
