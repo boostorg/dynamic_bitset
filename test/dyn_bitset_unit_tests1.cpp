@@ -262,23 +262,40 @@ run_test_cases()
 
     //=====================================================================
     // test iterators
+    Tests::value_initialized_iterators();
+    Tests::iterator_concepts();
     {
         bitset_type b;
         Tests::iterate_forward( b );
         Tests::iterate_backward( b );
         Tests::iterator_operations( b );
+        Tests::const_iterators_of_non_const( b );
+        Tests::iterate_with_cbegin_and_crbegin( b );
+        Tests::write_through_iterators( b );
+        Tests::mutating_std_algorithms( b );
+        Tests::iterators_with_ranges( b );
     }
     {
         bitset_type b( 1, 1ul );
         Tests::iterate_forward( b );
         Tests::iterate_backward( b );
         Tests::iterator_operations( b );
+        Tests::const_iterators_of_non_const( b );
+        Tests::iterate_with_cbegin_and_crbegin( b );
+        Tests::write_through_iterators( b );
+        Tests::mutating_std_algorithms( b );
+        Tests::iterators_with_ranges( b );
     }
     {
         bitset_type b( bitset_type::bits_per_block, 100ul );
         Tests::iterate_forward( b );
         Tests::iterate_backward( b );
         Tests::iterator_operations( b );
+        Tests::const_iterators_of_non_const( b );
+        Tests::iterate_with_cbegin_and_crbegin( b );
+        Tests::write_through_iterators( b );
+        Tests::mutating_std_algorithms( b );
+        Tests::iterators_with_ranges( b );
     }
     {
         bitset_type b( long_string );
@@ -286,6 +303,11 @@ run_test_cases()
         Tests::iterate_backward( b );
         Tests::iterator_operations( b );
         Tests::iterator_backward_offsets( b );
+        Tests::const_iterators_of_non_const( b );
+        Tests::iterate_with_cbegin_and_crbegin( b );
+        Tests::write_through_iterators( b );
+        Tests::mutating_std_algorithms( b );
+        Tests::iterators_with_ranges( b );
     }
     {
         typedef boost::dynamic_bitset< Block, pointer_vector< Block > > Bitset;

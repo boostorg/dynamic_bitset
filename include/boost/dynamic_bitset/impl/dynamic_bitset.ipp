@@ -177,6 +177,14 @@ namespace dynamic_bitset_impl {
 
 template< typename Iterator >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20
+bit_iterator_base< Iterator >::bit_iterator_base()
+    : m_block_iterator()
+    , m_bit_index( 0 )
+{
+}
+
+template< typename Iterator >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
 bit_iterator_base< Iterator >::bit_iterator_base( Iterator block_iterator, int bit_index )
     : m_block_iterator( block_iterator )
     , m_bit_index( bit_index )
@@ -377,6 +385,13 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename DynamicBitset::reference
 bit_iterator< DynamicBitset >::operator[]( difference_type n ) const
 {
     return *( *this + n );
+}
+
+template< typename DynamicBitset >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
+const_bit_iterator< DynamicBitset >::const_bit_iterator()
+    : bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >()
+{
 }
 
 template< typename DynamicBitset >

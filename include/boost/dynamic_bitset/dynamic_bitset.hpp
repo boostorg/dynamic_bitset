@@ -327,18 +327,25 @@ public:
 
     //!     A read/write iterator into the bitset.
     //!
-    //!     If `AllocatorOrContainer` is an allocator type, this is a
-    //!     C++20 RandomAccessIterator; otherwise, its category is the
-    //!     corresponding "non-legacy" category of the iterator type of
-    //!     the underlying container; for instance, if the underlying
-    //!     container provides LegacyBidirectionalIterators, this is a
-    //!     BidirectionalIterator.
+    //!     If `AllocatorOrContainer` is an allocator type, this type
+    //!     models the C++20 concept `std::random_access_iterator`;
+    //!     otherwise, it models the C++20 iterator concept which
+    //!     corresponds to the category of the iterator type of the
+    //!     underlying container; for instance, if the underlying
+    //!     container provides LegacyBidirectionalIterators, this type
+    //!     models `std::bidirectional_iterator`.
+    //!
+    //!     In C++14 and later, a value-initialized iterator compares
+    //!     equal to any other value-initialized iterator of the same
+    //!     type.
     // -----------------------------------------------------------------------
     typedef detail::dynamic_bitset_impl::bit_iterator< dynamic_bitset >       iterator;
 
     //!     A read-only iterator into the bitset.
     //!
     //!     \copydetails iterator
+    //!
+    //!     An `iterator` is implicitly convertible to a `const_iterator`.
     // -----------------------------------------------------------------------
     typedef detail::dynamic_bitset_impl::const_bit_iterator< dynamic_bitset > const_iterator;
 
@@ -347,12 +354,16 @@ public:
     typedef std::reverse_iterator< iterator >                                 reverse_iterator;
 
     //!     A reverse read-only iterator into the bitset.
+    //!
+    //!     A `reverse_iterator` is implicitly convertible to a
+    //!     `const_reverse_iterator`.
     // -----------------------------------------------------------------------
     typedef std::reverse_iterator< const_iterator >                           const_reverse_iterator;
 
 #if defined( __cpp_lib_ranges )
     static_assert( std::bidirectional_iterator< typename buffer_type::iterator >, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
     static_assert( std::bidirectional_iterator< iterator > );
+    static_assert( std::bidirectional_iterator< const_iterator > );
 #else
     static_assert( std::is_base_of< std::bidirectional_iterator_tag, typename std::iterator_traits< typename buffer_type::iterator >::iterator_category >::value, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
 #endif
@@ -1690,6 +1701,7 @@ public:
 
     static constexpr int                         bits_per_block = std::numeric_limits< typename std::iterator_traits< Iterator >::value_type >::digits;
 
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20             bit_iterator_base();
     BOOST_DYNAMIC_BITSET_CONSTEXPR20             bit_iterator_base( Iterator block_iterator, int bit_index );
 
     template< typename Iter >
@@ -1714,6 +1726,8 @@ template< typename DynamicBitset >
 class bit_iterator
     : public bit_iterator_base< typename DynamicBitset::buffer_type::iterator >
 {
+    friend class const_bit_iterator< DynamicBitset >;
+
 public:
     typedef typename DynamicBitset::reference                                                            reference;
     typedef reference *                                                                                  pointer;
@@ -1744,6 +1758,7 @@ public:
     typedef const bool *                                                                                       pointer;
     typedef typename bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >::difference_type difference_type;
 
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20                                                                           const_bit_iterator();
     BOOST_DYNAMIC_BITSET_CONSTEXPR20                                                                           const_bit_iterator( typename DynamicBitset::buffer_type::const_iterator block_iterator, int bit_index );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20                                                                           const_bit_iterator( const bit_iterator< DynamicBitset > & it );
 
