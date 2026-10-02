@@ -199,11 +199,15 @@ template< typename Iterator >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 bit_iterator_base< Iterator >::decrement()
 {
-    --m_bit_index;
-    if ( m_bit_index < 0 ) {
-        m_bit_index = bits_per_block - 1;
+    // The bit index is tested for zero before the decrement, rather than
+    // for a negative value after it, because MSVC 19.51 (VS 2026), at /O2
+    // and targeting x86, miscompiles the latter in std::find() on reverse
+    // iterators.
+    if ( m_bit_index == 0 ) {
+        m_bit_index = bits_per_block;
         --m_block_iterator;
     }
+    --m_bit_index;
 }
 
 template< typename Iterator >
