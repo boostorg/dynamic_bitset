@@ -17,10 +17,10 @@
 // -----------------------------------------------------------
 
 #include "boost/assert.hpp"
+#include "boost/container_hash/hash.hpp"
 #include "boost/core/bit.hpp"
 #include "boost/core/no_exceptions_support.hpp"
 #include "boost/dynamic_bitset/detail/lowest_bit.hpp"
-#include "boost/functional/hash/hash.hpp"
 #include "boost/throw_exception.hpp"
 #include <algorithm>
 #include <istream>
