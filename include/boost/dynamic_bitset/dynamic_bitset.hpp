@@ -58,6 +58,9 @@ class bit_iterator;
 template< typename DynamicBitset >
 class const_bit_iterator;
 
+template< typename B, typename A, typename StringT >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 void to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all );
+
 } // dynamic_bitset_impl
 } // namespace detail
 
@@ -1554,7 +1557,7 @@ public:
     friend std::basic_istream< CharT, Traits > & operator>>( std::basic_istream< CharT, Traits > & is, dynamic_bitset< B, A > & b );
 
     template< typename B, typename A, typename StringT >
-    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 void to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all );
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 void detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all );
 
     //!     Computes a hash value for a `dynamic_bitset`.
     //!

@@ -1326,7 +1326,7 @@ template< typename Block, typename AllocatorOrContainer, typename StringT >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 to_string( const dynamic_bitset< Block, AllocatorOrContainer > & b, StringT & s )
 {
-    to_string_helper( b, s, false );
+    detail::dynamic_bitset_impl::to_string_helper( b, s, false );
 }
 
 // Differently from to_string this function dumps out every bit of the
@@ -1335,7 +1335,7 @@ template< typename B, typename A, typename StringT >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dump_to_string( const dynamic_bitset< B, A > & b, StringT & s )
 {
-    to_string_helper( b, s, true /* = dump_all */ );
+    detail::dynamic_bitset_impl::to_string_helper( b, s, true /* = dump_all */ );
 }
 
 template< typename Block, typename AllocatorOrContainer, typename BlockOutputIterator >
@@ -1630,7 +1630,7 @@ operator>=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynam
 
 template< typename B, typename A, typename StringT >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all )
+detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all )
 {
     typedef typename StringT::traits_type              Tr;
     typedef typename StringT::value_type               Ch;
