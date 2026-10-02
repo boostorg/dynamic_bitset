@@ -259,7 +259,7 @@ struct bitset_test
         for ( ; j < actual_size; ++j )
             BOOST_TEST( b[ j ] == 0 );
 
-#if defined( BOOST_DYNAMIC_BITSET_USE_CPP17_OR_LATER )
+#if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
         BOOST_TEST( Bitset( std::basic_string_view< Ch, Tr >( str ).substr( pos, rlen ), num_bits ) == b );
 #endif
     }

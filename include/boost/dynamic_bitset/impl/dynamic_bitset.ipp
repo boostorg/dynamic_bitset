@@ -555,7 +555,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
     init_from_string( s, std::char_traits< CharT >::length( s ), 0, n, num_bits );
 }
 
-#if defined( BOOST_DYNAMIC_BITSET_USE_CPP17_OR_LATER )
+#if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
 
 template< typename Block, typename AllocatorOrContainer >
 template< typename CharT, typename Traits >
