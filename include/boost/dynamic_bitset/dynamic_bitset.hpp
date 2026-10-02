@@ -40,7 +40,10 @@ namespace std {
 //!     Support for std::hash.
 //!
 //!     You can exclude this support by defining the macro
-//!     `BOOST_DYNAMIC_BITSET_NO_STD_HASH`.
+//!     `BOOST_DYNAMIC_BITSET_NO_STD_HASH`. If you do so, define it in
+//!     all the translation units of your program. Otherwise, if you
+//!     provide your own specialization, the program might contain both
+//!     yours and the library's, violating the One Definition Rule.
 // -----------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
 struct hash< boost::dynamic_bitset< Block, AllocatorOrContainer > >;
