@@ -54,6 +54,43 @@ public:
     }
 };
 
+// A std::vector whose iterators are raw pointers. It redefines only the
+// functions which the iterators of dynamic_bitset use.
+template< typename T >
+class pointer_vector
+    : public std::vector< T >
+{
+public:
+    typedef T *       iterator;
+    typedef const T * const_iterator;
+
+    using std::vector< T >::vector;
+
+    iterator
+    begin()
+    {
+        return this->data();
+    }
+
+    iterator
+    end()
+    {
+        return this->data() + this->size();
+    }
+
+    const_iterator
+    cbegin() const
+    {
+        return this->data();
+    }
+
+    const_iterator
+    cend() const
+    {
+        return this->data() + this->size();
+    }
+};
+
 #define BOOST_BITSET_TEST_COUNT( x ) ( sizeof( x ) / sizeof( x[ 0 ] ) )
 
 template< typename Tests, typename String >
@@ -248,6 +285,11 @@ run_test_cases()
         Tests::iterate_forward( b );
         Tests::iterate_backward( b );
         Tests::iterator_operations( b );
+        Tests::iterator_backward_offsets( b );
+    }
+    {
+        typedef boost::dynamic_bitset< Block, pointer_vector< Block > > Bitset;
+        bitset_test< Bitset >::iterator_backward_offsets( Bitset( long_string ) );
     }
 
     //=====================================================================

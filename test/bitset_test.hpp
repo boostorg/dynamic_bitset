@@ -318,6 +318,17 @@ struct bitset_test
         BOOST_TEST( b.end() - b.begin() == static_cast< std::ptrdiff_t >( b.size() ) );
     }
 
+    // Moves an iterator backward from end() by each distance in
+    // [1, b.size()]. Some of the targets are the first bit of a block.
+    static void
+    iterator_backward_offsets( const Bitset & b )
+    {
+        const std::ptrdiff_t n = static_cast< std::ptrdiff_t >( b.size() );
+        for ( std::ptrdiff_t k = 1; k <= n; ++k ) {
+            BOOST_TEST( ( b.end() - k ) - b.begin() == n - k );
+        }
+    }
+
     static void
     to_block_range( const Bitset & b /*, BlockOutputIterator result*/ )
     {

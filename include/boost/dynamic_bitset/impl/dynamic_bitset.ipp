@@ -210,14 +210,16 @@ template< typename Iterator >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 bit_iterator_base< Iterator >::add( typename std::iterator_traits< Iterator >::difference_type n )
 {
-    typename Iterator::difference_type d = m_bit_index + n;
-    m_block_iterator += d / bits_per_block;
-    d %= bits_per_block;
-    if ( d < 0 ) {
-        d += bits_per_block;
-        --m_block_iterator;
-    }
-    m_bit_index = static_cast< int >( d );
+    // q is d / bits_per_block rounded toward minus infinity. We compute
+    // it, and the new bit index, without applying / or % to a negative
+    // operand: in some inlining contexts (e.g. a loop that moves an
+    // iterator backward by varying amounts), MSVC 19.44 (VS 2022 17.14)
+    // at /O1 and /O2 computes the remainder of a negative multiple of
+    // bits_per_block as -bits_per_block instead of zero.
+    const decltype( n ) d = m_bit_index + n;
+    const decltype( n ) q = d >= 0 ? d / bits_per_block : -( ( -1 - d ) / bits_per_block ) - 1;
+    m_block_iterator += q;
+    m_bit_index = static_cast< int >( d - q * bits_per_block );
 }
 
 template< typename Iterator >
