@@ -30,6 +30,19 @@
 #include <type_traits>
 #include <vector>
 
+// Clang 15 and earlier can't compile the views of libstdc++, and
+// Clang 16 can't compile the <ranges> header of libstdc++ 13 and later
+// in C++23 mode. In those cases, we don't include <ranges>, and don't
+// test the iterators with views.
+#if defined( __clang__ ) && defined( _GLIBCXX_RELEASE ) \
+    && ( __clang_major__ < 16 || ( __clang_major__ == 16 && _GLIBCXX_RELEASE >= 13 && __cplusplus > 202002L ) )
+#    define BOOST_DYNAMIC_BITSET_TEST_NO_VIEWS
+#endif
+
+#if defined( __cpp_lib_ranges ) && ! defined( BOOST_DYNAMIC_BITSET_TEST_NO_VIEWS )
+#    include <ranges>
+#endif
+
 template< typename T >
 using small_vector = boost::container::small_vector< T, 8 >;
 
@@ -327,6 +340,158 @@ struct bitset_test
         for ( std::ptrdiff_t k = 1; k <= n; ++k ) {
             BOOST_TEST( ( b.end() - k ) - b.begin() == n - k );
         }
+    }
+
+    // The iterators of the bitset wrap those of the underlying
+    // container, and the standard requires value-initialized iterators
+    // of a container to compare equal only since C++14.
+    static void
+    value_initialized_iterators()
+    {
+#if BOOST_CXX_VERSION >= 201402L
+        typedef typename Bitset::iterator               iterator;
+        typedef typename Bitset::const_iterator         const_iterator;
+        typedef typename Bitset::reverse_iterator       reverse_iterator;
+        typedef typename Bitset::const_reverse_iterator const_reverse_iterator;
+
+        BOOST_TEST( iterator() == iterator() );
+        BOOST_TEST( const_iterator() == const_iterator() );
+        BOOST_TEST( const_iterator( iterator() ) == const_iterator() );
+        BOOST_TEST( reverse_iterator() == reverse_iterator() );
+        BOOST_TEST( const_reverse_iterator() == const_reverse_iterator() );
+        BOOST_TEST( const_reverse_iterator( reverse_iterator() ) == const_reverse_iterator() );
+#endif
+    }
+
+    // Gets const iterators from a non-const bitset, both by conversion
+    // and via cbegin() and friends.
+    static void
+    const_iterators_of_non_const( const Bitset & b )
+    {
+        Bitset                                  c( b );
+        const Bitset &                          cc  = c;
+        typename Bitset::const_iterator         ci  = c.begin();
+        typename Bitset::const_reverse_iterator cri = c.rbegin();
+
+        BOOST_TEST( ci == cc.begin() );
+        BOOST_TEST( typename Bitset::const_iterator( c.end() ) == cc.end() );
+        BOOST_TEST( cri == cc.rbegin() );
+        BOOST_TEST( typename Bitset::const_reverse_iterator( c.rend() ) == cc.rend() );
+        if ( c.size() > 0 ) {
+            BOOST_TEST( *ci == b[ 0 ] );
+            BOOST_TEST( *cri == b[ b.size() - 1 ] );
+        }
+
+        typename Bitset::iterator it;
+        it = c.end();
+        ci = it;
+        BOOST_TEST( ci == cc.end() );
+
+        BOOST_TEST( c.cbegin() == cc.begin() );
+        BOOST_TEST( c.cend() == cc.end() );
+        BOOST_TEST( c.crbegin() == cc.rbegin() );
+        BOOST_TEST( c.crend() == cc.rend() );
+    }
+
+    static void
+    iterate_with_cbegin_and_crbegin( const Bitset & b )
+    {
+        typedef typename Bitset::const_iterator         const_iterator;
+        typedef typename Bitset::const_reverse_iterator const_reverse_iterator;
+
+        static_assert( std::is_same< decltype( b.cbegin() ), const_iterator >::value, "" );
+        static_assert( std::is_same< decltype( b.crbegin() ), const_reverse_iterator >::value, "" );
+
+        std::size_t i = 0;
+        for ( const_iterator it = b.cbegin(); it != b.cend(); ++it, ++i ) {
+            BOOST_TEST( *it == b[ i ] );
+        }
+        BOOST_TEST( i == b.size() );
+        for ( const_reverse_iterator it = b.crbegin(); it != b.crend(); ++it ) {
+            --i;
+            BOOST_TEST( *it == b[ i ] );
+        }
+        BOOST_TEST( i == 0 );
+    }
+
+    // Writes through the iterators of a copy of b.
+    static void
+    write_through_iterators( const Bitset & b )
+    {
+        Bitset c( b );
+        for ( typename Bitset::iterator it = c.begin(); it != c.end(); ++it ) {
+            *it = ! *it;
+        }
+        BOOST_TEST( c == ~b );
+
+        const typename Bitset::iterator first = c.begin();
+        const std::ptrdiff_t            n     = static_cast< std::ptrdiff_t >( c.size() );
+        for ( std::ptrdiff_t i = 0; i < n; ++i ) {
+            first[ i ] = b[ static_cast< typename Bitset::size_type >( i ) ];
+        }
+        BOOST_TEST( c == b );
+    }
+
+    static void
+    mutating_std_algorithms( const Bitset & b )
+    {
+        Bitset c( b );
+        std::fill( c.begin(), c.end(), true );
+        BOOST_TEST( c.all() );
+        std::fill( c.rbegin(), c.rend(), false );
+        BOOST_TEST( c.none() );
+        BOOST_TEST( std::find( c.rbegin(), c.rend(), true ) == c.rend() );
+
+        std::copy( b.begin(), b.end(), c.rbegin() );
+        for ( std::size_t i = 0; i < b.size(); ++i ) {
+            BOOST_TEST( c[ i ] == b[ b.size() - 1 - i ] );
+        }
+    }
+
+    static void
+    iterator_concepts()
+    {
+#if defined( __cpp_lib_ranges )
+        typedef typename Bitset::iterator       iterator;
+        typedef typename Bitset::const_iterator const_iterator;
+
+        static_assert( std::random_access_iterator< iterator > );
+        static_assert( std::random_access_iterator< const_iterator > );
+        static_assert( std::random_access_iterator< typename Bitset::reverse_iterator > );
+        static_assert( std::random_access_iterator< typename Bitset::const_reverse_iterator > );
+        static_assert( std::sentinel_for< iterator, iterator > );
+        static_assert( std::sentinel_for< const_iterator, const_iterator > );
+        static_assert( std::ranges::range< const Bitset > );
+        static_assert( std::ranges::random_access_range< Bitset > );
+        static_assert( std::ranges::random_access_range< const Bitset > );
+#endif
+    }
+
+    // Uses ranges algorithms and views on a const bitset.
+    static void
+    iterators_with_ranges( const Bitset & b )
+    {
+#if defined( __cpp_lib_ranges )
+        const std::size_t first = b.find_first();
+        const std::size_t found = first == Bitset::npos ? b.size() : first;
+        BOOST_TEST( std::ranges::count( b, true ) == static_cast< std::ptrdiff_t >( b.count() ) );
+        BOOST_TEST( std::ranges::find( b, true ) - b.begin() == static_cast< std::ptrdiff_t >( found ) );
+
+#    if ! defined( BOOST_DYNAMIC_BITSET_TEST_NO_VIEWS )
+        std::ranges::subrange< typename Bitset::iterator >       s;
+        std::ranges::subrange< typename Bitset::const_iterator > cs;
+        BOOST_TEST( s.empty() && cs.empty() );
+
+        std::size_t i = b.size();
+        for ( bool x : b | std::views::reverse ) {
+            --i;
+            BOOST_TEST( x == b[ i ] );
+        }
+        BOOST_TEST( i == 0 );
+#    endif
+#else
+        (void)b;
+#endif
     }
 
     static void
