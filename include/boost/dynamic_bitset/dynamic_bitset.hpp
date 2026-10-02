@@ -46,6 +46,9 @@ struct hash< boost::dynamic_bitset< Block, AllocatorOrContainer > >;
 
 namespace boost {
 
+namespace detail {
+namespace dynamic_bitset_impl {
+
 template< typename Iterator >
 class bit_iterator_base;
 
@@ -54,6 +57,9 @@ class bit_iterator;
 
 template< typename DynamicBitset >
 class const_bit_iterator;
+
+} // dynamic_bitset_impl
+} // namespace detail
 
 //!     The `dynamic_bitset` template represents a set of bits.
 //!
@@ -236,7 +242,7 @@ public:
     class reference
     {
         friend class dynamic_bitset< Block, AllocatorOrContainer >;
-        friend class bit_iterator< dynamic_bitset >;
+        friend class detail::dynamic_bitset_impl::bit_iterator< dynamic_bitset >;
 
         //!     The one and only non-copy ctor
         // -------------------------------------------------------------------
@@ -306,8 +312,8 @@ public:
     // -----------------------------------------------------------------------
     typedef bool const_reference;
 
-    friend class bit_iterator< dynamic_bitset >;
-    friend class const_bit_iterator< dynamic_bitset >;
+    friend class detail::dynamic_bitset_impl::bit_iterator< dynamic_bitset >;
+    friend class detail::dynamic_bitset_impl::const_bit_iterator< dynamic_bitset >;
 
     //!     A read/write iterator into the bitset.
     //!
@@ -318,21 +324,21 @@ public:
     //!     container provides LegacyBidirectionalIterators, this is a
     //!     BidirectionalIterator.
     // -----------------------------------------------------------------------
-    typedef bit_iterator< dynamic_bitset >          iterator;
+    typedef detail::dynamic_bitset_impl::bit_iterator< dynamic_bitset >       iterator;
 
     //!     A read-only iterator into the bitset.
     //!
     //!     \copydetails iterator
     // -----------------------------------------------------------------------
-    typedef const_bit_iterator< dynamic_bitset >    const_iterator;
+    typedef detail::dynamic_bitset_impl::const_bit_iterator< dynamic_bitset > const_iterator;
 
     //!     A reverse read/write reverse iterator into the bitset.
     // -----------------------------------------------------------------------
-    typedef std::reverse_iterator< iterator >       reverse_iterator;
+    typedef std::reverse_iterator< iterator >                                 reverse_iterator;
 
     //!     A reverse read-only iterator into the bitset.
     // -----------------------------------------------------------------------
-    typedef std::reverse_iterator< const_iterator > const_reverse_iterator;
+    typedef std::reverse_iterator< const_iterator >                           const_reverse_iterator;
 
 #if defined( __cpp_lib_ranges )
     static_assert( std::bidirectional_iterator< typename buffer_type::iterator >, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
@@ -1650,6 +1656,9 @@ private:
     };
 };
 
+namespace detail {
+namespace dynamic_bitset_impl {
+
 template< typename Iterator >
 class bit_iterator_base
 {
@@ -1680,6 +1689,8 @@ protected:
     int                                   m_bit_index = 0;
 };
 
+//!     \implementationdefined
+// -----------------------------------------------------------------------
 template< typename DynamicBitset >
 class bit_iterator
     : public bit_iterator_base< typename DynamicBitset::buffer_type::iterator >
@@ -1702,6 +1713,8 @@ public:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference                                                           operator[]( difference_type n ) const;
 };
 
+//!     \implementationdefined
+// -----------------------------------------------------------------------
 template< typename DynamicBitset >
 class const_bit_iterator
     : public bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >
@@ -1724,6 +1737,9 @@ public:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator &                                                      operator-=( difference_type n );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reference                                                           operator[]( difference_type n ) const;
 };
+
+} // dynamic_bitset_impl
+} // namespace detail
 
 //!     Compares two bitsets.
 //!

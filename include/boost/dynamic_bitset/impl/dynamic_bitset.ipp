@@ -49,7 +49,7 @@ template< typename Block, typename AllocatorOrContainer >
 constexpr int dynamic_bitset< Block, AllocatorOrContainer >::ulong_width;
 
 template< typename Iterator >
-constexpr int bit_iterator_base< Iterator >::bits_per_block;
+constexpr int detail::dynamic_bitset_impl::bit_iterator_base< Iterator >::bits_per_block;
 
 #endif
 
@@ -172,6 +172,9 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::do_assign( bool x )
         do_reset();
     }
 }
+
+namespace detail {
+namespace dynamic_bitset_impl {
 
 template< typename Iterator >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20
@@ -473,6 +476,9 @@ const_bit_iterator< DynamicBitset >::operator[]( difference_type n ) const
 {
     return *( *this + n );
 }
+
+} // dynamic_bitset_impl
+} // namespace detail
 
 template< typename BlockIterator, typename B, typename A >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
