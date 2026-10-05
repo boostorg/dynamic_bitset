@@ -448,6 +448,68 @@ struct bitset_test
         }
     }
 
+    // Returns b with its bits in reverse order.
+    static Bitset
+    reversed( const Bitset & b )
+    {
+        Bitset r( b.size() );
+        for ( std::size_t i = 0; i < b.size(); ++i ) {
+            r[ i ] = b[ b.size() - 1 - i ];
+        }
+        return r;
+    }
+
+    // Returns b with its bits sorted in ascending order, i.e. with all
+    // the zeros at the lowest positions.
+    static Bitset
+    sorted( const Bitset & b )
+    {
+        Bitset s( b.size() );
+        for ( std::size_t i = b.size() - b.count(); i < s.size(); ++i ) {
+            s[ i ] = true;
+        }
+        return s;
+    }
+
+    // Swaps the first and the last bit of a copy of b, which are made
+    // different first, through named references and through the
+    // references returned by operator[].
+    static void
+    swap_references( const Bitset & b )
+    {
+        if ( b.size() >= 2 ) {
+            Bitset                     c( b );
+            const std::size_t          last = c.size() - 1;
+            const bool                 x    = ! c[ last ];
+            typename Bitset::reference r0   = c[ 0 ];
+            typename Bitset::reference r1   = c[ last ];
+            r0                              = x;
+
+            using std::swap;
+            swap( r0, r1 );
+            BOOST_TEST( c[ 0 ] == ! x && c[ last ] == x );
+            swap( c[ 0 ], c[ last ] );
+            BOOST_TEST( c[ 0 ] == x && c[ last ] == ! x );
+            static_assert( noexcept( swap( r0, r1 ) ), "" );
+        }
+    }
+
+    static void
+    swapping_std_algorithms( const Bitset & b )
+    {
+        Bitset c( b );
+        std::reverse( c.begin(), c.end() );
+        BOOST_TEST( c == reversed( b ) );
+        std::sort( c.begin(), c.end() );
+        BOOST_TEST( c == sorted( b ) );
+
+        if ( b.size() >= 2 ) {
+            c = b;
+            std::iter_swap( c.begin(), c.end() - 1 );
+            BOOST_TEST( c[ 0 ] == b[ b.size() - 1 ] && c[ b.size() - 1 ] == b[ 0 ] );
+        }
+    }
+
     static void
     iterator_concepts()
     {
@@ -464,6 +526,68 @@ struct bitset_test
         static_assert( std::ranges::range< const Bitset > );
         static_assert( std::ranges::random_access_range< Bitset > );
         static_assert( std::ranges::random_access_range< const Bitset > );
+#endif
+    }
+
+    static void
+    mutating_iterator_concepts()
+    {
+#if defined( __cpp_lib_ranges )
+        typedef typename Bitset::iterator iterator;
+
+        static_assert( std::indirectly_writable< iterator, bool > );
+        static_assert( std::output_iterator< iterator, bool > );
+        static_assert( std::ranges::output_range< Bitset, bool > );
+        static_assert( std::indirectly_copyable< iterator, iterator > );
+        static_assert( std::indirectly_swappable< iterator > );
+        static_assert( std::permutable< iterator > );
+        static_assert( std::sortable< iterator > );
+        static_assert( std::swappable< typename Bitset::reference > );
+#endif
+    }
+
+    // Uses the ranges algorithms which assign elements, with both a
+    // const and a non-const source.
+    static void
+    assigning_ranges_algorithms( const Bitset & b )
+    {
+#if defined( __cpp_lib_ranges )
+        Bitset c( b.size() );
+        std::ranges::fill( c, true );
+        BOOST_TEST( c.all() );
+        std::ranges::fill( c.begin(), c.end(), false );
+        BOOST_TEST( c.none() );
+        std::ranges::copy( b, c.begin() );
+        BOOST_TEST( c == b );
+
+        Bitset d( ~b );
+        std::ranges::copy( d, c.begin() );
+        BOOST_TEST( c == ~b );
+#else
+        (void)b;
+#endif
+    }
+
+    // Uses the ranges algorithms which swap elements.
+    static void
+    swapping_ranges_algorithms( const Bitset & b )
+    {
+#if defined( __cpp_lib_ranges )
+        Bitset c( b );
+        std::ranges::reverse( c );
+        BOOST_TEST( c == reversed( b ) );
+        std::ranges::sort( c );
+        BOOST_TEST( c == sorted( b ) );
+
+        if ( b.size() >= 2 ) {
+            c = b;
+            std::ranges::iter_swap( c.begin(), c.end() - 1 );
+            BOOST_TEST( c[ 0 ] == b[ b.size() - 1 ] && c[ b.size() - 1 ] == b[ 0 ] );
+            std::ranges::swap( c[ 0 ], c[ b.size() - 1 ] );
+            BOOST_TEST( c == b );
+        }
+#else
+        (void)b;
 #endif
     }
 
@@ -880,6 +1004,10 @@ struct bitset_test
 
         static_assert( std::is_trivially_copy_constructible< reference >::value, "" );
         static_assert( std::is_nothrow_copy_constructible< reference >::value, "" );
+        static_assert( std::is_assignable< const reference &, bool >::value, "" );
+#if defined( __cpp_lib_is_swappable )
+        static_assert( std::is_nothrow_swappable< reference >::value, "" );
+#endif
     }
 
     // operator[] and reference members

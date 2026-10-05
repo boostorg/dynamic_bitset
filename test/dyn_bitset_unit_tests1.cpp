@@ -264,6 +264,7 @@ run_test_cases()
     // test iterators
     Tests::value_initialized_iterators();
     Tests::iterator_concepts();
+    Tests::mutating_iterator_concepts();
     {
         bitset_type b;
         Tests::iterate_forward( b );
@@ -273,6 +274,10 @@ run_test_cases()
         Tests::iterate_with_cbegin_and_crbegin( b );
         Tests::write_through_iterators( b );
         Tests::mutating_std_algorithms( b );
+        Tests::swap_references( b );
+        Tests::swapping_std_algorithms( b );
+        Tests::assigning_ranges_algorithms( b );
+        Tests::swapping_ranges_algorithms( b );
         Tests::iterators_with_ranges( b );
     }
     {
@@ -284,6 +289,10 @@ run_test_cases()
         Tests::iterate_with_cbegin_and_crbegin( b );
         Tests::write_through_iterators( b );
         Tests::mutating_std_algorithms( b );
+        Tests::swap_references( b );
+        Tests::swapping_std_algorithms( b );
+        Tests::assigning_ranges_algorithms( b );
+        Tests::swapping_ranges_algorithms( b );
         Tests::iterators_with_ranges( b );
     }
     {
@@ -295,6 +304,10 @@ run_test_cases()
         Tests::iterate_with_cbegin_and_crbegin( b );
         Tests::write_through_iterators( b );
         Tests::mutating_std_algorithms( b );
+        Tests::swap_references( b );
+        Tests::swapping_std_algorithms( b );
+        Tests::assigning_ranges_algorithms( b );
+        Tests::swapping_ranges_algorithms( b );
         Tests::iterators_with_ranges( b );
     }
     {
@@ -307,6 +320,10 @@ run_test_cases()
         Tests::iterate_with_cbegin_and_crbegin( b );
         Tests::write_through_iterators( b );
         Tests::mutating_std_algorithms( b );
+        Tests::swap_references( b );
+        Tests::swapping_std_algorithms( b );
+        Tests::assigning_ranges_algorithms( b );
+        Tests::swapping_ranges_algorithms( b );
         Tests::iterators_with_ranges( b );
         Tests::mixed_iterator_operations( b );
     }

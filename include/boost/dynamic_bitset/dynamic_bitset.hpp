@@ -248,6 +248,27 @@ public:
     //!
     //!       If the j-th bit of `b` is set, clears the i-th bit of `b`.
     //!       Returns `b[ i ]`.
+    //!
+    //!     - `swap( b[ i ], b[ j ] )`
+    //!
+    //!       Exchanges the values of the i-th and the j-th bit of `b`.
+    //!
+    //!     The assignment from `bool` works also on a `const
+    //!     reference`. Thanks to this, `iterator` models
+    //!     `std::output_iterator` and `std::permutable`, so it can be
+    //!     used with the algorithms of `std::ranges` which assign or
+    //!     swap elements, such as `std::ranges::fill()` and
+    //!     `std::ranges::reverse()`. Classic algorithms such as
+    //!     `std::iter_swap()`, `std::reverse()` and `std::sort()` swap
+    //!     elements with an unqualified call to `swap()`, so, in
+    //!     practice, they work too (formally, `iterator` is not a
+    //!     LegacyForwardIterator).
+    //!
+    //!     Note that a copy of a `reference` refers to the same bit as
+    //!     the original. So, `std::swap( r1, r2 )`, where `r1` and `r2`
+    //!     are lvalues of type `reference`, doesn't exchange the two
+    //!     bits: it sets both to the value of `r2`. Call `swap()`
+    //!     unqualified (after `using std::swap;`, if needed) instead.
     // -----------------------------------------------------------------------
     class reference
     {
@@ -261,61 +282,90 @@ public:
     public:
         //!     Deleted address-of operator.
         // -------------------------------------------------------------------
-        void                                         operator&()                          = delete;
+        void                                               operator&()                          = delete;
 
         //!     Copy constructor.
         //!
         //!     Constructs a `reference` which refers to the same bit as
         //!     `other`.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20             reference( const reference & other ) = default;
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20                   reference( const reference & other ) = default;
 
         //!     See the class description.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20             operator bool() const;
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20                   operator bool() const noexcept;
 
         //!     See the class description.
         //!
         //!     \return The opposite of the value of `*this`.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool        operator~() const;
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool              operator~() const noexcept;
 
         //!     See the class description.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference & flip();
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference &       flip() noexcept;
 
         //!     See the class description.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference & operator=( bool x );
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference &       operator=( bool x ) noexcept;
+
+        //!     Assigns `x` to the bit which `*this` refers to.
+        //!
+        //!     This overload allows assigning through a `const
+        //!     reference`, as `std::indirectly_writable` requires. See
+        //!     the class description.
+        //!
+        //!     \return `*this`.
+        // -------------------------------------------------------------------
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 const reference & operator=( bool x ) const noexcept;
 
         //!     See the class description.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference & operator=( const reference & rhs );
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference &       operator=( const reference & rhs ) noexcept;
 
         //!     See the class description.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference & operator|=( bool x );
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference &       operator|=( bool x ) noexcept;
 
         //!     See the class description.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference & operator&=( bool x );
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference &       operator&=( bool x ) noexcept;
 
         //!     See the class description.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference & operator^=( bool x );
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference &       operator^=( bool x ) noexcept;
 
         //!     See the class description.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference & operator-=( bool x );
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference &       operator-=( bool x ) noexcept;
+
+        //!     Exchanges the values of the bits which `a` and `b` refer
+        //!     to.
+        //!
+        //!     This is found by argument-dependent lookup, so it is
+        //!     used by `swap( b[ i ], b[ j ] )` and by the standard
+        //!     algorithms which swap elements. See the class
+        //!     description.
+        // -------------------------------------------------------------------
+        //
+        // Being a non-template, this is preferred to std::swap() also
+        // when the arguments are lvalues.
+        friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
+        swap( reference a, reference b ) noexcept
+        {
+            const bool tmp = a;
+            a              = static_cast< bool >( b );
+            b              = tmp;
+        }
 
     private:
         block_type &                          m_block;
         const block_type                      m_mask;
 
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 void do_set();
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 void do_reset();
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 void do_flip();
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20 void do_assign( bool x );
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 void do_set() const noexcept;
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 void do_reset() const noexcept;
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 void do_flip() const noexcept;
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 void do_assign( bool x ) const noexcept;
     };
 
     //!     The type bool.
@@ -370,6 +420,8 @@ public:
     static_assert( std::bidirectional_iterator< typename buffer_type::iterator >, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
     static_assert( std::bidirectional_iterator< iterator > );
     static_assert( std::bidirectional_iterator< const_iterator > );
+    static_assert( std::output_iterator< iterator, bool > );
+    static_assert( std::permutable< iterator > );
 #else
     static_assert( std::is_base_of< std::bidirectional_iterator_tag, typename std::iterator_traits< typename buffer_type::iterator >::iterator_category >::value, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
 #endif

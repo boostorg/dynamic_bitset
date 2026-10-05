@@ -61,21 +61,21 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::reference( block_type 
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >::reference::
-                                 operator bool() const
+                                 operator bool() const noexcept
 {
     return ( m_block & m_mask ) != 0;
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-dynamic_bitset< Block, AllocatorOrContainer >::reference::operator~() const
+dynamic_bitset< Block, AllocatorOrContainer >::reference::operator~() const noexcept
 {
     return ( m_block & m_mask ) == 0;
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::reference &
-dynamic_bitset< Block, AllocatorOrContainer >::reference::flip()
+dynamic_bitset< Block, AllocatorOrContainer >::reference::flip() noexcept
 {
     do_flip();
     return *this;
@@ -83,7 +83,15 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::flip()
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::reference &
-dynamic_bitset< Block, AllocatorOrContainer >::reference::operator=( bool x )
+dynamic_bitset< Block, AllocatorOrContainer >::reference::operator=( bool x ) noexcept
+{
+    do_assign( x );
+    return *this;
+}
+
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 const typename dynamic_bitset< Block, AllocatorOrContainer >::reference &
+dynamic_bitset< Block, AllocatorOrContainer >::reference::operator=( bool x ) const noexcept
 {
     do_assign( x );
     return *this;
@@ -91,7 +99,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::operator=( bool x )
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::reference &
-dynamic_bitset< Block, AllocatorOrContainer >::reference::operator=( const reference & rhs )
+dynamic_bitset< Block, AllocatorOrContainer >::reference::operator=( const reference & rhs ) noexcept
 {
     do_assign( rhs );
     return *this;
@@ -99,7 +107,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::operator=( const refer
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::reference &
-dynamic_bitset< Block, AllocatorOrContainer >::reference::operator|=( bool x )
+dynamic_bitset< Block, AllocatorOrContainer >::reference::operator|=( bool x ) noexcept
 {
     if ( x ) {
         do_set();
@@ -109,7 +117,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::operator|=( bool x )
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::reference &
-dynamic_bitset< Block, AllocatorOrContainer >::reference::operator&=( bool x )
+dynamic_bitset< Block, AllocatorOrContainer >::reference::operator&=( bool x ) noexcept
 {
     if ( ! x ) {
         do_reset();
@@ -119,7 +127,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::operator&=( bool x )
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::reference &
-dynamic_bitset< Block, AllocatorOrContainer >::reference::operator^=( bool x )
+dynamic_bitset< Block, AllocatorOrContainer >::reference::operator^=( bool x ) noexcept
 {
     if ( x ) {
         do_flip();
@@ -129,7 +137,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::operator^=( bool x )
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::reference &
-dynamic_bitset< Block, AllocatorOrContainer >::reference::operator-=( bool x )
+dynamic_bitset< Block, AllocatorOrContainer >::reference::operator-=( bool x ) noexcept
 {
     if ( x ) {
         do_reset();
@@ -139,28 +147,28 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::operator-=( bool x )
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-dynamic_bitset< Block, AllocatorOrContainer >::reference::do_set()
+dynamic_bitset< Block, AllocatorOrContainer >::reference::do_set() const noexcept
 {
     m_block |= m_mask;
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-dynamic_bitset< Block, AllocatorOrContainer >::reference::do_reset()
+dynamic_bitset< Block, AllocatorOrContainer >::reference::do_reset() const noexcept
 {
     m_block &= ~m_mask;
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-dynamic_bitset< Block, AllocatorOrContainer >::reference::do_flip()
+dynamic_bitset< Block, AllocatorOrContainer >::reference::do_flip() const noexcept
 {
     m_block ^= m_mask;
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-dynamic_bitset< Block, AllocatorOrContainer >::reference::do_assign( bool x )
+dynamic_bitset< Block, AllocatorOrContainer >::reference::do_assign( bool x ) const noexcept
 {
     if ( x ) {
         do_set();
