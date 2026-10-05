@@ -399,6 +399,14 @@ public:
     //!     container provides LegacyBidirectionalIterators, this type
     //!     models `std::bidirectional_iterator`.
     //!
+    //!     The `iterator_category` of this type is that of the iterator
+    //!     type of the underlying container. However, its `reference`
+    //!     type is not a reference type (it is the proxy class
+    //!     `reference` for `iterator` and `bool` for `const_iterator`),
+    //!     so, formally, this type doesn't meet the requirements of a
+    //!     LegacyForwardIterator. There is no `operator->`, and the
+    //!     `pointer` type is `void`.
+    //!
     //!     In C++14 and later, a value-initialized iterator compares
     //!     equal to any other value-initialized iterator of the same
     //!     type.
@@ -1770,8 +1778,6 @@ public:
     typedef typename std::iterator_traits< Iterator >::iterator_category iterator_category;
     typedef bool                                 value_type;
     typedef std::ptrdiff_t                       difference_type;
-    typedef value_type *                         pointer;
-    typedef value_type &                         reference;
 
     static constexpr int                         bits_per_block = std::numeric_limits< typename std::iterator_traits< Iterator >::value_type >::digits;
 
@@ -1804,7 +1810,7 @@ class bit_iterator
 
 public:
     typedef typename DynamicBitset::reference                                                            reference;
-    typedef reference *                                                                                  pointer;
+    typedef void                                                                                         pointer;
     typedef typename bit_iterator_base< typename DynamicBitset::buffer_type::iterator >::difference_type difference_type;
 
     BOOST_DYNAMIC_BITSET_CONSTEXPR20                                                                     bit_iterator();
@@ -1831,7 +1837,7 @@ class const_bit_iterator
 public:
     typedef bool                                                                                               reference;
     typedef bool                                                                                               const_reference;
-    typedef const bool *                                                                                       pointer;
+    typedef void                                                                                               pointer;
     typedef typename bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >::difference_type difference_type;
 
     BOOST_DYNAMIC_BITSET_CONSTEXPR20                                                                           const_bit_iterator();
