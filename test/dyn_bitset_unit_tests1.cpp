@@ -54,41 +54,183 @@ public:
     }
 };
 
-// A std::vector whose iterators are raw pointers. It redefines only the
-// functions which the iterators of dynamic_bitset use.
-template< typename T >
+// A std::vector whose iterators are made from pointers: by default,
+// they are raw pointers. It redefines only the functions which the
+// iterators of dynamic_bitset use.
+template< typename T, typename Iterator = T *, typename ConstIterator = const T * >
 class pointer_vector
     : public std::vector< T >
 {
 public:
-    typedef T *       iterator;
-    typedef const T * const_iterator;
+    typedef Iterator      iterator;
+    typedef ConstIterator const_iterator;
 
     using std::vector< T >::vector;
 
     iterator
     begin()
     {
-        return this->data();
+        return iterator( this->data() );
     }
 
     iterator
     end()
     {
-        return this->data() + this->size();
+        return iterator( this->data() + this->size() );
     }
 
     const_iterator
     cbegin() const
     {
-        return this->data();
+        return const_iterator( this->data() );
     }
 
     const_iterator
     cend() const
     {
-        return this->data() + this->size();
+        return const_iterator( this->data() + this->size() );
     }
+};
+
+// An iterator whose difference type is narrower than std::ptrdiff_t.
+template< typename T >
+class short_difference_iterator
+{
+public:
+    typedef std::random_access_iterator_tag       iterator_category;
+    typedef typename std::remove_const< T >::type value_type;
+    typedef short                                 difference_type;
+    typedef T *                                   pointer;
+    typedef T &                                   reference;
+
+    short_difference_iterator()
+        : m_ptr()
+    {
+    }
+
+    explicit short_difference_iterator( T * ptr )
+        : m_ptr( ptr )
+    {
+    }
+
+    T &
+    operator*() const
+    {
+        return *m_ptr;
+    }
+
+    T &
+    operator[]( difference_type n ) const
+    {
+        return m_ptr[ n ];
+    }
+
+    short_difference_iterator &
+    operator++()
+    {
+        ++m_ptr;
+        return *this;
+    }
+
+    short_difference_iterator
+    operator++( int )
+    {
+        const short_difference_iterator old = *this;
+        ++m_ptr;
+        return old;
+    }
+
+    short_difference_iterator &
+    operator--()
+    {
+        --m_ptr;
+        return *this;
+    }
+
+    short_difference_iterator
+    operator--( int )
+    {
+        const short_difference_iterator old = *this;
+        --m_ptr;
+        return old;
+    }
+
+    short_difference_iterator &
+    operator+=( difference_type n )
+    {
+        m_ptr += n;
+        return *this;
+    }
+
+    short_difference_iterator &
+    operator-=( difference_type n )
+    {
+        m_ptr -= n;
+        return *this;
+    }
+
+    friend short_difference_iterator
+    operator+( short_difference_iterator it, difference_type n )
+    {
+        return it += n;
+    }
+
+    friend short_difference_iterator
+    operator+( difference_type n, short_difference_iterator it )
+    {
+        return it += n;
+    }
+
+    friend short_difference_iterator
+    operator-( short_difference_iterator it, difference_type n )
+    {
+        return it -= n;
+    }
+
+    friend difference_type
+    operator-( const short_difference_iterator & lhs, const short_difference_iterator & rhs )
+    {
+        return static_cast< difference_type >( lhs.m_ptr - rhs.m_ptr );
+    }
+
+    friend bool
+    operator==( const short_difference_iterator & lhs, const short_difference_iterator & rhs )
+    {
+        return lhs.m_ptr == rhs.m_ptr;
+    }
+
+    friend bool
+    operator!=( const short_difference_iterator & lhs, const short_difference_iterator & rhs )
+    {
+        return ! ( lhs == rhs );
+    }
+
+    friend bool
+    operator<( const short_difference_iterator & lhs, const short_difference_iterator & rhs )
+    {
+        return lhs.m_ptr < rhs.m_ptr;
+    }
+
+    friend bool
+    operator<=( const short_difference_iterator & lhs, const short_difference_iterator & rhs )
+    {
+        return ! ( rhs < lhs );
+    }
+
+    friend bool
+    operator>( const short_difference_iterator & lhs, const short_difference_iterator & rhs )
+    {
+        return rhs < lhs;
+    }
+
+    friend bool
+    operator>=( const short_difference_iterator & lhs, const short_difference_iterator & rhs )
+    {
+        return ! ( lhs < rhs );
+    }
+
+private:
+    T * m_ptr;
 };
 
 #define BOOST_BITSET_TEST_COUNT( x ) ( sizeof( x ) / sizeof( x[ 0 ] ) )
@@ -330,6 +472,12 @@ run_test_cases()
     {
         typedef boost::dynamic_bitset< Block, pointer_vector< Block > > Bitset;
         bitset_test< Bitset >::iterator_backward_offsets( Bitset( long_string ) );
+    }
+    {
+        // More bits than the maximum value of the difference type of the
+        // iterators of the underlying container.
+        typedef boost::dynamic_bitset< Block, pointer_vector< Block, short_difference_iterator< Block >, short_difference_iterator< const Block > > > Bitset;
+        bitset_test< Bitset >::iterator_backward_offsets( Bitset( 40000 ) );
     }
 
     //=====================================================================

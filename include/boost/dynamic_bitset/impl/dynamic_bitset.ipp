@@ -225,7 +225,7 @@ bit_iterator_base< Iterator >::decrement()
 
 template< typename Iterator >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-bit_iterator_base< Iterator >::add( typename std::iterator_traits< Iterator >::difference_type n )
+bit_iterator_base< Iterator >::add( difference_type n )
 {
     // q is d / bits_per_block rounded toward minus infinity. We compute
     // it, and the new bit index, without applying / or % to a negative
@@ -233,9 +233,13 @@ bit_iterator_base< Iterator >::add( typename std::iterator_traits< Iterator >::d
     // iterator backward by varying amounts), MSVC 19.44 (VS 2022 17.14)
     // at /O1 and /O2 computes the remainder of a negative multiple of
     // bits_per_block as -bits_per_block instead of zero.
+    //
+    // The offsets in bits are difference_type values. Only the offset
+    // in blocks, q, is converted to the difference type of Iterator,
+    // which can be narrower.
     const decltype( n ) d = m_bit_index + n;
     const decltype( n ) q = d >= 0 ? d / bits_per_block : -( ( -1 - d ) / bits_per_block ) - 1;
-    m_block_iterator += q;
+    m_block_iterator += static_cast< typename std::iterator_traits< Iterator >::difference_type >( q );
     m_bit_index = static_cast< int >( d - q * bits_per_block );
 }
 
@@ -283,11 +287,11 @@ operator>=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< 
 }
 
 template< typename Iterator >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 std::ptrdiff_t
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 std::intmax_t
                                  operator-( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
 {
-    return ( lhs.m_block_iterator - rhs.m_block_iterator ) * bit_iterator_base< Iterator >::bits_per_block
-         + lhs.m_bit_index - rhs.m_bit_index;
+    return static_cast< std::intmax_t >( lhs.m_block_iterator - rhs.m_block_iterator ) * bit_iterator_base< Iterator >::bits_per_block
+         + ( lhs.m_bit_index - rhs.m_bit_index );
 }
 
 template< typename DynamicBitset >
@@ -1396,10 +1400,18 @@ dynamic_bitset< Block, AllocatorOrContainer >::max_size() const noexcept
     // Because of that, I was tempted to not provide this function
     // at all, but the user could need it if they provide their own
     // allocator.
+    //
+    // The result is capped at the maximum value of difference_type, so
+    // that the difference of any two iterators is representable, and at
+    // that of size_type, which is the smaller one on 32-bit platforms.
+    // The cap is a whole number of blocks, so that the number of bits in
+    // the blocks of any bitset is representable too.
 
-    const size_type m = m_bits.max_size();
+    const size_type      m        = m_bits.max_size();
+    const std::uintmax_t diff_max = static_cast< std::uintmax_t >( ( std::numeric_limits< difference_type >::max )() );
+    const size_type      cap      = ( diff_max < size_type( -1 ) ? static_cast< size_type >( diff_max ) : size_type( -1 ) ) / bits_per_block * bits_per_block;
 
-    return m <= ( size_type( -1 ) / bits_per_block ) ? m * bits_per_block : size_type( -1 );
+    return m <= cap / bits_per_block ? m * bits_per_block : cap;
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -1413,7 +1425,12 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::capacity() const noexcept
 {
-    return m_bits.capacity() * bits_per_block;
+    // The container can have room for more blocks than a bitset may
+    // have, and their bits might not be representable.
+    const size_type c = m_bits.capacity();
+    const size_type m = max_size();
+
+    return c <= m / bits_per_block ? c * bits_per_block : m;
 }
 
 template< typename Block, typename AllocatorOrContainer >

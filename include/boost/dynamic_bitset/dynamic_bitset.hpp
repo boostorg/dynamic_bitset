@@ -22,6 +22,7 @@
 #include "boost/dynamic_bitset/config.hpp"
 #include "boost/dynamic_bitset/detail/dynamic_bitset.hpp"
 #include "boost/dynamic_bitset_fwd.hpp"
+#include <cstdint>
 #include <iosfwd>
 #include <iterator>
 #include <limits>
@@ -156,9 +157,9 @@ public:
     //!     A signed integral type that can represent the difference
     //!     between any two iterators into the same bitset. The same
     //!     type as `iterator::difference_type` and
-    //!     `const_iterator::difference_type`.
+    //!     `const_iterator::difference_type`. See \ref max_size().
     // -----------------------------------------------------------------------
-    typedef std::ptrdiff_t difference_type;
+    typedef std::intmax_t difference_type;
 
     //!     Note: Made public to cope with failures from many GCC and
     //!     Clang versions which seem to ignore the friend declarations
@@ -1470,7 +1471,13 @@ public:
     //!
     //!     \return
     //!     The maximum size of a `dynamic_bitset` object having the
-    //!     same type as `*this`. Note that if any `dynamic_bitset`
+    //!     same type as `*this`: the number of bits in the maximum
+    //!     number of blocks that the underlying container can hold or,
+    //!     if smaller, the largest multiple of `bits_per_block` that
+    //!     both `size_type` and `difference_type` can represent. Thanks
+    //!     to the bound on `difference_type`, the distance between any
+    //!     two iterators into the same bitset is representable as a
+    //!     `difference_type`. Note that if any `dynamic_bitset`
     //!     operation causes `size()` to exceed `max_size()` then
     //!     <em>the behavior is undefined</em>.
     //!
@@ -1777,7 +1784,7 @@ class bit_iterator_base
 public:
     typedef typename std::iterator_traits< Iterator >::iterator_category iterator_category;
     typedef bool                                 value_type;
-    typedef std::ptrdiff_t                       difference_type;
+    typedef std::intmax_t                        difference_type;
 
     static constexpr int                         bits_per_block = std::numeric_limits< typename std::iterator_traits< Iterator >::value_type >::digits;
 
@@ -1794,7 +1801,7 @@ public:
 protected:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void increment();
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void decrement();
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void add( typename std::iterator_traits< Iterator >::difference_type n );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void add( difference_type n );
 
     Iterator                              m_block_iterator;
     int                                   m_bit_index = 0;

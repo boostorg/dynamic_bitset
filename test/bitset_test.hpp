@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <assert.h> // <cassert> is sometimes macro-guarded :-(
 #include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <limits>
 #include <locale>
@@ -762,11 +763,15 @@ struct bitset_test
         }
     }
 
+    // Checks that max_size() is a whole number of blocks, and that the
+    // difference of any two iterators is representable.
     static void
     max_size( const Bitset & b )
     {
         BOOST_TEST( b.max_size() > 0 );
         BOOST_TEST( b.max_size() >= b.size() );
+        BOOST_TEST( b.max_size() % bits_per_block == 0 );
+        BOOST_TEST( b.max_size() <= static_cast< std::uintmax_t >( ( std::numeric_limits< typename Bitset::difference_type >::max )() ) );
     }
 
     // move constructor (absent from std::bitset)
