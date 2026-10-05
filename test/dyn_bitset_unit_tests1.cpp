@@ -646,6 +646,7 @@ run_test_cases()
     }
     //=====================================================================
     // Test bracket operator
+    Tests::reference_traits();
     {
         bitset_type         b1;
         std::vector< bool > bitvec1;

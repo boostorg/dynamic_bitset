@@ -60,9 +60,6 @@ dynamic_bitset< Block, AllocatorOrContainer >::reference::reference( block_type 
 }
 
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >::reference::reference( const reference & other ) = default;
-
-template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >::reference::
                                  operator bool() const
 {

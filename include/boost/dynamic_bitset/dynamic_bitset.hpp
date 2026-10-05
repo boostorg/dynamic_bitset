@@ -261,14 +261,14 @@ public:
     public:
         //!     Deleted address-of operator.
         // -------------------------------------------------------------------
-        void                                         operator&() = delete;
+        void                                         operator&()                          = delete;
 
         //!     Copy constructor.
         //!
         //!     Constructs a `reference` which refers to the same bit as
         //!     `other`.
         // -------------------------------------------------------------------
-        BOOST_DYNAMIC_BITSET_CONSTEXPR20             reference( const reference & other );
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20             reference( const reference & other ) = default;
 
         //!     See the class description.
         // -------------------------------------------------------------------

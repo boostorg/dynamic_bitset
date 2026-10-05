@@ -873,6 +873,15 @@ struct bitset_test
         }
     }
 
+    static void
+    reference_traits()
+    {
+        typedef typename Bitset::reference reference;
+
+        static_assert( std::is_trivially_copy_constructible< reference >::value, "" );
+        static_assert( std::is_nothrow_copy_constructible< reference >::value, "" );
+    }
+
     // operator[] and reference members
     // PRE: b[i] == bit_vec[i]
     static void
