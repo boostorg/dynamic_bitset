@@ -14,7 +14,8 @@ import-search /boost/config/checks ;
 import config : requires ;
 
 project : requirements <library>/boost/dynamic_bitset//boost_dynamic_bitset
-                       <toolset>msvc:<cxxflags>/bigobj ;
+                       <toolset>msvc:<cxxflags>/bigobj
+                       <target-os>windows,<toolset>gcc:<cxxflags>-Wa,-mbig-obj ;
 
 test-suite dynamic_bitset :
 

@@ -49,8 +49,14 @@ as `(n >> i) & 1`.
 Because of the proxy reference type, `dynamic_bitset` is not a
 https://en.cppreference.com/w/cpp/named_req/Container.html[Container] and its
 iterators do not satisfy the requirements for a LegacyForwardIterator. This
-means that its iterators are not usable with many standard algorithms. However,
-`dynamic_bitset` provides C++20 iterators which can be used with ranges.
+means that, formally, its iterators are not usable with many standard
+algorithms. In practice, algorithms such as `std::reverse()` and `std::sort()`
+generally work, because they only need to read, assign and swap the elements,
+and the proxy reference supports all of that (swapping is done by an
+unqualified call to `swap()`). Moreover, `dynamic_bitset` provides C++20
+iterators, which can be used with ranges, including the algorithms which modify
+the elements, such as `std::ranges::fill()`, `std::ranges::reverse()` and
+`std::ranges::sort()`.
 
 Some people prefer the name "toggle" to "flip". The name "flip" was chosen
 because that is the name used in `std::bitset`. In fact, most of the function
