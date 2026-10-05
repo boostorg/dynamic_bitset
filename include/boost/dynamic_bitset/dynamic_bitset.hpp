@@ -346,6 +346,10 @@ public:
     //!     \copydetails iterator
     //!
     //!     An `iterator` is implicitly convertible to a `const_iterator`.
+    //!     Also, an `iterator` and a `const_iterator` can be the operands
+    //!     of any of `==`, `!=`, `<`, `<=`, `>`, `>=` and binary `-`
+    //!     that `const_iterator` supports, in either order; the
+    //!     `iterator` is converted to a `const_iterator`.
     // -----------------------------------------------------------------------
     typedef detail::dynamic_bitset_impl::const_bit_iterator< dynamic_bitset > const_iterator;
 
@@ -356,7 +360,9 @@ public:
     //!     A reverse read-only iterator into the bitset.
     //!
     //!     A `reverse_iterator` is implicitly convertible to a
-    //!     `const_reverse_iterator`.
+    //!     `const_reverse_iterator`, and the two types can be mixed in
+    //!     comparisons and subtractions like `iterator` and
+    //!     `const_iterator`.
     // -----------------------------------------------------------------------
     typedef std::reverse_iterator< const_iterator >                           const_reverse_iterator;
 
@@ -1752,6 +1758,8 @@ template< typename DynamicBitset >
 class const_bit_iterator
     : public bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator >
 {
+    typedef bit_iterator_base< typename DynamicBitset::buffer_type::const_iterator > base_type;
+
 public:
     typedef bool                                                                                               reference;
     typedef bool                                                                                               const_reference;
@@ -1770,6 +1778,54 @@ public:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator &                                                      operator+=( difference_type n );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator &                                                      operator-=( difference_type n );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reference                                                           operator[]( difference_type n ) const;
+
+    // These are non-template friends (unlike the operators of
+    // bit_iterator_base, which are templates), so they are viable also
+    // when one of the operands is a bit_iterator, which converts to a
+    // const_bit_iterator: that's what allows comparing and subtracting
+    // an iterator and a const_iterator. Being non-template friends of a
+    // class template, they must be defined in the class.
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
+    operator==( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+    {
+        return static_cast< const base_type & >( lhs ) == static_cast< const base_type & >( rhs );
+    }
+
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
+    operator!=( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+    {
+        return ! ( lhs == rhs );
+    }
+
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
+    operator<( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+    {
+        return static_cast< const base_type & >( lhs ) < static_cast< const base_type & >( rhs );
+    }
+
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
+    operator<=( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+    {
+        return ! ( rhs < lhs );
+    }
+
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
+    operator>( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+    {
+        return rhs < lhs;
+    }
+
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
+    operator>=( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+    {
+        return ! ( lhs < rhs );
+    }
+
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 difference_type
+    operator-( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+    {
+        return static_cast< const base_type & >( lhs ) - static_cast< const base_type & >( rhs );
+    }
 };
 
 } // dynamic_bitset_impl

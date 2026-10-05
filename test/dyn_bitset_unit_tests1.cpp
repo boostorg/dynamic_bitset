@@ -308,6 +308,7 @@ run_test_cases()
         Tests::write_through_iterators( b );
         Tests::mutating_std_algorithms( b );
         Tests::iterators_with_ranges( b );
+        Tests::mixed_iterator_operations( b );
     }
     {
         typedef boost::dynamic_bitset< Block, pointer_vector< Block > > Bitset;

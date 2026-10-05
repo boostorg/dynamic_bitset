@@ -494,6 +494,40 @@ struct bitset_test
 #endif
     }
 
+    // Compares and subtracts iterators and const_iterators into a copy
+    // of b, and does the same with the corresponding reverse iterators.
+    static void
+    mixed_iterator_operations( const Bitset & b )
+    {
+        Bitset               c( b );
+        const std::ptrdiff_t n = static_cast< std::ptrdiff_t >( c.size() );
+        compare_mixed( c.begin(), c.cbegin(), 0 );
+        compare_mixed( c.begin(), c.cend(), -n );
+        compare_mixed( c.rend(), c.crbegin(), n );
+    }
+
+    // Checks all the comparisons between x and y, in both orders, and
+    // their differences, given that x - y is expected to be d.
+    template< typename Iterator, typename ConstIterator >
+    static void
+    compare_mixed( Iterator x, ConstIterator y, std::ptrdiff_t d )
+    {
+        BOOST_TEST( ( x == y ) == ( d == 0 ) );
+        BOOST_TEST( ( y == x ) == ( d == 0 ) );
+        BOOST_TEST( ( x != y ) == ( d != 0 ) );
+        BOOST_TEST( ( y != x ) == ( d != 0 ) );
+        BOOST_TEST( ( x < y ) == ( d < 0 ) );
+        BOOST_TEST( ( y < x ) == ( d > 0 ) );
+        BOOST_TEST( ( x <= y ) == ( d <= 0 ) );
+        BOOST_TEST( ( y <= x ) == ( d >= 0 ) );
+        BOOST_TEST( ( x > y ) == ( d > 0 ) );
+        BOOST_TEST( ( y > x ) == ( d < 0 ) );
+        BOOST_TEST( ( x >= y ) == ( d >= 0 ) );
+        BOOST_TEST( ( y >= x ) == ( d <= 0 ) );
+        BOOST_TEST( x - y == d );
+        BOOST_TEST( y - x == -d );
+    }
+
     static void
     to_block_range( const Bitset & b /*, BlockOutputIterator result*/ )
     {
