@@ -153,6 +153,13 @@ public:
     // -----------------------------------------------------------------------
     typedef std::size_t size_type;
 
+    //!     A signed integral type that can represent the difference
+    //!     between any two iterators into the same bitset. The same
+    //!     type as `iterator::difference_type` and
+    //!     `const_iterator::difference_type`.
+    // -----------------------------------------------------------------------
+    typedef std::ptrdiff_t difference_type;
+
     //!     Note: Made public to cope with failures from many GCC and
     //!     Clang versions which seem to ignore the friend declarations
     //!     of `bit_iterator` and `const_bit_iterator`.
@@ -368,6 +375,13 @@ public:
         BOOST_DYNAMIC_BITSET_CONSTEXPR20 void do_assign( bool x ) const noexcept;
     };
 
+    //!     The type bool, i.e. the type of the value of a bit.
+    //!
+    //!     Among other things, this allows using `std::back_inserter()`
+    //!     with a bitset, to append bits with `push_back()`.
+    // -----------------------------------------------------------------------
+    typedef bool value_type;
+
     //!     The type bool.
     // -----------------------------------------------------------------------
     typedef bool const_reference;
@@ -415,6 +429,8 @@ public:
     //!     `const_iterator`.
     // -----------------------------------------------------------------------
     typedef std::reverse_iterator< const_iterator >                           const_reverse_iterator;
+
+    static_assert( std::is_same< difference_type, typename iterator::difference_type >::value && std::is_same< difference_type, typename const_iterator::difference_type >::value, "difference_type differs from the difference type of the iterators" );
 
 #if defined( __cpp_lib_ranges )
     static_assert( std::bidirectional_iterator< typename buffer_type::iterator >, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
