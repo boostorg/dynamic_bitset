@@ -17,6 +17,7 @@
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
 #include <cstdlib>
 #include <limits>
+#include <list>
 #include <new>
 #if ! defined( BOOST_NO_CXX17_HDR_MEMORY_RESOURCE )
 #    include <memory_resource>
@@ -231,6 +232,35 @@ public:
 
 private:
     T * m_ptr;
+};
+
+// A std::list with the members which dynamic_bitset needs from a
+// container, so that the iterators of a bitset which uses it are only
+// bidirectional.
+template< typename T >
+class list_with_subscript
+    : public std::list< T >
+{
+public:
+    using std::list< T >::list;
+
+    T &
+    operator[]( std::size_t i )
+    {
+        return *std::next( this->begin(), static_cast< std::ptrdiff_t >( i ) );
+    }
+
+    const T &
+    operator[]( std::size_t i ) const
+    {
+        return *std::next( this->begin(), static_cast< std::ptrdiff_t >( i ) );
+    }
+
+    std::size_t
+    capacity() const
+    {
+        return this->size();
+    }
 };
 
 #define BOOST_BITSET_TEST_COUNT( x ) ( sizeof( x ) / sizeof( x[ 0 ] ) )
@@ -478,6 +508,12 @@ run_test_cases()
         // iterators of the underlying container.
         typedef boost::dynamic_bitset< Block, pointer_vector< Block, short_difference_iterator< Block >, short_difference_iterator< const Block > > > Bitset;
         bitset_test< Bitset >::iterator_backward_offsets( Bitset( 40000 ) );
+    }
+    {
+        typedef boost::dynamic_bitset< Block, list_with_subscript< Block > > Bitset;
+        bitset_test< Bitset >::bidirectional_iterators( Bitset() );
+        bitset_test< Bitset >::bidirectional_iterators( Bitset( 1, 1ul ) );
+        bitset_test< Bitset >::bidirectional_iterators( Bitset( 3 * Bitset::bits_per_block + 5, 0x5A5Aul ) );
     }
 
     //=====================================================================
