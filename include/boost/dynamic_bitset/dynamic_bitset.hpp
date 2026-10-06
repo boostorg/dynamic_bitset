@@ -1719,7 +1719,6 @@ public:
 private:
     static constexpr int                              ulong_width = std::numeric_limits< unsigned long >::digits;
 
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & range_operation( size_type pos, size_type len, Block ( *partial_block_operation )( Block, size_type, size_type ), Block ( *full_block_operation )( Block ) );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void             m_zero_unused_bits();
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             m_check_invariants() const;
     template< typename Buffer >
@@ -1736,13 +1735,31 @@ private:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block     bit_mask( size_type first, size_type last ) noexcept;
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block     set_block_bits( Block block, size_type first, size_type last, bool val ) noexcept;
 
-    // Functions for operations on ranges
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block     set_block_partial( Block block, size_type first, size_type last ) noexcept;
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block     set_block_full( Block ) noexcept;
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block     reset_block_partial( Block block, size_type first, size_type last ) noexcept;
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block     reset_block_full( Block ) noexcept;
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block     flip_block_partial( Block block, size_type first, size_type last ) noexcept;
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block     flip_block_full( Block block ) noexcept;
+    template< typename Operation >
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & range_operation( size_type pos, size_type len );
+
+    // The operations for range_operation(). partial() applies to the
+    // bits from first to last (inclusive) of block, full() to count
+    // whole blocks, starting from the one at first. Passing them as a
+    // template argument, rather than as function pointers, ensures that
+    // they are never called indirectly.
+    struct set_operation
+    {
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block partial( Block block, size_type first, size_type last ) noexcept;
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 static void  full( typename buffer_type::iterator first, size_type count );
+    };
+
+    struct reset_operation
+    {
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block partial( Block block, size_type first, size_type last ) noexcept;
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 static void  full( typename buffer_type::iterator first, size_type count );
+    };
+
+    struct flip_operation
+    {
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 static Block partial( Block block, size_type first, size_type last ) noexcept;
+        BOOST_DYNAMIC_BITSET_CONSTEXPR20 static void  full( typename buffer_type::iterator first, size_type count );
+    };
 
     template< typename T >
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void dispatch_init( T num_bits, unsigned long value, detail::dynamic_bitset_impl::value_to_type< true > );

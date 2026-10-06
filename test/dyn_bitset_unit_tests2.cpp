@@ -393,6 +393,26 @@ run_test_cases()
         bitset_type b( long_string );
         Tests::flip_segment( b, 3, 7 );
     }
+    //=====================================================================
+    // Test b.set(pos, len, value), b.reset(pos, len) and b.flip(pos, len)
+    // with each end of the range on, or next to, a block boundary. This
+    // includes the case of two adjacent partial blocks, with no full
+    // block between them.
+    {
+        const std::size_t bpb    = bits_per_block;
+        const std::size_t ends[] = { 0, 1, bpb - 1, bpb, bpb + 1, 2 * bpb - 1, 2 * bpb, 2 * bpb + 1, 3 * bpb - 1, 3 * bpb, 3 * bpb + 1 };
+        bitset_type       b( long_string );
+        for ( std::size_t pos : ends ) {
+            for ( std::size_t end : ends ) {
+                if ( pos <= end ) {
+                    Tests::set_segment( b, pos, end - pos, true );
+                    Tests::set_segment( b, pos, end - pos, false );
+                    Tests::reset_segment( b, pos, end - pos );
+                    Tests::flip_segment( b, pos, end - pos );
+                }
+            }
+        }
+    }
 }
 
 int
