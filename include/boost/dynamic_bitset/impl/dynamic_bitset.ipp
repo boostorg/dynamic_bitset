@@ -1494,16 +1494,25 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrCont
 dynamic_bitset< Block, AllocatorOrContainer >::m_do_find_from( size_type first_block, bool value ) const
 {
     typedef typename std::iterator_traits< typename buffer_type::const_iterator >::difference_type block_difference_type;
-    size_type i = std::distance( m_bits.begin(), std::find_if( std::next( m_bits.begin(), static_cast< block_difference_type >( first_block ) ), m_bits.end(), value ? m_not_empty : m_not_full ) );
 
-    if ( i >= num_blocks() ) {
+    BOOST_ASSERT( first_block <= num_blocks() );
+
+    // We used std::find_if(), here, with a function pointer predicate,
+    // but that cost a call per block.
+    const Block                                skipped = value ? Block( 0 ) : Block( -1 );
+    const typename buffer_type::const_iterator last    = m_bits.end();
+    typename buffer_type::const_iterator       it      = std::next( m_bits.begin(), static_cast< block_difference_type >( first_block ) );
+    while ( it != last && *it == skipped ) {
+        ++it;
+    }
+
+    if ( it == last ) {
         return npos; // not found
     }
 
-    const Block b = value
-                      ? m_bits[ i ]
-                      : m_bits[ i ] ^ Block( -1 );
-    return i * bits_per_block + static_cast< size_type >( detail::dynamic_bitset_impl::lowest_bit( b ) );
+    // *it ^ skipped has a one wherever *it has a bit with value `value`.
+    const size_type i = static_cast< size_type >( std::distance( m_bits.begin(), it ) );
+    return i * bits_per_block + static_cast< size_type >( detail::dynamic_bitset_impl::lowest_bit( *it ^ skipped ) );
 }
 
 template< typename Block, typename AllocatorOrContainer >
