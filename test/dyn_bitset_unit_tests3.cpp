@@ -518,6 +518,28 @@ run_test_cases()
         Tests::find_pos( b, b.npos );
         Tests::find_pos( b, b.npos, false );
     }
+    {
+        // all-0s (all-1s) bitsets with a single 1 (0), or none, searched
+        // from a few positions on, or next to, a block boundary, so that
+        // the search may have to skip whole blocks; the last block is
+        // only partially used
+        const typename bitset_type::size_type bpb      = bitset_type::bits_per_block;
+        const typename bitset_type::size_type sz       = 4 * bpb - 1;
+        const typename bitset_type::size_type starts[] = { 0, bpb - 1, bpb, bpb + 1 };
+        for ( typename bitset_type::size_type i = 0; i <= sz; ++i ) {
+            bitset_type b( sz );
+            if ( i < sz ) {
+                b.set( i );
+            }
+            for ( typename bitset_type::size_type pos : starts ) {
+                Tests::find_pos( b, pos );
+            }
+            b.flip();
+            for ( typename bitset_type::size_type pos : starts ) {
+                Tests::find_pos( b, pos, false );
+            }
+        }
+    }
     //=====================================================================
     // Test operator==
     {
