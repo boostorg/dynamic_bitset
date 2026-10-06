@@ -135,6 +135,14 @@ run_test_cases()
             Tests::shift_left_assignment( b, non_multiple );
         }
     }
+    { // case pos is any multiple of bits_per_block up to size()
+        const bitset_type bitsets[] = { bitset_type( long_string ), bitset_type( long_string.substr( 0, 3 * bits_per_block ) ) };
+        for ( const bitset_type & b : bitsets ) {
+            for ( std::size_t pos = 0; pos <= b.size(); pos += bits_per_block ) {
+                Tests::shift_left_assignment( b, pos );
+            }
+        }
+    }
     { // case pos == size()/2
         std::size_t                    pos = long_string.size() / 2;
         bitset_type b( long_string );
@@ -173,6 +181,14 @@ run_test_cases()
 
             Tests::shift_right_assignment( b, multiple );
             Tests::shift_right_assignment( b, non_multiple );
+        }
+    }
+    { // case pos is any multiple of bits_per_block up to size()
+        const bitset_type bitsets[] = { bitset_type( long_string ), bitset_type( long_string.substr( 0, 3 * bits_per_block ) ) };
+        for ( const bitset_type & b : bitsets ) {
+            for ( std::size_t pos = 0; pos <= b.size(); pos += bits_per_block ) {
+                Tests::shift_right_assignment( b, pos );
+            }
         }
     }
     { // case pos == size()/2
