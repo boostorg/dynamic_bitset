@@ -1076,9 +1076,9 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
                                  dynamic_bitset< Block, AllocatorOrContainer >::set( size_type pos, size_type len, bool val )
 {
     if ( val ) {
-        return range_operation( pos, len, set_block_partial, set_block_full );
+        return range_operation< set_operation >( pos, len );
     } else {
-        return range_operation( pos, len, reset_block_partial, reset_block_full );
+        return range_operation< reset_operation >( pos, len );
     }
 }
 
@@ -1110,7 +1110,7 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
                                  dynamic_bitset< Block, AllocatorOrContainer >::reset( size_type pos, size_type len )
 {
-    return range_operation( pos, len, reset_block_partial, reset_block_full );
+    return range_operation< reset_operation >( pos, len );
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -1134,7 +1134,7 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
                                  dynamic_bitset< Block, AllocatorOrContainer >::flip( size_type pos, size_type len )
 {
-    return range_operation( pos, len, flip_block_partial, flip_block_full );
+    return range_operation< flip_operation >( pos, len );
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -1946,10 +1946,12 @@ dynamic_bitset< Block, AllocatorOrContainer >::m_highest_block() const
 }
 
 template< typename Block, typename AllocatorOrContainer >
+template< typename Operation >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
-                                 dynamic_bitset< Block, AllocatorOrContainer >::range_operation(
-    size_type pos, size_type len, Block ( *partial_block_operation )( Block, size_type, size_type ), Block ( *full_block_operation )( Block ) )
+                                 dynamic_bitset< Block, AllocatorOrContainer >::range_operation( size_type pos, size_type len )
 {
+    typedef typename std::iterator_traits< typename buffer_type::iterator >::difference_type block_difference_type;
+
     BOOST_ASSERT( pos + len <= m_num_bits );
 
     // Do nothing in case of zero length
@@ -1971,7 +1973,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
 
     if ( first_block == last_block ) {
         // Filling only a sub-block of a block
-        m_bits[ first_block ] = partial_block_operation( m_bits[ first_block ], first_bit_index, last_bit_index );
+        m_bits[ first_block ] = Operation::partial( m_bits[ first_block ], first_bit_index, last_bit_index );
     } else {
         // Check if the corner blocks won't be fully filled with 'val'
         const size_type first_block_shift = bit_index( pos ) ? 1 : 0;
@@ -1984,18 +1986,18 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
         const size_type first_full_block  = first_block + first_block_shift;
         const size_type last_full_block   = last_block - last_block_shift;
 
-        for ( size_type i = first_full_block; i <= last_full_block; ++i ) {
-            m_bits[ i ] = full_block_operation( m_bits[ i ] );
-        }
+        // Note that there are no full blocks if the first and the last
+        // blocks are adjacent and both partial.
+        Operation::full( std::next( m_bits.begin(), static_cast< block_difference_type >( first_full_block ) ), last_full_block + 1 - first_full_block );
 
         // Fill the first block from the 'first' bit index to the end
         if ( first_block_shift ) {
-            m_bits[ first_block ] = partial_block_operation( m_bits[ first_block ], first_bit_index, bits_per_block - 1 );
+            m_bits[ first_block ] = Operation::partial( m_bits[ first_block ], first_bit_index, bits_per_block - 1 );
         }
 
         // Fill the last block from the start to the 'last' bit index
         if ( last_block_shift ) {
-            m_bits[ last_block ] = partial_block_operation( m_bits[ last_block ], 0, last_bit_index );
+            m_bits[ last_block ] = Operation::partial( m_bits[ last_block ], 0, last_bit_index );
         }
     }
 
@@ -2130,10 +2132,10 @@ dynamic_bitset< Block, AllocatorOrContainer >::set_block_bits(
     }
 }
 
-// Functions for operations on ranges
+// Operations for range_operation()
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 Block
-dynamic_bitset< Block, AllocatorOrContainer >::set_block_partial(
+dynamic_bitset< Block, AllocatorOrContainer >::set_operation::partial(
     Block     block,
     size_type first,
     size_type last ) noexcept
@@ -2142,15 +2144,17 @@ dynamic_bitset< Block, AllocatorOrContainer >::set_block_partial(
 }
 
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 Block
-dynamic_bitset< Block, AllocatorOrContainer >::set_block_full( Block ) noexcept
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
+dynamic_bitset< Block, AllocatorOrContainer >::set_operation::full(
+    typename buffer_type::iterator first,
+    size_type                      count )
 {
-    return Block( -1 );
+    std::fill_n( first, count, Block( -1 ) );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 Block
-dynamic_bitset< Block, AllocatorOrContainer >::reset_block_partial(
+dynamic_bitset< Block, AllocatorOrContainer >::reset_operation::partial(
     Block     block,
     size_type first,
     size_type last ) noexcept
@@ -2159,15 +2163,17 @@ dynamic_bitset< Block, AllocatorOrContainer >::reset_block_partial(
 }
 
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 Block
-dynamic_bitset< Block, AllocatorOrContainer >::reset_block_full( Block ) noexcept
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
+dynamic_bitset< Block, AllocatorOrContainer >::reset_operation::full(
+    typename buffer_type::iterator first,
+    size_type                      count )
 {
-    return 0;
+    std::fill_n( first, count, Block( 0 ) );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 Block
-dynamic_bitset< Block, AllocatorOrContainer >::flip_block_partial(
+dynamic_bitset< Block, AllocatorOrContainer >::flip_operation::partial(
     Block     block,
     size_type first,
     size_type last ) noexcept
@@ -2176,10 +2182,18 @@ dynamic_bitset< Block, AllocatorOrContainer >::flip_block_partial(
 }
 
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 Block
-dynamic_bitset< Block, AllocatorOrContainer >::flip_block_full( Block block ) noexcept
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
+dynamic_bitset< Block, AllocatorOrContainer >::flip_operation::full(
+    typename buffer_type::iterator first,
+    size_type                      count )
 {
-    return ~block;
+    // We don't write *( first + i ), because the container iterators
+    // are only required to be bidirectional. And we loop on a count,
+    // rather than on a pair of iterators, because MSVC vectorizes only
+    // the former.
+    for ( size_type i = 0; i < count; ++i, ++first ) {
+        *first = ~*first;
+    }
 }
 
 template< typename Block, typename AllocatorOrContainer >
