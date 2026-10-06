@@ -1028,7 +1028,8 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
                                  dynamic_bitset< Block, AllocatorOrContainer >::operator<<( size_type n ) const
 {
     dynamic_bitset r( *this );
-    return r <<= n;
+    r <<= n;
+    return r;
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -1036,7 +1037,8 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
                                  dynamic_bitset< Block, AllocatorOrContainer >::operator>>( size_type n ) const
 {
     dynamic_bitset r( *this );
-    return r >>= n;
+    r >>= n;
+    return r;
 }
 
 //-----------------------------------------------------------------------------
@@ -1838,7 +1840,8 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
                                  operator&( const dynamic_bitset< Block, AllocatorOrContainer > & x, const dynamic_bitset< Block, AllocatorOrContainer > & y )
 {
     dynamic_bitset< Block, AllocatorOrContainer > b( x );
-    return b &= y;
+    b &= y;
+    return b;
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -1846,7 +1849,8 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
                                  operator|( const dynamic_bitset< Block, AllocatorOrContainer > & x, const dynamic_bitset< Block, AllocatorOrContainer > & y )
 {
     dynamic_bitset< Block, AllocatorOrContainer > b( x );
-    return b |= y;
+    b |= y;
+    return b;
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -1854,7 +1858,8 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
                                  operator^( const dynamic_bitset< Block, AllocatorOrContainer > & x, const dynamic_bitset< Block, AllocatorOrContainer > & y )
 {
     dynamic_bitset< Block, AllocatorOrContainer > b( x );
-    return b ^= y;
+    b ^= y;
+    return b;
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -1862,7 +1867,8 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
                                  operator-( const dynamic_bitset< Block, AllocatorOrContainer > & x, const dynamic_bitset< Block, AllocatorOrContainer > & y )
 {
     dynamic_bitset< Block, AllocatorOrContainer > b( x );
-    return b -= y;
+    b -= y;
+    return b;
 }
 
 //-----------------------------------------------------------------------------
