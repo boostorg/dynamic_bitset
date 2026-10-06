@@ -564,11 +564,15 @@ public:
     //!     13ul)`.
     //!
     //!     \pre
-    //!     `pos <= s.size()` and the characters used to initialize the
-    //!     bits compare equal to either `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '0' )`
-    //!     or `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '1' )`. E.g.:
+    //!     `pos <= s.size()` and each character of `s` used to
+    //!     initialize a bit compares equal, according to `Traits::eq`,
+    //!     to either the digit zero or the digit one of `CharT`. These
+    //!     digits are `'0'` and `'1'` with the encoding prefix of
+    //!     `CharT` (e.g. `L'0'` and `L'1'` for `wchar_t`), or
+    //!     `CharT( '0' )` and `CharT( '1' )` if `CharT` has no encoding
+    //!     prefix (e.g. for `char`). Unlike the digits of the stream
+    //!     operators, they don't depend on any locale. E.g.:
     //!     `dynamic_bitset<> b( std::string( "10xyz" ), 0, 2 ); // OK`.
-
     //!
     //!     \param s The string to construct from.
     //!     \param pos The start position in the string.
@@ -579,7 +583,7 @@ public:
     //!     \param alloc The allocator to use.
     // -----------------------------------------------------------------------
     template< typename CharT, typename Traits, typename Alloc >
-    explicit dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = ( std::basic_string< CharT, Traits, Alloc >::npos ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = ( std::basic_string< CharT, Traits, Alloc >::npos ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
     //!     Similar to the constructor from a `basic_string`, but takes
     //!     a pointer to a C-style string (and doesn't take a `pos`).
@@ -590,9 +594,10 @@ public:
     //!     to the corresponding characters in `s`.
     //!
     //!     \pre
-    //!     The characters in `s` that are used to initialize the bits
-    //!     compare equal to either `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '0' )`
-    //!     or `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '1' )`. E.g.:
+    //!     Each character of `s` used to initialize a bit compares
+    //!     equal, according to `std::char_traits< CharT >::eq`, to
+    //!     either the digit zero or the digit one of `CharT`, as
+    //!     defined for the constructor from a `basic_string`. E.g.:
     //!     `dynamic_bitset<> b( "10xyz", 2 ); // OK`.
     //!
     //!     \param s The string to construct from.
@@ -603,7 +608,7 @@ public:
     //!     \param alloc The allocator to use.
     // -----------------------------------------------------------------------
     template< typename CharT >
-    explicit dynamic_bitset( const CharT * s, std::size_t n = std::size_t( -1 ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const CharT * s, std::size_t n = std::size_t( -1 ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
 #if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
 
@@ -622,9 +627,10 @@ public:
     //!     implementation supports doing so for its standard library.
     //!
     //!     \pre
-    //!     The characters in `sv` that are use to initialize the bits
-    //!     compare equal to either `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '0' )`
-    //!     or `std::use_facet< std::ctype< CharT > >( std::locale() ).widen( '1' )`. E.g.:
+    //!     Each character of `sv` used to initialize a bit compares
+    //!     equal, according to `Traits::eq`, to either the digit zero
+    //!     or the digit one of `CharT`, as defined for the constructor
+    //!     from a `basic_string`. E.g.:
     //!     `dynamic_bitset<> b( std::string_view( "10xyz", 2 ) ); // OK`.
     //!
     //!     \param sv The basic_string_view to construct from.
@@ -634,7 +640,7 @@ public:
     //!     \param alloc The allocator to use.
     // -----------------------------------------------------------------------
     template< typename CharT, typename Traits >
-    explicit dynamic_bitset( std::basic_string_view< CharT, Traits > sv, size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( std::basic_string_view< CharT, Traits > sv, size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
 #endif
 
@@ -2257,10 +2263,17 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void swap( dynamic_bitset< Block, AllocatorOrContainer > & a, dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept( noexcept( a.swap( b ) ) );
 
-//!     Copies a representation of `b` into the string `s`.
+//!     Replaces the contents of the string `s` with a representation
+//!     of `b`.
 //!
-//!     Character position `i` in the string corresponds to bit position
-//!     `b.size() - 1 - i`.
+//!     After the call, `s.size() == b.size()`, and character position
+//!     `i` in `s` corresponds to bit position `b.size() - 1 - i`: it is
+//!     the digit one of `CharT` if that bit is set, and the digit zero
+//!     of `CharT` otherwise, where `CharT` is `StringT::value_type`.
+//!     These digits are the ones defined for the string constructors of
+//!     `dynamic_bitset` (e.g. `L'1'` and `L'0'` for `wchar_t`), and
+//!     don't depend on any locale: to take a locale into account,
+//!     insert `b` into a stream imbued with it.
 //!
 //!     \par Throws
 //!     An allocation error from `s` if memory is exhausted.

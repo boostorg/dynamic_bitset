@@ -151,6 +151,98 @@ struct allowed_block_type< bool >
 template< typename T >
 using is_numeric = std::is_integral< T >; // floating points intentionally excluded
 
+// The characters that stand for a zero bit and a one bit in the strings
+// that a dynamic_bitset is constructed from or converted to. Unlike the
+// characters used by the stream operators, they don't depend on any
+// locale. The primary template serves char and any character type that
+// is not specialized below. The specializations use the literals of the
+// corresponding type, which give the right digits even if the encoding
+// of that type doesn't agree with the narrow one on their values.
+template< typename CharT >
+struct binary_digits
+{
+    static constexpr CharT
+    zero() noexcept
+    {
+        return CharT( '0' );
+    }
+
+    static constexpr CharT
+    one() noexcept
+    {
+        return CharT( '1' );
+    }
+};
+
+template<>
+struct binary_digits< wchar_t >
+{
+    static constexpr wchar_t
+    zero() noexcept
+    {
+        return L'0';
+    }
+
+    static constexpr wchar_t
+    one() noexcept
+    {
+        return L'1';
+    }
+};
+
+#if defined( __cpp_char8_t ) && __cpp_char8_t >= 201811L
+// We don't use u8'0' and u8'1' here, because u8 character literals only
+// exist since C++17, whereas GCC and Clang also support char8_t in C++11
+// and C++14 (with -fchar8_t). u8 string literals exist since C++11.
+template<>
+struct binary_digits< char8_t >
+{
+    static constexpr char8_t
+    zero() noexcept
+    {
+        return u8"0"[ 0 ];
+    }
+
+    static constexpr char8_t
+    one() noexcept
+    {
+        return u8"1"[ 0 ];
+    }
+};
+#endif
+
+template<>
+struct binary_digits< char16_t >
+{
+    static constexpr char16_t
+    zero() noexcept
+    {
+        return u'0';
+    }
+
+    static constexpr char16_t
+    one() noexcept
+    {
+        return u'1';
+    }
+};
+
+template<>
+struct binary_digits< char32_t >
+{
+    static constexpr char32_t
+    zero() noexcept
+    {
+        return U'0';
+    }
+
+    static constexpr char32_t
+    one() noexcept
+    {
+        return U'1';
+    }
+};
+
 } // dynamic_bitset_impl
 } // namespace detail
 

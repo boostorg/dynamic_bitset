@@ -24,7 +24,6 @@
 #include "boost/throw_exception.hpp"
 #include <algorithm>
 #include <istream>
-#include <locale>
 #include <ostream>
 #include <stdexcept>
 #include <utility>
@@ -508,6 +507,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::
 
 template< typename Block, typename AllocatorOrContainer >
 template< typename CharT, typename Traits, typename Alloc >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
 dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
     const std::basic_string< CharT, Traits, Alloc > &             s,
     typename std::basic_string< CharT, Traits, Alloc >::size_type pos,
@@ -517,11 +517,12 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
 
     : m_bits( alloc ), m_num_bits( 0 )
 {
-    init_from_string( s.c_str(), s.length(), pos, n, num_bits );
+    init_from_string< CharT, Traits >( s.c_str(), s.length(), pos, n, num_bits );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 template< typename CharT >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
 dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
     const CharT *          s,
     std::size_t            n,
@@ -536,13 +537,14 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
 
 template< typename Block, typename AllocatorOrContainer >
 template< typename CharT, typename Traits >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
 dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
     std::basic_string_view< CharT, Traits > sv,
     size_type                               num_bits,
     const allocator_type &                  alloc )
     : m_bits( alloc ), m_num_bits( 0 )
 {
-    init_from_string( sv.data(), sv.length(), 0, sv.length(), num_bits );
+    init_from_string< CharT, Traits >( sv.data(), sv.length(), 0, sv.length(), num_bits );
 }
 
 #endif
@@ -1662,12 +1664,13 @@ template< typename B, typename A, typename StringT >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all )
 {
+    using boost::detail::dynamic_bitset_impl::binary_digits;
+
     typedef typename StringT::traits_type              Tr;
     typedef typename StringT::value_type               Ch;
 
-    const std::ctype< Ch > &                           fac  = std::use_facet< std::ctype< Ch > >( std::locale() );
-    const Ch                                           zero = fac.widen( '0' );
-    const Ch                                           one  = fac.widen( '1' );
+    const Ch                                           zero = binary_digits< Ch >::zero();
+    const Ch                                           one  = binary_digits< Ch >::one();
 
     // Note that this function may access (when
     // dump_all == true) bits beyond position size() - 1
@@ -2247,24 +2250,25 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
     std::size_t   n,
     size_type     num_bits )
 {
+    using boost::detail::dynamic_bitset_impl::binary_digits;
+
     BOOST_ASSERT( pos <= string_length );
 
     const std::size_t rlen = (std::min)( n, string_length - pos );
     const size_type   sz   = ( num_bits != npos ? num_bits : rlen );
     m_bits.resize( calc_num_blocks( sz ) );
-    m_num_bits                      = sz;
+    m_num_bits          = sz;
 
-    const std::ctype< CharT > & fac = std::use_facet< std::ctype< CharT > >( std::locale() );
-    const CharT                 one = fac.widen( '1' );
+    const CharT     one = binary_digits< CharT >::one();
 
-    const size_type             m   = num_bits < rlen ? num_bits : rlen;
+    const size_type m   = num_bits < rlen ? num_bits : rlen;
     for ( std::size_t i = 0; i < m; ++i ) {
         const CharT c = s[ ( pos + m - 1 ) - i ];
 
         if ( Traits::eq( c, one ) ) {
             set( i );
         } else {
-            BOOST_ASSERT( Traits::eq( c, fac.widen( '0' ) ) );
+            BOOST_ASSERT( Traits::eq( c, binary_digits< CharT >::zero() ) );
         }
     }
 }

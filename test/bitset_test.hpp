@@ -273,6 +273,7 @@ struct bitset_test
         for ( ; j < actual_size; ++j )
             BOOST_TEST( b[ j ] == 0 );
 
+        BOOST_TEST( Bitset( str.c_str() + pos, max_char, num_bits ) == b );
 #if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
         BOOST_TEST( Bitset( std::basic_string_view< Ch, Tr >( str ).substr( pos, rlen ), num_bits ) == b );
 #endif
@@ -1501,14 +1502,29 @@ struct bitset_test
         }
     }
 
+    template< typename String >
     static void
-    to_string( const Bitset & b )
+    to_string_of_type( const Bitset & b )
     {
-        std::string str;
+        typedef typename String::value_type Ch;
+
+        String                              str;
         boost::to_string( b, str );
         BOOST_TEST( str.size() == b.size() );
         for ( std::size_t i = 0; i < b.size(); ++i )
-            BOOST_TEST( str[ b.size() - 1 - i ] == ( b.test( i ) ? '1' : '0' ) );
+            BOOST_TEST( str[ b.size() - 1 - i ] == Ch( b.test( i ) ? '1' : '0' ) );
+    }
+
+    static void
+    to_string( const Bitset & b )
+    {
+        to_string_of_type< std::string >( b );
+        to_string_of_type< std::wstring >( b );
+        to_string_of_type< std::u16string >( b );
+        to_string_of_type< std::u32string >( b );
+#if defined( __cpp_lib_char8_t ) && __cpp_lib_char8_t >= 201811L
+        to_string_of_type< std::u8string >( b );
+#endif
     }
 
     static void

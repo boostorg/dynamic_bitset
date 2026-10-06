@@ -263,6 +263,47 @@ public:
     }
 };
 
+// Character traits under which 'T' and 'F' are equal to '1' and '0',
+// respectively.
+struct true_false_traits : std::char_traits< char >
+{
+    static char
+    canonical( char c )
+    {
+        if ( c == 'T' ) {
+            return '1';
+        } else if ( c == 'F' ) {
+            return '0';
+        }
+        return c;
+    }
+
+    static bool
+    eq( char a, char b )
+    {
+        return canonical( a ) == canonical( b );
+    }
+};
+
+#if defined( __cpp_lib_constexpr_string ) && __cpp_lib_constexpr_string >= 201907L \
+    && defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L
+
+// The string constructors and to_string() don't depend on any locale,
+// so they can be used in constant expressions.
+constexpr bool
+converts_in_constant_expressions()
+{
+    std::string    s;
+    std::u16string u;
+    boost::to_string( boost::dynamic_bitset<>( std::string( "1101" ) ), s );
+    boost::to_string( boost::dynamic_bitset<>( u"0110" ), u );
+
+    return s == "1101" && u == u"0110"
+        && boost::dynamic_bitset<>( std::string_view( "0111" ) ).count() == 3;
+}
+
+#endif
+
 #define BOOST_BITSET_TEST_COUNT( x ) ( sizeof( x ) / sizeof( x[ 0 ] ) )
 
 template< typename Tests, typename String >
@@ -392,20 +433,32 @@ run_test_cases()
 
         run_string_tests< Tests >( long_string );
 
-        // I need to decide what to do for non "C" locales here. On
-        // one hand I should have better tests. On the other one
-        // I don't want tests for dynamic_bitset to cope with locales,
-        // ctype::widen, etc. (but that's what you deserve when you
-        // don't separate concerns at the library level)
-        //
         run_string_tests< Tests >(
             std::wstring( L"11111000000111111111010101010101010101010111111" ) );
+        run_string_tests< Tests >( std::u16string( long_string.begin(), long_string.end() ) );
+        run_string_tests< Tests >( std::u32string( long_string.begin(), long_string.end() ) );
+#if defined( __cpp_lib_char8_t ) && __cpp_lib_char8_t >= 201811L
+        run_string_tests< Tests >( std::u8string( long_string.begin(), long_string.end() ) );
+#endif
 
         // Note that these are _valid_ arguments
         Tests::from_string( std::string( "x11y" ), 1, 2 );
         Tests::from_string( std::string( "x11" ), 1, 10 );
         Tests::from_string( std::string( "x11" ), 1, 10, 10 );
     }
+    {
+        // The string constructors compare the characters with the
+        // Traits::eq() of the string.
+        typedef std::basic_string< char, true_false_traits > tf_string;
+        BOOST_TEST( bitset_type( tf_string( "TFTF" ) ) == bitset_type( 4, 10ul ) );
+#if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
+        BOOST_TEST( bitset_type( std::basic_string_view< char, true_false_traits >( "TFTF" ) ) == bitset_type( 4, 10ul ) );
+#endif
+    }
+#if defined( __cpp_lib_constexpr_string ) && __cpp_lib_constexpr_string >= 201907L \
+    && defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L
+    static_assert( converts_in_constant_expressions(), "" );
+#endif
     //=====================================================================
     // test from_block_range
     {
