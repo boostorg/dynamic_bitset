@@ -987,10 +987,10 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
             b[ div ] = b[ 0 ] << r;
 
         } else {
-            for ( size_type i = last - div; i > 0; --i ) {
-                b[ i + div ] = b[ i ];
-            }
-            b[ div ] = b[ 0 ];
+            // Here div is >= 1, so the destination range ends past the
+            // source range, as std::copy_backward() requires.
+            typedef typename std::iterator_traits< typename buffer_type::iterator >::difference_type block_difference_type;
+            std::copy_backward( b.begin(), std::next( b.begin(), static_cast< block_difference_type >( num_blocks() - div ) ), b.end() );
         }
 
         // zero out div blocks at the least significant end
@@ -1032,6 +1032,9 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< B, A > &
         }
 
         else {
+            // We don't use std::copy() here: it would be a memmove() of
+            // overlapping ranges, which some implementations do much
+            // more slowly than this loop when the ranges are close.
             for ( size_type i = div; i <= last; ++i ) {
                 b[ i - div ] = b[ i ];
             }
