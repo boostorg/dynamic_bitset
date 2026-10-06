@@ -653,6 +653,88 @@ struct bitset_test
         BOOST_TEST( y - x == -d );
     }
 
+    // For a bitset whose underlying container provides only
+    // bidirectional iterators: checks that its iterators work as
+    // bidirectional iterators and don't provide the random-access
+    // operations.
+    static void
+    bidirectional_iterators( const Bitset & b )
+    {
+        const std::ptrdiff_t n = static_cast< std::ptrdiff_t >( b.size() );
+        Bitset               c( b );
+        BOOST_TEST( std::distance( b.begin(), b.end() ) == n );
+        BOOST_TEST( std::distance( c.begin(), c.end() ) == n );
+        iterate_forward( b );
+        iterate_backward( b );
+
+        typename Bitset::iterator it = c.begin();
+        std::advance( it, n );
+        BOOST_TEST( it == c.end() );
+        std::reverse( c.begin(), c.end() );
+        BOOST_TEST( c == reversed( b ) );
+
+        bidirectional_iterator_concepts();
+        bidirectional_ranges( b );
+    }
+
+    static void
+    bidirectional_iterator_concepts()
+    {
+#if defined( __cpp_lib_ranges )
+        typedef typename Bitset::iterator       iterator;
+        typedef typename Bitset::const_iterator const_iterator;
+
+        static_assert( std::bidirectional_iterator< iterator > );
+        static_assert( std::bidirectional_iterator< const_iterator > );
+        static_assert( ! std::random_access_iterator< iterator > );
+        static_assert( ! std::random_access_iterator< const_iterator > );
+        static_assert( ! std::totally_ordered< iterator > );
+        static_assert( ! std::totally_ordered< const_iterator > );
+        static_assert( ! std::totally_ordered_with< iterator, const_iterator > );
+        static_assert( ! std::sized_sentinel_for< iterator, iterator > );
+        static_assert( ! std::sized_sentinel_for< const_iterator, const_iterator > );
+        static_assert( ! std::sized_sentinel_for< const_iterator, iterator > );
+        static_assert( ! std::sized_sentinel_for< typename Bitset::reverse_iterator, typename Bitset::reverse_iterator > );
+
+        static_assert( ! requires( iterator i ) { i += 1; } );
+        static_assert( ! requires( iterator i ) { i -= 1; } );
+        static_assert( ! requires( iterator i ) { i + 1; } );
+        static_assert( ! requires( iterator i ) { 1 + i; } );
+        static_assert( ! requires( iterator i ) { i - 1; } );
+        static_assert( ! requires( iterator i ) { i[ 1 ]; } );
+        static_assert( ! requires( const_iterator i ) { i += 1; } );
+        static_assert( ! requires( const_iterator i ) { i -= 1; } );
+        static_assert( ! requires( const_iterator i ) { i + 1; } );
+        static_assert( ! requires( const_iterator i ) { 1 + i; } );
+        static_assert( ! requires( const_iterator i ) { i - 1; } );
+        static_assert( ! requires( const_iterator i ) { i[ 1 ]; } );
+#endif
+    }
+
+    // Checks that the ranges facilities work with the iterators, which
+    // are only bidirectional.
+    static void
+    bidirectional_ranges( const Bitset & b )
+    {
+#if defined( __cpp_lib_ranges )
+        const std::ptrdiff_t n = static_cast< std::ptrdiff_t >( b.size() );
+        Bitset               c( b );
+        BOOST_TEST( std::ranges::distance( b.begin(), b.end() ) == n );
+        BOOST_TEST( std::ranges::distance( c.begin(), c.end() ) == n );
+        BOOST_TEST( std::ranges::distance( c.begin(), c.cend() ) == n );
+
+        typename Bitset::const_iterator it = b.begin();
+        BOOST_TEST( std::ranges::advance( it, n + 1, b.end() ) == 1 );
+        BOOST_TEST( it == b.end() );
+
+        BOOST_TEST( std::ranges::equal( b.begin(), b.end(), c.begin(), c.end() ) );
+        std::ranges::reverse( c );
+        BOOST_TEST( c == reversed( b ) );
+#else
+        (void)b;
+#endif
+    }
+
     static void
     to_block_range( const Bitset & b /*, BlockOutputIterator result*/ )
     {

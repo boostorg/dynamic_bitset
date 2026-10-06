@@ -34,6 +34,24 @@
 #    include <string_view>
 #endif
 
+// In C++20 and later, the operations of our iterators which only a
+// random-access iterator provides require the iterators of the
+// underlying container to be random-access. Otherwise, with a container
+// which provides only bidirectional iterators, our iterators would
+// satisfy std::sized_sentinel_for and std::totally_ordered, which only
+// look at declarations, and the ranges facilities which trust them
+// wouldn't compile.
+//
+// The member functions and friends with such a requirement are
+// defined in their class, because matching an out-of-class definition
+// with a requires-clause to its declaration has been a source of bugs
+// in older compilers.
+#if defined( __cpp_lib_ranges )
+#    define BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( iter ) requires std::random_access_iterator< iter >
+#else
+#    define BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( iter )
+#endif
+
 #if defined( BOOST_DYNAMIC_BITSET_SPECIALIZE_STD_HASH )
 #    include <functional>
 namespace std {
@@ -398,7 +416,13 @@ public:
     //!     corresponds to the category of the iterator type of the
     //!     underlying container; for instance, if the underlying
     //!     container provides LegacyBidirectionalIterators, this type
-    //!     models `std::bidirectional_iterator`.
+    //!     models `std::bidirectional_iterator`. If the iterators of the
+    //!     underlying container are not random-access, the operations
+    //!     which only a random-access iterator provides (`+=`, `-=`,
+    //!     `+`, binary `-`, `[]`, `<`, `<=`, `>` and `>=`) can't be
+    //!     used; in C++20 and later, they don't participate in overload
+    //!     resolution, so that, for instance, `std::sized_sentinel_for`
+    //!     is not satisfied.
     //!
     //!     The `iterator_category` of this type is that of the iterator
     //!     type of the underlying container. However, its `reference`
@@ -445,6 +469,8 @@ public:
     static_assert( std::bidirectional_iterator< typename buffer_type::iterator >, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
     static_assert( std::bidirectional_iterator< iterator > );
     static_assert( std::bidirectional_iterator< const_iterator > );
+    static_assert( std::random_access_iterator< iterator > == ( std::random_access_iterator< typename buffer_type::iterator > && std::derived_from< typename iterator::iterator_category, std::random_access_iterator_tag > ) );
+    static_assert( std::random_access_iterator< const_iterator > == ( std::random_access_iterator< typename buffer_type::const_iterator > && std::derived_from< typename const_iterator::iterator_category, std::random_access_iterator_tag > ) );
     static_assert( std::output_iterator< iterator, bool > );
     static_assert( std::permutable< iterator > );
 #else
@@ -1793,10 +1819,24 @@ public:
 
     template< typename Iter >
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator==( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
-    template< typename Iter >
-    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator<( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
-    template< typename Iter >
-    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 difference_type operator-( const bit_iterator_base< Iter > & lhs, const bit_iterator_base< Iter > & rhs );
+
+    // These are defined in the class (see the comment before the
+    // definition of BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS).
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
+    operator<( const bit_iterator_base & lhs, const bit_iterator_base & rhs )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( Iterator )
+    {
+        return lhs.m_block_iterator < rhs.m_block_iterator
+            || ( lhs.m_block_iterator == rhs.m_block_iterator && lhs.m_bit_index < rhs.m_bit_index );
+    }
+
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 difference_type
+    operator-( const bit_iterator_base & lhs, const bit_iterator_base & rhs )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( Iterator )
+    {
+        return static_cast< difference_type >( lhs.m_block_iterator - rhs.m_block_iterator ) * bits_per_block
+             + ( lhs.m_bit_index - rhs.m_bit_index );
+    }
 
 protected:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void increment();
@@ -1828,9 +1868,31 @@ public:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator                                                        operator++( int );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator &                                                      operator--();
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator                                                        operator--( int );
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator &                                                      operator+=( difference_type n );
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator &                                                      operator-=( difference_type n );
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference                                                           operator[]( difference_type n ) const;
+
+    // These are defined in the class (see the comment before the
+    // definition of BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS).
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator &
+    operator+=( difference_type n )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::iterator )
+    {
+        this->add( n );
+        return *this;
+    }
+
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator &
+    operator-=( difference_type n )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::iterator )
+    {
+        this->add( -n );
+        return *this;
+    }
+
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 reference
+    operator[]( difference_type n ) const
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::iterator )
+    {
+        return *( *this + n );
+    }
 };
 
 //!     \implementationdefined
@@ -1856,16 +1918,39 @@ public:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator                                                        operator++( int );
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator &                                                      operator--();
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator                                                        operator--( int );
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator &                                                      operator+=( difference_type n );
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator &                                                      operator-=( difference_type n );
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reference                                                           operator[]( difference_type n ) const;
 
-    // These are non-template friends (unlike the operators of
-    // bit_iterator_base, which are templates), so they are viable also
-    // when one of the operands is a bit_iterator, which converts to a
-    // const_bit_iterator: that's what allows comparing and subtracting
-    // an iterator and a const_iterator. Being non-template friends of a
-    // class template, they must be defined in the class.
+    // These are defined in the class (see the comment before the
+    // definition of BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS).
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator &
+    operator+=( difference_type n )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
+    {
+        this->add( n );
+        return *this;
+    }
+
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator &
+    operator-=( difference_type n )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
+    {
+        this->add( -n );
+        return *this;
+    }
+
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reference
+    operator[]( difference_type n ) const
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
+    {
+        return *( *this + n );
+    }
+
+    // These are non-template friends which take const_bit_iterator
+    // operands (unlike the operators of bit_iterator_base), so they are
+    // viable also when one of the operands is a bit_iterator, which
+    // converts to a const_bit_iterator: that's what allows comparing
+    // and subtracting an iterator and a const_iterator. Being
+    // non-template friends of a class template, they must be defined in
+    // the class.
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
     operator==( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
     {
@@ -1880,30 +1965,35 @@ public:
 
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
     operator<( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
     {
         return static_cast< const base_type & >( lhs ) < static_cast< const base_type & >( rhs );
     }
 
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
     operator<=( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
     {
         return ! ( rhs < lhs );
     }
 
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
     operator>( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
     {
         return rhs < lhs;
     }
 
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
     operator>=( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
     {
         return ! ( lhs < rhs );
     }
 
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 difference_type
     operator-( const const_bit_iterator & lhs, const const_bit_iterator & rhs )
+        BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
     {
         return static_cast< const base_type & >( lhs ) - static_cast< const base_type & >( rhs );
     }

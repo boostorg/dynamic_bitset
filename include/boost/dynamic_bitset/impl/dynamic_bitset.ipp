@@ -258,14 +258,7 @@ operator!=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< 
 }
 
 template< typename Iterator >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-operator<( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
-{
-    return lhs.m_block_iterator < rhs.m_block_iterator
-        || ( lhs.m_block_iterator == rhs.m_block_iterator && lhs.m_bit_index < rhs.m_bit_index );
-}
-
-template< typename Iterator >
+BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( Iterator )
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
 operator<=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
 {
@@ -273,6 +266,7 @@ operator<=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< 
 }
 
 template< typename Iterator >
+BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( Iterator )
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
 operator>( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
 {
@@ -280,18 +274,11 @@ operator>( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< I
 }
 
 template< typename Iterator >
+BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( Iterator )
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
 operator>=( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
 {
     return ! ( lhs < rhs );
-}
-
-template< typename Iterator >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 std::intmax_t
-                                 operator-( const bit_iterator_base< Iterator > & lhs, const bit_iterator_base< Iterator > & rhs )
-{
-    return static_cast< std::intmax_t >( lhs.m_block_iterator - rhs.m_block_iterator ) * bit_iterator_base< Iterator >::bits_per_block
-         + ( lhs.m_bit_index - rhs.m_bit_index );
 }
 
 template< typename DynamicBitset >
@@ -349,24 +336,9 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator< DynamicBitset >
 }
 
 template< typename DynamicBitset >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator< DynamicBitset > &
-                                 bit_iterator< DynamicBitset >::operator+=( difference_type n )
-{
-    this->add( n );
-    return *this;
-}
-
-template< typename DynamicBitset >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator< DynamicBitset > &
-                                 bit_iterator< DynamicBitset >::operator-=( difference_type n )
-{
-    this->add( -n );
-    return *this;
-}
-
-template< typename DynamicBitset >
+BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::iterator )
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator< DynamicBitset >
-                                 operator+( const bit_iterator< DynamicBitset > & it, typename bit_iterator< DynamicBitset >::difference_type n )
+operator+( const bit_iterator< DynamicBitset > & it, typename bit_iterator< DynamicBitset >::difference_type n )
 {
     bit_iterator< DynamicBitset > temp = it;
     temp += n;
@@ -374,26 +346,21 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator< DynamicBitset >
 }
 
 template< typename DynamicBitset >
+BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::iterator )
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator< DynamicBitset >
-                                 operator+( typename bit_iterator< DynamicBitset >::difference_type n, const bit_iterator< DynamicBitset > & it )
+operator+( typename bit_iterator< DynamicBitset >::difference_type n, const bit_iterator< DynamicBitset > & it )
 {
     return it + n;
 }
 
 template< typename DynamicBitset >
+BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::iterator )
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bit_iterator< DynamicBitset >
-                                 operator-( const bit_iterator< DynamicBitset > & it, typename bit_iterator< DynamicBitset >::difference_type n )
+operator-( const bit_iterator< DynamicBitset > & it, typename bit_iterator< DynamicBitset >::difference_type n )
 {
     bit_iterator< DynamicBitset > temp = it;
     temp -= n;
     return temp;
-}
-
-template< typename DynamicBitset >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename DynamicBitset::reference
-bit_iterator< DynamicBitset >::operator[]( difference_type n ) const
-{
-    return *( *this + n );
 }
 
 template< typename DynamicBitset >
@@ -459,24 +426,9 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator< DynamicBitset >
 }
 
 template< typename DynamicBitset >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator< DynamicBitset > &
-                                 const_bit_iterator< DynamicBitset >::operator+=( difference_type n )
-{
-    this->add( n );
-    return *this;
-}
-
-template< typename DynamicBitset >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator< DynamicBitset > &
-                                 const_bit_iterator< DynamicBitset >::operator-=( difference_type n )
-{
-    this->add( -n );
-    return *this;
-}
-
-template< typename DynamicBitset >
+BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator< DynamicBitset >
-                                 operator+( const const_bit_iterator< DynamicBitset > & it, typename const_bit_iterator< DynamicBitset >::difference_type n )
+operator+( const const_bit_iterator< DynamicBitset > & it, typename const_bit_iterator< DynamicBitset >::difference_type n )
 {
     const_bit_iterator< DynamicBitset > temp = it;
     temp += n;
@@ -484,26 +436,21 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator< DynamicBitset >
 }
 
 template< typename DynamicBitset >
+BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator< DynamicBitset >
-                                 operator+( typename const_bit_iterator< DynamicBitset >::difference_type n, const const_bit_iterator< DynamicBitset > & it )
+operator+( typename const_bit_iterator< DynamicBitset >::difference_type n, const const_bit_iterator< DynamicBitset > & it )
 {
     return it + n;
 }
 
 template< typename DynamicBitset >
+BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( typename DynamicBitset::buffer_type::const_iterator )
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_bit_iterator< DynamicBitset >
-                                 operator-( const const_bit_iterator< DynamicBitset > & it, typename const_bit_iterator< DynamicBitset >::difference_type n )
+operator-( const const_bit_iterator< DynamicBitset > & it, typename const_bit_iterator< DynamicBitset >::difference_type n )
 {
     const_bit_iterator< DynamicBitset > temp = it;
     temp -= n;
     return temp;
-}
-
-template< typename DynamicBitset >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename const_bit_iterator< DynamicBitset >::const_reference
-const_bit_iterator< DynamicBitset >::operator[]( difference_type n ) const
-{
-    return *( *this + n );
 }
 
 } // dynamic_bitset_impl
