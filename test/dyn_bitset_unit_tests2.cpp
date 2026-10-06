@@ -96,6 +96,16 @@ run_test_cases()
         Tests::sub_assignment( lhs, rhs );
     }
     //=====================================================================
+    // Test operator&=, |=, ^= and -= with the same object as both operands
+    {
+        bitset_type b;
+        Tests::compound_assignments_to_self( b );
+    }
+    {
+        bitset_type b( long_string );
+        Tests::compound_assignments_to_self( b );
+    }
+    //=====================================================================
     // Test operator<<=
     { // case pos == 0
         std::size_t pos = 0;

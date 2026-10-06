@@ -1222,6 +1222,23 @@ struct bitset_test
                 BOOST_TEST( lhs[ I ] == prev[ I ] );
     }
 
+    // Checks &=, |=, ^= and -= when both operands are the same object.
+    static void
+    compound_assignments_to_self( const Bitset & b )
+    {
+        Bitset         lhs( b );
+        const Bitset & rhs = lhs;
+        lhs &= rhs;
+        BOOST_TEST( lhs == b );
+        lhs |= rhs;
+        BOOST_TEST( lhs == b );
+        lhs ^= rhs;
+        BOOST_TEST( lhs.size() == b.size() && lhs.none() );
+        lhs = b;
+        lhs -= rhs;
+        BOOST_TEST( lhs.size() == b.size() && lhs.none() );
+    }
+
     static void
     shift_left_assignment( const Bitset & b, std::size_t pos )
     {

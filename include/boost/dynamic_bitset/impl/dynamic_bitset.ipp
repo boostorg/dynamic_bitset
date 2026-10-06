@@ -888,13 +888,28 @@ dynamic_bitset< Block, AllocatorOrContainer >::append( BlockInputIterator first,
 
 //-----------------------------------------------------------------------------
 // bitset operations
+
+// NOTE:
+//  In the loops of the four compound assignment operators below and of
+//  flip(), we read num_blocks() and the begin iterators only once, so
+//  that the compiler can vectorize them without having to prove that
+//  the block stores don't change the internal pointers of the buffers
+//  (MSVC does no type-based alias analysis, and an unsigned char lvalue
+//  may alias anything). And we increment the iterators, rather than
+//  writing *( p + i ), because the container iterators are only
+//  required to be bidirectional; but we loop on a count, rather than on
+//  a pair of iterators, because MSVC vectorizes only the former.
+//
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
                                  dynamic_bitset< Block, AllocatorOrContainer >::operator&=( const dynamic_bitset & rhs )
 {
     BOOST_ASSERT( size() == rhs.size() );
-    for ( size_type i = 0; i < num_blocks(); ++i ) {
-        m_bits[ i ] &= rhs.m_bits[ i ];
+    const size_type                      n = num_blocks();
+    typename buffer_type::iterator       p = m_bits.begin();
+    typename buffer_type::const_iterator q = rhs.m_bits.begin();
+    for ( size_type i = 0; i < n; ++i, ++p, ++q ) {
+        *p &= *q;
     }
     return *this;
 }
@@ -904,8 +919,11 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
                                  dynamic_bitset< Block, AllocatorOrContainer >::operator|=( const dynamic_bitset & rhs )
 {
     BOOST_ASSERT( size() == rhs.size() );
-    for ( size_type i = 0; i < num_blocks(); ++i ) {
-        m_bits[ i ] |= rhs.m_bits[ i ];
+    const size_type                      n = num_blocks();
+    typename buffer_type::iterator       p = m_bits.begin();
+    typename buffer_type::const_iterator q = rhs.m_bits.begin();
+    for ( size_type i = 0; i < n; ++i, ++p, ++q ) {
+        *p |= *q;
     }
     // m_zero_unused_bits();
     return *this;
@@ -916,8 +934,11 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
                                  dynamic_bitset< Block, AllocatorOrContainer >::operator^=( const dynamic_bitset & rhs )
 {
     BOOST_ASSERT( size() == rhs.size() );
-    for ( size_type i = 0; i < this->num_blocks(); ++i ) {
-        m_bits[ i ] ^= rhs.m_bits[ i ];
+    const size_type                      n = num_blocks();
+    typename buffer_type::iterator       p = m_bits.begin();
+    typename buffer_type::const_iterator q = rhs.m_bits.begin();
+    for ( size_type i = 0; i < n; ++i, ++p, ++q ) {
+        *p ^= *q;
     }
     // m_zero_unused_bits();
     return *this;
@@ -928,8 +949,11 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
                                  dynamic_bitset< Block, AllocatorOrContainer >::operator-=( const dynamic_bitset & rhs )
 {
     BOOST_ASSERT( size() == rhs.size() );
-    for ( size_type i = 0; i < num_blocks(); ++i ) {
-        m_bits[ i ] &= ~rhs.m_bits[ i ];
+    const size_type                      n = num_blocks();
+    typename buffer_type::iterator       p = m_bits.begin();
+    typename buffer_type::const_iterator q = rhs.m_bits.begin();
+    for ( size_type i = 0; i < n; ++i, ++p, ++q ) {
+        *p &= ~*q;
     }
     // m_zero_unused_bits();
     return *this;
@@ -1123,8 +1147,11 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
                                  dynamic_bitset< Block, AllocatorOrContainer >::flip()
 {
-    for ( size_type i = 0; i < num_blocks(); ++i ) {
-        m_bits[ i ] = ~m_bits[ i ];
+    // See the NOTE before operator&=().
+    const size_type                n = num_blocks();
+    typename buffer_type::iterator p = m_bits.begin();
+    for ( size_type i = 0; i < n; ++i, ++p ) {
+        *p = ~*p;
     }
     m_zero_unused_bits();
     return *this;
