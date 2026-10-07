@@ -44,7 +44,7 @@ constexpr typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
     dynamic_bitset< Block, AllocatorOrContainer >::npos;
 
 template< typename Block, typename AllocatorOrContainer >
-constexpr int dynamic_bitset< Block, AllocatorOrContainer >::ulong_width;
+constexpr int dynamic_bitset< Block, AllocatorOrContainer >::ullong_width;
 
 template< typename Iterator >
 constexpr int detail::dynamic_bitset_impl::bit_iterator_base< Iterator >::bits_per_block;
@@ -493,17 +493,17 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset( const allocator_t
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20
 dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset( size_type num_bits )
-    : dynamic_bitset( num_bits, 0ul )
+    : dynamic_bitset( num_bits, 0ull )
 {
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20
 dynamic_bitset< Block, AllocatorOrContainer >::
-    dynamic_bitset( size_type num_bits, unsigned long value, const allocator_type & alloc )
+    dynamic_bitset( size_type num_bits, unsigned long long value, const allocator_type & alloc )
     : m_bits( alloc ), m_num_bits( 0 )
 {
-    init_from_unsigned_long( num_bits, value );
+    init_from_ullong( num_bits, value );
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -2233,13 +2233,13 @@ dynamic_bitset< Block, AllocatorOrContainer >::dispatch_init(
     detail::dynamic_bitset_impl::value_to_type< true > )
 {
     static_assert( ! std::is_floating_point< T >::value, "the constructor from a range of blocks doesn't take floating-point arguments" );
-    static_assert( std::is_convertible< T, unsigned long >::value, "the constructor from a range of blocks doesn't take scoped enumerators" );
+    static_assert( std::is_convertible< T, unsigned long long >::value, "the constructor from a range of blocks doesn't take scoped enumerators" );
 
     // Given the static_asserts, the second static_cast converts as an
     // implicit conversion would. We use it to avoid further errors when
     // one of the static_asserts fails, and warnings about narrowing or
     // sign conversions (e.g. from a long long).
-    init_from_unsigned_long( static_cast< size_type >( num_bits ), static_cast< unsigned long >( value ) );
+    init_from_ullong( static_cast< size_type >( num_bits ), static_cast< unsigned long long >( value ) );
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -2300,24 +2300,24 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-dynamic_bitset< Block, AllocatorOrContainer >::init_from_unsigned_long(
-    size_type     num_bits,
-    unsigned long value )
+dynamic_bitset< Block, AllocatorOrContainer >::init_from_ullong(
+    size_type          num_bits,
+    unsigned long long value )
 {
     BOOST_ASSERT( m_bits.size() == 0 );
 
     m_bits.resize( calc_num_blocks( num_bits ) );
     m_num_bits = num_bits;
 
-    typedef unsigned long                                                                        num_type;
-    typedef boost::detail::dynamic_bitset_impl::shifter< num_type, bits_per_block, ulong_width > shifter;
+    typedef unsigned long long                                                                    num_type;
+    typedef boost::detail::dynamic_bitset_impl::shifter< num_type, bits_per_block, ullong_width > shifter;
 
     // if (num_bits == 0)
     //     return;
 
     // zero out all bits at pos >= num_bits, if any;
     // note that: num_bits == 0 implies value == 0
-    if ( num_bits < static_cast< size_type >( ulong_width ) ) {
+    if ( num_bits < static_cast< size_type >( ullong_width ) ) {
         const num_type mask = ( num_type( 1 ) << num_bits ) - 1;
         value &= mask;
     }

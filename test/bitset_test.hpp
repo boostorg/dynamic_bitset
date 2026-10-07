@@ -203,38 +203,45 @@ struct bitset_test
     typedef typename Bitset::block_type Block;
     static constexpr int bits_per_block = Bitset::bits_per_block;
 
-    // from unsigned long
+    // from an integer
     //
     // Note: this is templatized so that we check that the do-the-right-thing
-    // constructor dispatch is working correctly.
+    // constructor dispatch is working correctly: the first bitset below is
+    // constructed from the arguments as they are, which selects the
+    // constructor from a range of blocks if NumBits and Value are the same
+    // type.
     //
     template< typename NumBits, typename Value >
     static void
-    from_unsigned_long( NumBits num_bits, Value num )
+    from_integer( NumBits num_bits, Value num )
     {
-        // An object of size sz = num_bits is constructed:
-        // - the first m bit positions are initialized to the corresponding
-        //   bit values in num (m being the smaller of sz and ulong_width)
-        //
-        // - any remaining bit positions are initialized to zero
-        //
-
-        Bitset                             b( static_cast< typename Bitset::size_type >( num_bits ), static_cast< unsigned long >( num ) );
-
-        // OK, we can now cast to size_type
         typedef typename Bitset::size_type size_type;
-        const size_type                    sz = static_cast< size_type >( num_bits );
+        const size_type                    sz    = static_cast< size_type >( num_bits );
+        const unsigned long long           value = static_cast< unsigned long long >( num );
+
+        check_from_integer( Bitset( num_bits, num ), sz, value );
+        check_from_integer( Bitset( sz, value ), sz, value );
+    }
+
+    static void
+    check_from_integer( const Bitset & b, typename Bitset::size_type sz, unsigned long long value )
+    {
+        // b must have size sz, and:
+        // - the first m bit positions must have the corresponding bit
+        //   values in value (m being the smaller of sz and the width of
+        //   unsigned long long)
+        //
+        // - any remaining bit positions must be zero
+        //
+        typedef typename Bitset::size_type size_type;
+        const size_type                    ullong_width = std::numeric_limits< unsigned long long >::digits;
+        const size_type                    m            = (std::min)( sz, ullong_width );
 
         BOOST_TEST( b.size() == sz );
 
-        const std::size_t ulong_width = std::numeric_limits< unsigned long >::digits;
-        size_type         m           = sz;
-        if ( ulong_width < sz )
-            m = ulong_width;
-
         size_type i = 0;
         for ( ; i < m; ++i )
-            BOOST_TEST( b.test( i ) == nth_bit( static_cast< unsigned long >( num ), i ) );
+            BOOST_TEST( b.test( i ) == nth_bit( value, i ) );
         for ( ; i < sz; ++i )
             BOOST_TEST( b.test( i ) == 0 );
     }

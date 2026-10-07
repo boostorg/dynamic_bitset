@@ -356,8 +356,9 @@ run_numeric_ctor_tests()
 
     for ( std::size_t s = 0; s < BOOST_BITSET_TEST_COUNT( sizes ); ++s ) {
         for ( std::size_t n = 0; n < BOOST_BITSET_TEST_COUNT( numbers ); ++n ) {
-            // can match ctor from ulong or templated one
-            Tests::from_unsigned_long( sizes[ s ], numbers[ n ] );
+            // can match the constructor from a size and a value or the
+            // templated one
+            Tests::from_integer( sizes[ s ], numbers[ n ] );
 
             typedef std::size_t compare_type;
             const compare_type  sz = sizes[ s ];
@@ -365,7 +366,7 @@ run_numeric_ctor_tests()
             // that for signed T's we avoid implementation-defined behavior [if ma
             // is larger than what std::size_t can hold then this is ok for our
             // purposes: our sizes are anyhow < max(size_t)], which in turn could
-            // make the first argument of from_unsigned_long() a small negative,
+            // make the first argument of from_integer() a small negative,
             // later converted to a very large unsigned. Example: signed 8-bit
             // char (CHAR_MAX=127), bits_per_block=64, sz = 192 > 127.
             const bool          fits =
@@ -373,7 +374,7 @@ run_numeric_ctor_tests()
 
             if ( fits ) {
                 // can match templated ctor only (so we test dispatching)
-                Tests::from_unsigned_long( static_cast< T >( sizes[ s ] ), numbers[ n ] );
+                Tests::from_integer( static_cast< T >( sizes[ s ] ), numbers[ n ] );
             }
         }
     }
@@ -392,7 +393,7 @@ run_test_cases()
     const Block                            all_1s         = static_cast< Block >( -1 );
 
     //=====================================================================
-    // Test construction from unsigned long
+    // Test construction from an integer
     {
         // NOTE:
         //
@@ -410,8 +411,8 @@ run_test_cases()
 
         for ( std::size_t s = 0; s < BOOST_BITSET_TEST_COUNT( sizes ); ++s ) {
             for ( std::size_t v = 0; v < BOOST_BITSET_TEST_COUNT( values ); ++v ) {
-                Tests::from_unsigned_long( sizes[ s ], values[ v ] );
-                Tests::from_unsigned_long( sizes[ s ] != 0, values[ v ] );
+                Tests::from_integer( sizes[ s ], values[ v ] );
+                Tests::from_integer( sizes[ s ] != 0, values[ v ] );
             }
         }
 
@@ -437,6 +438,22 @@ run_test_cases()
 
         const bitset_type a = { 8, 7ul };
         BOOST_TEST( a == bitset_type( 8, 7ul ) );
+    }
+    //=====================================================================
+    // Test that the value is taken as an unsigned long long, whatever the
+    // width of unsigned long
+    {
+        const unsigned long long value = 0x8000000100000001ull;
+
+        const bitset_type        a( 64, value );
+        const bitset_type        d( 70, -1 );
+
+        BOOST_TEST_EQ( a.template to_number< unsigned long long >(), value );
+        BOOST_TEST_EQ( d.count(), 64u );
+
+        // No narrowing of value, even where unsigned long has 32 bits.
+        const bitset_type e = { 64, value };
+        BOOST_TEST( e == a );
     }
     //=====================================================================
     // Test construction from a string
@@ -1044,13 +1061,15 @@ run_test_cases()
 #if defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L \
     && ! ( defined( __clang__ ) && defined( _GLIBCXX_RELEASE ) && _GLIBCXX_RELEASE < 14 )
 
-// The value spans several blocks, so the constructor shifts it.
+// The values span several blocks, so the constructor shifts them.
 constexpr bool
 constructs_from_an_integer_in_constant_expressions()
 {
-    const boost::dynamic_bitset< unsigned char > b( 16, 0x305ul );
+    const boost::dynamic_bitset< unsigned char > a( 16, 0x305ul );
+    const boost::dynamic_bitset< unsigned int >  b( 64, 0x8000000100000001ull );
 
-    return b.size() == 16 && b.to_ulong() == 0x305ul;
+    return a.size() == 16 && a.to_ulong() == 0x305ul
+        && b.to_number< unsigned long long >() == 0x8000000100000001ull;
 }
 
 static_assert( constructs_from_an_integer_in_constant_expressions(), "" );

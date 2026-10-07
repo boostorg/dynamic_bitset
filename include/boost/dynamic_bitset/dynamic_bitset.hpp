@@ -519,12 +519,19 @@ public:
     //!     Constructs a bitset from an integer.
     //!
     //!     The first `M` bits (where `M = min( num_bits,
-    //!     std::numeric_limits< unsigned long >::digits )`) are
+    //!     std::numeric_limits< unsigned long long >::digits )`) are
     //!     initialized to the corresponding bits in `value` and all
     //!     other bits, if any, to zero. A copy of the `alloc` object
     //!     will be used in subsequent bitset operations such as
-    //!     `resize()` to allocate memory. Note that, e.g., the
-    //!     following
+    //!     `resize()` to allocate memory.
+    //!
+    //!     Like the corresponding constructor of `std::bitset`, this
+    //!     constructor takes the value as an `unsigned long long`, so
+    //!     the result doesn't depend on the width of `unsigned long`.
+    //!     E.g., `dynamic_bitset<>( 64, -1 )` has all of its 64 bits
+    //!     set on all platforms.
+    //!
+    //!     Note that, e.g., the following
     //!
     //!     \code
     //!     dynamic_bitset<> b( 16, 7 );
@@ -563,7 +570,7 @@ public:
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
     //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20          dynamic_bitset( size_type num_bits, unsigned long value, const allocator_type & alloc = allocator_type() );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20          dynamic_bitset( size_type num_bits, unsigned long long value, const allocator_type & alloc = allocator_type() );
 
     //!     Constructs a bitset of `num_bits` zero bits, which uses a
     //!     copy of `alloc` to allocate memory.
@@ -704,7 +711,8 @@ public:
     //!     If this constructor is called with a type
     //!     `BlockInputIterator` which is actually an integral type or
     //!     an unscoped enumeration type, the library behaves as if the
-    //!     constructor from `unsigned long` were called, with arguments
+    //!     constructor from a size and a value (which takes the value
+    //!     as an `unsigned long long`) were called, with arguments
     //!     `static_cast< size_type >( first )`, `last` and `alloc`, in
     //!     that order. If `BlockInputIterator` is a floating-point type
     //!     or a scoped enumeration type, the program is ill-formed (a
@@ -721,7 +729,7 @@ public:
     //!
     //!     \code
     //!     dynamic_bitset(size_type num_bits,
-    //!                    unsigned long value,
+    //!                    unsigned long long value,
     //!                    const allocator_type & alloc = allocator_type())
     //!     \endcode
     //!
@@ -1802,7 +1810,7 @@ public:
     class serialize_impl;
 
 private:
-    static constexpr int                              ulong_width = std::numeric_limits< unsigned long >::digits;
+    static constexpr int                              ullong_width = std::numeric_limits< unsigned long long >::digits;
 
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void             m_zero_unused_bits();
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             m_check_invariants() const;
@@ -1858,9 +1866,7 @@ private:
     template< typename CharT, typename Traits = std::char_traits< CharT > >
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void init_from_string( const CharT * s, std::size_t string_length, std::size_t pos, std::size_t n, size_type num_bits );
 
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void init_from_unsigned_long( size_type num_bits, unsigned long value /*,
-                                                       const allocator_type& alloc*/
-    );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void init_from_ullong( size_type num_bits, unsigned long long value );
 
     template< typename BlockInputIterator >
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void m_append( BlockInputIterator first, BlockInputIterator last, std::input_iterator_tag );
