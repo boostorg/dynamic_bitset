@@ -14,28 +14,6 @@
 
 #include "boost/config.hpp"
 
-// no-op function to workaround gcc bug c++/8419
-//
-namespace boost {
-namespace detail {
-namespace dynamic_bitset_impl {
-template< typename T >
-T
-make_non_const( T t )
-{
-    return t;
-}
-}
-}
-}
-
-#if defined( __GNUC__ )
-#    define BOOST_DYNAMIC_BITSET_WRAP_CONSTANT( expr ) \
-        ( boost::detail::dynamic_bitset_impl::make_non_const( expr ) )
-#else
-#    define BOOST_DYNAMIC_BITSET_WRAP_CONSTANT( expr ) ( expr )
-#endif
-
 #if ! defined( BOOST_NO_CXX11_HDR_FUNCTIONAL ) && ! defined( BOOST_DYNAMIC_BITSET_NO_STD_HASH )
 #    define BOOST_DYNAMIC_BITSET_SPECIALIZE_STD_HASH
 #endif
