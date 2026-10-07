@@ -736,8 +736,10 @@ public:
     //!     \pre
     //!     `BlockInputIterator` must be either an integral type, an
     //!     unscoped enumeration type or a model of <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
-    //!     whose `value_type` is implicitly convertible to `Block` (a
-    //!     `static_assert` checks this).
+    //!     whose `value_type` is implicitly convertible to `Block` and
+    //!     is neither `bool` nor a floating-point type (a
+    //!     `static_assert` checks this): in particular, a range of
+    //!     `bool`s is not a range of blocks.
     //!
     //!     \param first `num_bits` if the template argument is an
     //!     integral or enumeration type, otherwise the start of the
@@ -1098,7 +1100,8 @@ public:
     //!     The `BlockInputIterator` type must be a model of
     //!     <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
     //!     and its `value_type` must be implicitly convertible to
-    //!     `Block` (a `static_assert` checks this).
+    //!     `Block` and be neither `bool` nor a floating-point type (a
+    //!     `static_assert` checks this).
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
@@ -2368,7 +2371,8 @@ to_block_range( const dynamic_bitset< Block, AllocatorOrContainer > & b, BlockOu
 //!     The type `BlockIterator` must be a model of
 //!     <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
 //!     and its `value_type` must be implicitly convertible to `Block`
-//!     (a `static_assert` checks this). The size of the iterator range
+//!     and be neither `bool` nor a floating-point type (a
+//!     `static_assert` checks this). The size of the iterator range
 //!     must be less than or equal to `b.num_blocks()`. Excess bits are
 //!     not copied into the bitset, which doesn't change its size.
 //!

@@ -231,6 +231,18 @@ rejected_case()
     const std::vector< scoped_enum > v( 1, scoped_enum::a );
     default_bitset                   b;
     b.append( v.begin(), v.end() );
+#    elif BOOST_DYNAMIC_BITSET_TEST_REJECTED_CASE == 4
+    // A range of bool is not a range of blocks.
+    const std::vector< bool > v( 3, true );
+    const default_bitset      b( v.begin(), v.end() );
+#    elif BOOST_DYNAMIC_BITSET_TEST_REJECTED_CASE == 5
+    const std::vector< double > v( 1, 1.0 );
+    default_bitset              b( 64 );
+    boost::from_block_range( v.begin(), v.end(), b );
+#    elif BOOST_DYNAMIC_BITSET_TEST_REJECTED_CASE == 6
+    const std::vector< bool > v( 3, true );
+    default_bitset            b;
+    b.append( v.begin(), v.end() );
 #    endif
 }
 

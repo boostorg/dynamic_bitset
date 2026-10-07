@@ -459,7 +459,7 @@ template< typename BlockIterator, typename B, typename A >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< B, A > & result )
 {
-    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockIterator >::value_type, B >::value, "the value_type of a range of blocks must be implicitly convertible to Block" );
+    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockIterator >::value_type, B >::value, "the value_type of a range of blocks must be implicitly convertible to Block, and can't be bool or a floating-point type" );
 
     // PRE: distance(first, last) <= numblocks()
     BOOST_TRY
@@ -878,7 +878,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::append( BlockInputIterator first,
     // warnings about narrowing and sign conversions, would accept a
     // value_type which converts to Block only explicitly (e.g.
     // std::byte), if it weren't for this static_assert.
-    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockInputIterator >::value_type, Block >::value, "the value_type of a range of blocks must be implicitly convertible to Block" );
+    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockInputIterator >::value_type, Block >::value, "the value_type of a range of blocks must be implicitly convertible to Block, and can't be bool or a floating-point type" );
 
     const size_type old_size = size();
     BOOST_TRY
@@ -2251,7 +2251,7 @@ template< typename BlockIter >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::init_from_block_range( BlockIter first, BlockIter last )
 {
-    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockIter >::value_type, Block >::value, "the value_type of a range of blocks must be implicitly convertible to Block" );
+    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockIter >::value_type, Block >::value, "the value_type of a range of blocks must be implicitly convertible to Block, and can't be bool or a floating-point type" );
 
     BOOST_ASSERT( m_bits.size() == 0 );
     m_bits.insert( m_bits.end(), first, last );
