@@ -33,6 +33,7 @@ test-suite dynamic_bitset :
     [ run test_no_string_view.cpp ]
     [ run test_move.cpp ]
     [ run test_copy_assignment.cpp ]
+    [ run test_block_ranges.cpp ]
 
     [ run test_boost_hash.cpp ]
     [ run test_std_hash.cpp          : : : [ requires cxx11_hdr_unordered_set ] ]
@@ -40,6 +41,11 @@ test-suite dynamic_bitset :
     [ compile-fail test_std_hash.cpp : [ requires cxx11_hdr_unordered_set ]
                                        <define>BOOST_DYNAMIC_BITSET_NO_STD_HASH
                                      : test_std_hash_disabled ]
+
+    [ compile-fail test_block_ranges.cpp : <define>BOOST_DYNAMIC_BITSET_TEST_REJECTED_CASE=1
+                                         : test_block_ranges_floating_point_pair ]
+    [ compile-fail test_block_ranges.cpp : <define>BOOST_DYNAMIC_BITSET_TEST_REJECTED_CASE=2
+                                         : test_block_ranges_scoped_enum_pair ]
     ;
 
 # due to https://github.com/boostorg/serialization/issues/108
