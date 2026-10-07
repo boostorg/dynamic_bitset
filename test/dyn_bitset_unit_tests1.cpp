@@ -1036,6 +1036,27 @@ run_test_cases()
 #endif
 }
 
+// Clang can't evaluate std::vector::resize() of libstdc++ 12 before
+// 12.4 and 13 before 13.2 in constant expressions when it adds more
+// than one element (GCC bug 110542). _GLIBCXX_RELEASE doesn't tell
+// those releases apart from the later ones, so we skip this test
+// with Clang and libstdc++ 12 and 13.
+#if defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L \
+    && ! ( defined( __clang__ ) && defined( _GLIBCXX_RELEASE ) && _GLIBCXX_RELEASE < 14 )
+
+// The value spans several blocks, so the constructor shifts it.
+constexpr bool
+constructs_from_an_integer_in_constant_expressions()
+{
+    const boost::dynamic_bitset< unsigned char > b( 16, 0x305ul );
+
+    return b.size() == 16 && b.to_ulong() == 0x305ul;
+}
+
+static_assert( constructs_from_an_integer_in_constant_expressions(), "" );
+
+#endif
+
 int
 main()
 {

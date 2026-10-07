@@ -120,8 +120,11 @@ struct shifter
     static BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
     right_shift( T & v )
     {
+        // When the shift is evaluated, amount % width is amount. The %
+        // keeps the shift count less than width in the other case too,
+        // to avoid warnings.
         amount >= width ? ( v = 0 )
-                        : ( v >>= BOOST_DYNAMIC_BITSET_WRAP_CONSTANT( amount ) );
+                        : ( v >>= ( amount % width ) );
     }
 };
 
