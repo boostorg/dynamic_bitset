@@ -2213,11 +2213,18 @@ template< typename Block, typename AllocatorOrContainer >
 template< typename T >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::dispatch_init(
-    T             num_bits,
-    unsigned long value,
+    T num_bits,
+    T value,
     detail::dynamic_bitset_impl::value_to_type< true > )
 {
-    init_from_unsigned_long( static_cast< size_type >( num_bits ), value );
+    static_assert( ! std::is_floating_point< T >::value, "the constructor from a range of blocks doesn't take floating-point arguments" );
+    static_assert( std::is_convertible< T, unsigned long >::value, "the constructor from a range of blocks doesn't take scoped enumerators" );
+
+    // Given the static_asserts, the second static_cast converts as an
+    // implicit conversion would. We use it to avoid further errors when
+    // one of the static_asserts fails, and warnings about narrowing or
+    // sign conversions (e.g. from a long long).
+    init_from_unsigned_long( static_cast< size_type >( num_bits ), static_cast< unsigned long >( value ) );
 }
 
 template< typename Block, typename AllocatorOrContainer >

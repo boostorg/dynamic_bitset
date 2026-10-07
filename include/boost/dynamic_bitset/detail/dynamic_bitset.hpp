@@ -149,8 +149,14 @@ struct allowed_block_type< bool >
     };
 };
 
+// Whether the constructor from a range of blocks takes its two
+// arguments, of type T, as a size and a value rather than as iterators.
+// As the major implementations of the standard containers do, we take
+// the enumeration types, too, as numbers. The floating-point types are
+// here only so that the constructor can reject them with a
+// static_assert, instead of trying to use them as iterators.
 template< typename T >
-using is_numeric = std::is_integral< T >; // floating points intentionally excluded
+using is_numeric = std::integral_constant< bool, std::is_arithmetic< T >::value || std::is_enum< T >::value >;
 
 // The characters that stand for a zero bit and a one bit in the strings
 // that a dynamic_bitset is constructed from or converted to. Unlike the

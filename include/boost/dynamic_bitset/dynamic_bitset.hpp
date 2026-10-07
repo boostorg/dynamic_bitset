@@ -669,10 +669,13 @@ public:
     //!     integer.
     //!
     //!     If this constructor is called with a type
-    //!     `BlockInputIterator` which is actually an integral type, the
-    //!     library behaves as if the constructor from `unsigned long`
-    //!     were called, with arguments `static_cast< size_type >( first )`,
-    //!     `last` and `alloc`, in that order.
+    //!     `BlockInputIterator` which is actually an integral type or
+    //!     an unscoped enumeration type, the library behaves as if the
+    //!     constructor from `unsigned long` were called, with arguments
+    //!     `static_cast< size_type >( first )`, `last` and `alloc`, in
+    //!     that order. If `BlockInputIterator` is a floating-point type
+    //!     or a scoped enumeration type, the program is ill-formed (a
+    //!     `static_assert` fails).
     //!
     //!     \par Example
     //!     Given:
@@ -709,12 +712,15 @@ public:
     //!     C++03; when it is either an integral type or any other type
     //!     that the implementation might detect as impossible to be an
     //!     input iterator, with the proposed resolution. For the
-    //!     purposes of dynamic_bitset we limit ourselves to the first
-    //!     of these two changes.
+    //!     purposes of dynamic_bitset we adopt the first of these two
+    //!     changes, and we use the leeway given by the second only to
+    //!     take the enumeration types, too, as integers (as the major
+    //!     implementations of the standard containers do).
     //!
-    //!     Otherwise (i.e. if the template argument is not an integral
-    //!     type), constructs a bitset based on a range of blocks. Let
-    //!     `*first` be block number 0, `\*++first` block number 1, etc.
+    //!     Otherwise (i.e. if the template argument is neither an
+    //!     arithmetic type nor an enumeration type), constructs a
+    //!     bitset based on a range of blocks. Let `*first` be block
+    //!     number 0, `\*++first` block number 1, etc.
     //!     Block number `b` is used to initialize the bits of the
     //!     dynamic_bitset in the position range `[b * bits_per_block, (
     //!     b + 1 ) * bits_per_block)`. For each block number `b` with
@@ -722,14 +728,15 @@ public:
     //!     bit at position `b * bits_per_block + i` in the bitset
     //!     (where i goes through the range `[0, bits_per_block)`).
     //!     \pre
-    //!     `BlockInputIterator` must be either an integral type or a
-    //!     model of <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
+    //!     `BlockInputIterator` must be either an integral type, an
+    //!     unscoped enumeration type or a model of <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
     //!     whose `value_type` is the same type as `Block`.
     //!
-    //!     \param first `numbits` if the template argument is an
-    //!     integral type, otherwise the start of the range.
+    //!     \param first `num_bits` if the template argument is an
+    //!     integral or enumeration type, otherwise the start of the
+    //!     range.
     //!     \param last `value` if the template argument is an integral
-    //!     type, otherwise the end of the range.
+    //!     or enumeration type, otherwise the end of the range.
     //!     \param alloc The allocator to use.
     //!
     //!     \par Throws
@@ -1789,7 +1796,7 @@ private:
     };
 
     template< typename T >
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void dispatch_init( T num_bits, unsigned long value, detail::dynamic_bitset_impl::value_to_type< true > );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void dispatch_init( T num_bits, T value, detail::dynamic_bitset_impl::value_to_type< true > );
 
     template< typename T >
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void dispatch_init( T first, T last, detail::dynamic_bitset_impl::value_to_type< false > );
