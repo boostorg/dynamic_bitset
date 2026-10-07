@@ -42,8 +42,8 @@ non-negative position. A bitset `x` contains `x.size()` bits, with each bit
 assigned a unique position in the range `[0, x.size())`. The bit at position 0
 is called the least significant bit and the bit at position `size() - 1` is the
 most significant bit. When converting an instance of `dynamic_bitset` to or from
-an unsigned long `n`, the bit at position `i` of the bitset has the same value
-as `(n >> i) & 1`.
+an unsigned integer `n`, the bit at position `i` of the bitset has the same
+value as `(n >> i) & 1`.
 
 == Rationale
 Because of the proxy reference type, `dynamic_bitset` is not a
