@@ -521,7 +521,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
 }
 
 template< typename Block, typename AllocatorOrContainer >
-template< typename CharT >
+template< typename CharT, typename >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20
 dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
     const CharT *          s,

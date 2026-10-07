@@ -588,6 +588,13 @@ public:
     //!     Similar to the constructor from a `basic_string`, but takes
     //!     a pointer to a C-style string (and doesn't take a `pos`).
     //!
+    //!     This constructor participates in overload resolution only
+    //!     if `CharT` is `char`, `wchar_t`, `char8_t`, `char16_t` or
+    //!     `char32_t`. So, e.g., a pointer to a
+    //!     `std::pmr::memory_resource` selects the constructor from an
+    //!     allocator when `allocator_type` is a
+    //!     `std::pmr::polymorphic_allocator`.
+    //!
     //!     The size of the bitset is `num_bits` if `num_bits != npos`,
     //!     otherwise `rlen = min( n, std::char_traits< CharT >::length( s ) )`.
     //!     The first `M = min( num_bits, rlen )` bits are initialized
@@ -607,7 +614,7 @@ public:
     //!     different from `npos`.
     //!     \param alloc The allocator to use.
     // -----------------------------------------------------------------------
-    template< typename CharT >
+    template< typename CharT, typename = typename std::enable_if< detail::dynamic_bitset_impl::is_character_type< CharT >::value >::type >
     explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const CharT * s, std::size_t n = std::size_t( -1 ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
 #if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )

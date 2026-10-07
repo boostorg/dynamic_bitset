@@ -285,6 +285,11 @@ struct true_false_traits : std::char_traits< char >
     }
 };
 
+// The constructor from a pointer to a string takes only pointers to
+// character types.
+template< typename T >
+using is_constructible_from_pointer_to = std::is_constructible< boost::dynamic_bitset<>, const T * >;
+
 #if defined( __cpp_lib_constexpr_string ) && __cpp_lib_constexpr_string >= 201907L \
     && defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L
 
@@ -455,6 +460,33 @@ run_test_cases()
         BOOST_TEST( bitset_type( std::basic_string_view< char, true_false_traits >( "TFTF" ) ) == bitset_type( 4, 10ul ) );
 #endif
     }
+    static_assert( is_constructible_from_pointer_to< char >::value, "" );
+    static_assert( is_constructible_from_pointer_to< wchar_t >::value, "" );
+#if defined( __cpp_char8_t ) && __cpp_char8_t >= 201811L
+    static_assert( is_constructible_from_pointer_to< char8_t >::value, "" );
+#endif
+    static_assert( is_constructible_from_pointer_to< char16_t >::value, "" );
+    static_assert( is_constructible_from_pointer_to< char32_t >::value, "" );
+    static_assert( std::is_constructible< boost::dynamic_bitset<>, char * >::value, "" );
+    static_assert( ! is_constructible_from_pointer_to< signed char >::value, "" );
+    static_assert( ! is_constructible_from_pointer_to< unsigned char >::value, "" );
+    static_assert( ! is_constructible_from_pointer_to< unsigned long >::value, "" );
+#if defined( __cpp_lib_memory_resource ) && __cpp_lib_memory_resource >= 201603L
+    {
+        // So, a pointer to a memory resource selects the constructor from
+        // an allocator.
+        typedef boost::dynamic_bitset< Block, std::pmr::polymorphic_allocator< Block > > Bitset;
+
+        std::pmr::monotonic_buffer_resource                                              resource;
+        const Bitset                                                                     b( &resource );
+        BOOST_TEST( b.size() == 0 );
+        BOOST_TEST( b.get_allocator().resource() == &resource );
+
+        std::pmr::memory_resource * const mr = std::pmr::new_delete_resource();
+        const Bitset                      c( mr );
+        BOOST_TEST( c.get_allocator().resource() == mr );
+    }
+#endif
 #if defined( __cpp_lib_constexpr_string ) && __cpp_lib_constexpr_string >= 201907L \
     && defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L
     static_assert( converts_in_constant_expressions(), "" );

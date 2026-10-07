@@ -243,6 +243,46 @@ struct binary_digits< char32_t >
     }
 };
 
+// Whether T is one of the character types that the constructor from a
+// pointer to a string accepts. That constructor is constrained on this
+// trait so that it doesn't take pointers to anything else: e.g., a
+// pointer to a std::pmr::memory_resource must select the constructor
+// from an allocator, when the allocator is a
+// std::pmr::polymorphic_allocator. Signed char and unsigned char are
+// intentionally excluded, because std::char_traits isn't required to
+// support them.
+template< typename T >
+struct is_character_type : std::false_type
+{
+};
+
+template<>
+struct is_character_type< char > : std::true_type
+{
+};
+
+template<>
+struct is_character_type< wchar_t > : std::true_type
+{
+};
+
+#if defined( __cpp_char8_t ) && __cpp_char8_t >= 201811L
+template<>
+struct is_character_type< char8_t > : std::true_type
+{
+};
+#endif
+
+template<>
+struct is_character_type< char16_t > : std::true_type
+{
+};
+
+template<>
+struct is_character_type< char32_t > : std::true_type
+{
+};
+
 } // dynamic_bitset_impl
 } // namespace detail
 
