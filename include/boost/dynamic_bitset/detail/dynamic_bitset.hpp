@@ -158,6 +158,15 @@ struct allowed_block_type< bool >
 template< typename T >
 using is_numeric = std::integral_constant< bool, std::is_arithmetic< T >::value || std::is_enum< T >::value >;
 
+// Whether T can be the value_type of a range of blocks of type Block.
+// Each element of such a range is converted to Block, so T must be
+// implicitly convertible to Block.
+template< typename T, typename Block >
+struct is_block_value_type
+    : std::is_convertible< T, Block >
+{
+};
+
 // The characters that stand for a zero bit and a one bit in the strings
 // that a dynamic_bitset is constructed from or converted to. Unlike the
 // characters used by the stream operators, they don't depend on any

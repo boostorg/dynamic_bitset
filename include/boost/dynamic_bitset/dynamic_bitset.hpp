@@ -719,18 +719,25 @@ public:
     //!
     //!     Otherwise (i.e. if the template argument is neither an
     //!     arithmetic type nor an enumeration type), constructs a
-    //!     bitset based on a range of blocks. Let `*first` be block
-    //!     number 0, `\*++first` block number 1, etc.
-    //!     Block number `b` is used to initialize the bits of the
-    //!     dynamic_bitset in the position range `[b * bits_per_block, (
-    //!     b + 1 ) * bits_per_block)`. For each block number `b` with
-    //!     value `bval`, the bit `( bval >> i ) & 1` corresponds to the
-    //!     bit at position `b * bits_per_block + i` in the bitset
-    //!     (where i goes through the range `[0, bits_per_block)`).
+    //!     bitset based on a range of blocks. Each element of the range
+    //!     is converted to `Block`. Let `*first` be block number 0,
+    //!     `\*++first` block number 1, etc. Block number `b` is used to
+    //!     initialize the bits of the dynamic_bitset in the position
+    //!     range `[b * bits_per_block, ( b + 1 ) * bits_per_block)`.
+    //!     For each block number `b` with value `bval`, the bit
+    //!     `( bval >> i ) & 1` corresponds to the bit at position
+    //!     `b * bits_per_block + i` in the bitset (where i goes through
+    //!     the range `[0, bits_per_block)`). Note that each element
+    //!     makes a whole block, even if the `value_type` of the
+    //!     iterator is narrower than `Block`: e.g., a range of two
+    //!     `unsigned char`s makes a `dynamic_bitset< unsigned long >`
+    //!     of `2 * bits_per_block` bits.
+    //!
     //!     \pre
     //!     `BlockInputIterator` must be either an integral type, an
     //!     unscoped enumeration type or a model of <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
-    //!     whose `value_type` is the same type as `Block`.
+    //!     whose `value_type` is implicitly convertible to `Block` (a
+    //!     `static_assert` checks this).
     //!
     //!     \param first `num_bits` if the template argument is an
     //!     integral or enumeration type, otherwise the start of the
@@ -1083,10 +1090,15 @@ public:
     //!     }
     //!     \endcode
     //!
+    //!     So, each element of the range is converted to `Block`, and
+    //!     makes a whole block, as with the constructor from a range of
+    //!     blocks.
+    //!
     //!     \pre
     //!     The `BlockInputIterator` type must be a model of
     //!     <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
-    //!     and its value_type must be the same type as Block.
+    //!     and its `value_type` must be implicitly convertible to
+    //!     `Block` (a `static_assert` checks this).
     //!
     //!     \par Throws
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
@@ -2349,13 +2361,16 @@ to_block_range( const dynamic_bitset< Block, AllocatorOrContainer > & b, BlockOu
 
 //!     Reads blocks from the iterator range into the bitset.
 //!
+//!     Each element of the range is converted to `Block`, and makes a
+//!     whole block, as with the constructor from a range of blocks.
+//!
 //!     \pre
 //!     The type `BlockIterator` must be a model of
 //!     <a href="https://en.cppreference.com/w/cpp/named_req/InputIterator">LegacyInputIterator</a>
-//!     and its `value_type` must be the same type as `Block`. The size
-//!     of the iterator range must be less than or equal to
-//!     `b.num_blocks()`. Excess bits are not copied into the bitset,
-//!     which doesn't change its size.
+//!     and its `value_type` must be implicitly convertible to `Block`
+//!     (a `static_assert` checks this). The size of the iterator range
+//!     must be less than or equal to `b.num_blocks()`. Excess bits are
+//!     not copied into the bitset, which doesn't change its size.
 //!
 //!     \par Throws
 //!     Any exception thrown by an operation of `BlockIterator`. In that
