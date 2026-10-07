@@ -492,6 +492,13 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset( const allocator_t
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20
+dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset( size_type num_bits )
+    : dynamic_bitset( num_bits, 0ul )
+{
+}
+
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
 dynamic_bitset< Block, AllocatorOrContainer >::
     dynamic_bitset( size_type num_bits, unsigned long value, const allocator_type & alloc )
     : m_bits( alloc ), m_num_bits( 0 )

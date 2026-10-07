@@ -496,6 +496,26 @@ public:
     // -----------------------------------------------------------------------
     explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const allocator_type & alloc );
 
+    //!     Constructs a bitset of `num_bits` bits, all zero.
+    //!
+    //!     This constructor is `explicit`, so, e.g., neither
+    //!     `dynamic_bitset<> b = 8;` nor `dynamic_bitset<> b = { 8 };`
+    //!     compiles. The constructor from a size and a value, instead,
+    //!     isn't `explicit` (see below).
+    //!
+    //!     \param num_bits The size of the constructed bitset.
+    //!
+    //!     \post
+    //!     - `this->size() == num_bits`
+    //!     - For all i in the range `[0, num_bits)`, `( *this )[ i ] ==
+    //!       false`.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
+    // -----------------------------------------------------------------------
+    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( size_type num_bits );
+
     //!     Constructs a bitset from an integer.
     //!
     //!     The first `M` bits (where `M = min( num_bits,
@@ -507,13 +527,26 @@ public:
     //!     following
     //!
     //!     \code
-    //!     dynamic_bitset b<>( 16, 7 );
+    //!     dynamic_bitset<> b( 16, 7 );
     //!     \endcode
     //!
     //!     will match the constructor from an iterator range (not this
     //!     one), but the underlying implementation will still "do the
     //!     right thing" and construct a bitset of 16 bits, from the
     //!     value 7.
+    //!
+    //!     Unlike the constructor from a size alone, and like the
+    //!     corresponding constructor of `std::vector`, this constructor
+    //!     isn't `explicit`. So, a bitset can be copy-list-initialized
+    //!     from a size and a value, as in
+    //!
+    //!     \code
+    //!     dynamic_bitset<> b = { 8, 7ul };
+    //!     \endcode
+    //!
+    //!     As with any list-initialization, though, a narrowing
+    //!     conversion of an argument (e.g. from a non-constant `int` to
+    //!     `size_type`) makes the program ill-formed.
     //!
     //!     \param num_bits The size of the constructed bitset.
     //!     \param value The value to initialize the bitset from.
@@ -530,7 +563,7 @@ public:
     //!     An allocation error if memory is exhausted (`std::bad_alloc`
     //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
-    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( size_type num_bits, unsigned long value = 0, const allocator_type & alloc = allocator_type() );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20          dynamic_bitset( size_type num_bits, unsigned long value, const allocator_type & alloc = allocator_type() );
 
     //!     Constructs a bitset of `num_bits` zero bits, which uses a
     //!     copy of `alloc` to allocate memory.
@@ -688,7 +721,7 @@ public:
     //!
     //!     \code
     //!     dynamic_bitset(size_type num_bits,
-    //!                    unsigned long value = 0,
+    //!                    unsigned long value,
     //!                    const allocator_type & alloc = allocator_type())
     //!     \endcode
     //!
@@ -732,6 +765,9 @@ public:
     //!     iterator is narrower than `Block`: e.g., a range of two
     //!     `unsigned char`s makes a `dynamic_bitset< unsigned long >`
     //!     of `2 * bits_per_block` bits.
+    //!
+    //!     Like the range constructors of the standard containers, this
+    //!     constructor isn't `explicit`.
     //!
     //!     \pre
     //!     `BlockInputIterator` must be either an integral type, an
