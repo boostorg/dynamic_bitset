@@ -160,10 +160,16 @@ using is_numeric = std::integral_constant< bool, std::is_arithmetic< T >::value 
 
 // Whether T can be the value_type of a range of blocks of type Block.
 // Each element of such a range is converted to Block, so T must be
-// implicitly convertible to Block.
+// implicitly convertible to Block. And it can't be bool (a range of
+// bool is surely meant as a range of bits, not of blocks) or a
+// floating-point type.
 template< typename T, typename Block >
 struct is_block_value_type
-    : std::is_convertible< T, Block >
+    : std::integral_constant<
+          bool,
+          std::is_convertible< T, Block >::value
+              && ! std::is_same< typename std::remove_cv< T >::type, bool >::value
+              && ! std::is_floating_point< T >::value >
 {
 };
 

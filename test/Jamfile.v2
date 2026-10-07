@@ -48,6 +48,12 @@ test-suite dynamic_bitset :
                                          : test_block_ranges_scoped_enum_pair ]
     [ compile-fail test_block_ranges.cpp : <define>BOOST_DYNAMIC_BITSET_TEST_REJECTED_CASE=3
                                          : test_block_ranges_scoped_enum_append ]
+    [ compile-fail test_block_ranges.cpp : <define>BOOST_DYNAMIC_BITSET_TEST_REJECTED_CASE=4
+                                         : test_block_ranges_bool_constructor ]
+    [ compile-fail test_block_ranges.cpp : <define>BOOST_DYNAMIC_BITSET_TEST_REJECTED_CASE=5
+                                         : test_block_ranges_double_from_block_range ]
+    [ compile-fail test_block_ranges.cpp : <define>BOOST_DYNAMIC_BITSET_TEST_REJECTED_CASE=6
+                                         : test_block_ranges_bool_append ]
     ;
 
 # due to https://github.com/boostorg/serialization/issues/108
