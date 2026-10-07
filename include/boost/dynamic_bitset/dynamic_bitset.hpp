@@ -586,7 +586,9 @@ public:
     explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = ( std::basic_string< CharT, Traits, Alloc >::npos ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
     //!     Similar to the constructor from a `basic_string`, but takes
-    //!     a pointer to a C-style string (and doesn't take a `pos`).
+    //!     a pointer to a C-style string, or to an array of characters
+    //!     which need not be null-terminated (and doesn't take a
+    //!     `pos`).
     //!
     //!     This constructor participates in overload resolution only
     //!     if `CharT` is `char`, `wchar_t`, `char8_t`, `char16_t` or
@@ -595,21 +597,33 @@ public:
     //!     allocator when `allocator_type` is a
     //!     `std::pmr::polymorphic_allocator`.
     //!
-    //!     The size of the bitset is `num_bits` if `num_bits != npos`,
-    //!     otherwise `rlen = min( n, std::char_traits< CharT >::length( s ) )`.
-    //!     The first `M = min( num_bits, rlen )` bits are initialized
-    //!     to the corresponding characters in `s`.
+    //!     Let `rlen` be the number of characters that precede the
+    //!     first null character in `s`, if that number is less than
+    //!     `n`, or `n` otherwise. (So, if `s` is null-terminated,
+    //!     `rlen == min( n, std::char_traits< CharT >::length( s ) )`.)
+    //!     The constructor reads only the first `rlen` characters of
+    //!     `s` and, if `rlen < n`, the null character that follows
+    //!     them. The size of the bitset is `num_bits` if
+    //!     `num_bits != npos`, otherwise `rlen`. The first
+    //!     `M = min( num_bits, rlen )` bits are initialized to the
+    //!     corresponding characters in `s`. Note that, unlike with
+    //!     `std::bitset`, a null character among the first `n`
+    //!     characters ends the input, rather than being an invalid
+    //!     digit.
     //!
     //!     \pre
-    //!     Each character of `s` used to initialize a bit compares
-    //!     equal, according to `std::char_traits< CharT >::eq`, to
-    //!     either the digit zero or the digit one of `CharT`, as
-    //!     defined for the constructor from a `basic_string`. E.g.:
-    //!     `dynamic_bitset<> b( "10xyz", 2 ); // OK`.
+    //!     - `s` points to the first character of either a
+    //!       null-terminated string or an array of at least `n`
+    //!       characters. E.g.:
+    //!       `const char a[] = { '1', '0' }; dynamic_bitset<> b( a, 2 ); // OK`.
+    //!     - Each character of `s` used to initialize a bit compares
+    //!       equal, according to `std::char_traits< CharT >::eq`, to
+    //!       either the digit zero or the digit one of `CharT`, as
+    //!       defined for the constructor from a `basic_string`. E.g.:
+    //!       `dynamic_bitset<> b( "10xyz", 2 ); // OK`.
     //!
-    //!     \param s The string to construct from.
-    //!     \param n The maximum number of characters in the string to
-    //!     consider.
+    //!     \param s The string or array to construct from.
+    //!     \param n The maximum number of characters to read from `s`.
     //!     \param num_bits The size of the bitset to construct, if
     //!     different from `npos`.
     //!     \param alloc The allocator to use.

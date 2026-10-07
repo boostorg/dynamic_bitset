@@ -487,6 +487,12 @@ run_test_cases()
         BOOST_TEST( c.get_allocator().resource() == mr );
     }
 #endif
+    {
+        // The constructor from a pointer to a string reads at most n
+        // characters, so the array need not be null-terminated.
+        const char digits[] = { '1', '0', '1', '1' };
+        BOOST_TEST( bitset_type( digits, 4 ) == bitset_type( 4, 11ul ) );
+    }
 #if defined( __cpp_lib_constexpr_string ) && __cpp_lib_constexpr_string >= 201907L \
     && defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L
     static_assert( converts_in_constant_expressions(), "" );

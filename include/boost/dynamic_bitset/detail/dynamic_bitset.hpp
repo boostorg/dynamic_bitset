@@ -19,6 +19,7 @@
 #include "boost/dynamic_bitset/config.hpp"
 #include <cstddef>
 #include <limits>
+#include <string>
 #include <type_traits>
 #include <utility>
 
@@ -282,6 +283,25 @@ template<>
 struct is_character_type< char32_t > : std::true_type
 {
 };
+
+// Returns the number of characters that precede the first null
+// character among the first n characters of s, or n if there is no
+// null character among them. Unlike
+// std::char_traits< CharT >::length(), this never reads more than n
+// characters, so s need not be null-terminated if it has at least n
+// characters. And unlike std::char_traits< CharT >::find(), it doesn't
+// require s to have at least n characters, so n can exceed the length
+// of a null-terminated s (as the default std::size_t( -1 ) does).
+template< typename CharT >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 std::size_t
+bounded_length( const CharT * s, std::size_t n )
+{
+    std::size_t length = 0;
+    while ( length < n && ! std::char_traits< CharT >::eq( s[ length ], CharT() ) ) {
+        ++length;
+    }
+    return length;
+}
 
 } // dynamic_bitset_impl
 } // namespace detail

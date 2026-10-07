@@ -530,7 +530,8 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
     const allocator_type & alloc )
     : m_bits( alloc ), m_num_bits( 0 )
 {
-    init_from_string( s, std::char_traits< CharT >::length( s ), 0, n, num_bits );
+    const std::size_t length = detail::dynamic_bitset_impl::bounded_length( s, n );
+    init_from_string( s, length, 0, n, num_bits );
 }
 
 #if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
