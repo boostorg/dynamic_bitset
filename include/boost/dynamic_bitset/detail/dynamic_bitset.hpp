@@ -158,6 +158,15 @@ struct allowed_block_type< bool >
 template< typename T >
 using is_numeric = std::integral_constant< bool, std::is_arithmetic< T >::value || std::is_enum< T >::value >;
 
+// Whether T can be the value_type of a range of blocks of type Block.
+// Each element of such a range is converted to Block, so T must be
+// implicitly convertible to Block.
+template< typename T, typename Block >
+struct is_block_value_type
+    : std::is_convertible< T, Block >
+{
+};
+
 // Whether T is one of the character types that the constructor from a
 // pointer to a string accepts. That constructor is constrained on this
 // trait so that it doesn't take pointers to anything else: e.g., a

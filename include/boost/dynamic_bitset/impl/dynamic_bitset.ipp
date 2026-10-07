@@ -459,6 +459,8 @@ template< typename BlockIterator, typename B, typename A >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< B, A > & result )
 {
+    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockIterator >::value_type, B >::value, "the value_type of a range of blocks must be implicitly convertible to Block" );
+
     // PRE: distance(first, last) <= numblocks()
     BOOST_TRY
     {
@@ -872,6 +874,12 @@ template< typename BlockInputIterator >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::append( BlockInputIterator first, BlockInputIterator last ) // strong guarantee
 {
+    // Note that the static_casts to Block in m_append(), which avoid
+    // warnings about narrowing and sign conversions, would accept a
+    // value_type which converts to Block only explicitly (e.g.
+    // std::byte), if it weren't for this static_assert.
+    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockInputIterator >::value_type, Block >::value, "the value_type of a range of blocks must be implicitly convertible to Block" );
+
     const size_type old_size = size();
     BOOST_TRY
     {
@@ -2241,6 +2249,8 @@ template< typename BlockIter >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::init_from_block_range( BlockIter first, BlockIter last )
 {
+    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockIter >::value_type, Block >::value, "the value_type of a range of blocks must be implicitly convertible to Block" );
+
     BOOST_ASSERT( m_bits.size() == 0 );
     m_bits.insert( m_bits.end(), first, last );
     m_num_bits = m_bits.size() * bits_per_block;
@@ -2313,7 +2323,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::m_append( BlockInputIterator first, BlockInputIterator last, std::input_iterator_tag )
 {
     for ( ; first != last; ++first ) {
-        append( *first );
+        append( static_cast< Block >( *first ) );
     }
 }
 
@@ -2332,7 +2342,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::m_append( BlockInputIterator firs
 
     const int r = count_extra_bits();
     for ( ; first != last; ++first, ++i ) {
-        const Block value = *first; // convert before shifting
+        const Block value = static_cast< Block >( *first ); // convert before shifting
         if ( r == 0 ) {
             m_bits[ i ] = value;
         } else {
