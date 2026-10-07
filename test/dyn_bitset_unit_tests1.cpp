@@ -431,6 +431,14 @@ run_test_cases()
         run_numeric_ctor_tests< Tests, unsigned long long >();
     }
     //=====================================================================
+    // Test copy-list-initialization from a size and a value
+    {
+        static_assert( ! std::is_convertible< std::size_t, bitset_type >::value, "" );
+
+        const bitset_type a = { 8, 7ul };
+        BOOST_TEST( a == bitset_type( 8, 7ul ) );
+    }
+    //=====================================================================
     // Test construction from a string
     {
         run_string_tests< Tests >( std::string( "" ) ); // empty string
