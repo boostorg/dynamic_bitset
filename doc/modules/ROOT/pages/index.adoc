@@ -69,6 +69,15 @@ with this, the documentation of the member functions doesn't use the term
 "precondition" for conditions that cause an exception to be emitted (the C++
 standard uses the term "requires" in such cases).
 
+The functions which have a precondition (e.g., `test()` and `operator[]`) aren't
+declared `noexcept`, even if they can't throw: so, an assertion handler which
+throws (see `BOOST_ENABLE_ASSERT_HANDLER`) can report a violation, e.g. in a
+test. The functions which have no precondition and can't throw, such as
+`clear()`, `count()`, `find_first()` and the comparison operators, are
+`noexcept`. The default constructor, the constructor from an allocator, the move
+operations and `swap()` are `noexcept` if the corresponding operations of the
+underlying container are.
+
 == Constant evaluation
 In C++20 and later, all the functions of `dynamic_bitset`, including those of
 its iterators and of its `reference` class, are `constexpr`, except the stream

@@ -478,14 +478,14 @@ from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< B, A 
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20
-dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset()
+dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset() noexcept( std::is_nothrow_default_constructible< buffer_type >::value )
     : m_num_bits( 0 )
 {
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20
-dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset( const allocator_type & alloc )
+dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset( const allocator_type & alloc ) noexcept( std::is_nothrow_constructible< buffer_type, const allocator_type & >::value )
     : m_bits( alloc ), m_num_bits( 0 )
 {
 }
@@ -602,21 +602,21 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >::
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::iterator
-dynamic_bitset< Block, AllocatorOrContainer >::begin()
+dynamic_bitset< Block, AllocatorOrContainer >::begin() noexcept
 {
     return iterator( m_bits.begin(), 0 );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::const_iterator
-dynamic_bitset< Block, AllocatorOrContainer >::begin() const
+dynamic_bitset< Block, AllocatorOrContainer >::begin() const noexcept
 {
     return const_iterator( m_bits.cbegin(), 0 );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::iterator
-dynamic_bitset< Block, AllocatorOrContainer >::end()
+dynamic_bitset< Block, AllocatorOrContainer >::end() noexcept
 {
     if ( count_extra_bits() == 0 ) {
         return iterator( m_bits.end(), 0 );
@@ -627,7 +627,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::end()
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::const_iterator
-dynamic_bitset< Block, AllocatorOrContainer >::end() const
+dynamic_bitset< Block, AllocatorOrContainer >::end() const noexcept
 {
     if ( count_extra_bits() == 0 ) {
         return const_iterator( m_bits.cend(), 0 );
@@ -638,56 +638,56 @@ dynamic_bitset< Block, AllocatorOrContainer >::end() const
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::reverse_iterator
-dynamic_bitset< Block, AllocatorOrContainer >::rbegin()
+dynamic_bitset< Block, AllocatorOrContainer >::rbegin() noexcept
 {
     return reverse_iterator( end() );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::const_reverse_iterator
-dynamic_bitset< Block, AllocatorOrContainer >::rbegin() const
+dynamic_bitset< Block, AllocatorOrContainer >::rbegin() const noexcept
 {
     return const_reverse_iterator( end() );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::reverse_iterator
-dynamic_bitset< Block, AllocatorOrContainer >::rend()
+dynamic_bitset< Block, AllocatorOrContainer >::rend() noexcept
 {
     return reverse_iterator( begin() );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::const_reverse_iterator
-dynamic_bitset< Block, AllocatorOrContainer >::rend() const
+dynamic_bitset< Block, AllocatorOrContainer >::rend() const noexcept
 {
     return const_reverse_iterator( begin() );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::const_iterator
-dynamic_bitset< Block, AllocatorOrContainer >::cbegin() const
+dynamic_bitset< Block, AllocatorOrContainer >::cbegin() const noexcept
 {
     return const_iterator( begin() );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::const_iterator
-dynamic_bitset< Block, AllocatorOrContainer >::cend() const
+dynamic_bitset< Block, AllocatorOrContainer >::cend() const noexcept
 {
     return const_iterator( end() );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::const_reverse_iterator
-dynamic_bitset< Block, AllocatorOrContainer >::crbegin() const
+dynamic_bitset< Block, AllocatorOrContainer >::crbegin() const noexcept
 {
     return const_reverse_iterator( end() );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::const_reverse_iterator
-dynamic_bitset< Block, AllocatorOrContainer >::crend() const
+dynamic_bitset< Block, AllocatorOrContainer >::crend() const noexcept
 {
     return const_reverse_iterator( begin() );
 }
@@ -751,7 +751,7 @@ operator=( dynamic_bitset< Block, AllocatorOrContainer > && b ) noexcept( std::i
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::allocator_type
-dynamic_bitset< Block, AllocatorOrContainer >::get_allocator() const
+dynamic_bitset< Block, AllocatorOrContainer >::get_allocator() const noexcept
 {
     return m_bits.get_allocator();
 }
@@ -800,7 +800,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dynamic_bitset< Block, AllocatorOrContainer >::
-    clear() // no throw
+    clear() noexcept
 {
     m_bits.clear();
     m_num_bits = 0;
@@ -984,7 +984,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
 //
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
-                                 dynamic_bitset< Block, AllocatorOrContainer >::operator<<=( size_type n )
+                                 dynamic_bitset< Block, AllocatorOrContainer >::operator<<=( size_type n ) noexcept
 {
     if ( n >= m_num_bits ) {
         return reset();
@@ -1027,7 +1027,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
 //
 template< typename B, typename A >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< B, A > &
-                                 dynamic_bitset< B, A >::operator>>=( size_type n )
+                                 dynamic_bitset< B, A >::operator>>=( size_type n ) noexcept
 {
     if ( n >= m_num_bits ) {
         return reset();
@@ -1117,7 +1117,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
-                                 dynamic_bitset< Block, AllocatorOrContainer >::set()
+                                 dynamic_bitset< Block, AllocatorOrContainer >::set() noexcept
 {
     std::fill( m_bits.begin(), m_bits.end(), Block( -1 ) );
     m_zero_unused_bits();
@@ -1142,7 +1142,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
-                                 dynamic_bitset< Block, AllocatorOrContainer >::reset()
+                                 dynamic_bitset< Block, AllocatorOrContainer >::reset() noexcept
 {
     std::fill( m_bits.begin(), m_bits.end(), Block( 0 ) );
     return *this;
@@ -1166,7 +1166,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
-                                 dynamic_bitset< Block, AllocatorOrContainer >::flip()
+                                 dynamic_bitset< Block, AllocatorOrContainer >::flip() noexcept
 {
     // See the NOTE before operator&=().
     const size_type                n = num_blocks();
@@ -1221,7 +1221,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::test_set( size_type pos, bool val
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-dynamic_bitset< Block, AllocatorOrContainer >::all() const
+dynamic_bitset< Block, AllocatorOrContainer >::all() const noexcept
 {
     const int        extra_bits        = count_extra_bits();
     const block_type all_ones          = Block( -1 );
@@ -1243,7 +1243,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::all() const
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-dynamic_bitset< Block, AllocatorOrContainer >::any() const
+dynamic_bitset< Block, AllocatorOrContainer >::any() const noexcept
 {
     for ( size_type i = 0; i < num_blocks(); ++i ) {
         if ( m_bits[ i ] ) {
@@ -1255,7 +1255,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::any() const
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-dynamic_bitset< Block, AllocatorOrContainer >::none() const
+dynamic_bitset< Block, AllocatorOrContainer >::none() const noexcept
 {
     return ! any();
 }
@@ -1535,7 +1535,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::m_do_find_from( size_type first_b
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
-dynamic_bitset< Block, AllocatorOrContainer >::find_first( size_type pos ) const
+dynamic_bitset< Block, AllocatorOrContainer >::find_first( size_type pos ) const noexcept
 {
     const size_type sz = size();
     if ( pos >= sz ) {
@@ -1555,7 +1555,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_first( size_type pos ) const
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
-dynamic_bitset< Block, AllocatorOrContainer >::find_first_off( size_type pos ) const
+dynamic_bitset< Block, AllocatorOrContainer >::find_first_off( size_type pos ) const noexcept
 {
     if ( pos >= size() ) {
         return npos;
@@ -1582,7 +1582,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_first_off( size_type pos ) c
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
-dynamic_bitset< Block, AllocatorOrContainer >::find_next( size_type pos ) const
+dynamic_bitset< Block, AllocatorOrContainer >::find_next( size_type pos ) const noexcept
 {
     return pos == npos
              ? npos
@@ -1591,7 +1591,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_next( size_type pos ) const
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
-dynamic_bitset< Block, AllocatorOrContainer >::find_next_off( size_type pos ) const
+dynamic_bitset< Block, AllocatorOrContainer >::find_next_off( size_type pos ) const noexcept
 {
     return pos == npos
              ? npos
@@ -1603,7 +1603,7 @@ dynamic_bitset< Block, AllocatorOrContainer >::find_next_off( size_type pos ) co
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-operator==( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b )
+operator==( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept
 {
     return ( a.m_num_bits == b.m_num_bits )
         && ( a.m_bits == b.m_bits );
@@ -1611,14 +1611,14 @@ operator==( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynam
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-operator!=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b )
+operator!=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept
 {
     return ! ( a == b );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b )
+operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept
 {
     typedef typename dynamic_bitset< Block, AllocatorOrContainer >::size_type size_type;
 
@@ -1657,21 +1657,21 @@ operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynami
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-operator<=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b )
+operator<=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept
 {
     return ! ( a > b );
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-operator>( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b )
+operator>( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept
 {
     return b < a;
 }
 
 template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool
-operator>=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b )
+operator>=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept
 {
     return ! ( a < b );
 }
@@ -1708,7 +1708,7 @@ detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< B, A > & b,
 
 template< typename Block, typename AllocatorOrContainer >
 std::size_t
-hash_value( const dynamic_bitset< Block, AllocatorOrContainer > & a )
+hash_value( const dynamic_bitset< Block, AllocatorOrContainer > & a ) noexcept
 {
     std::size_t res = hash_value( a.m_num_bits );
     boost::hash_combine( res, a.m_bits );

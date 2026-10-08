@@ -147,6 +147,14 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 void to_string_helper( const dynamic_bitset< B,
 //!     first three can't be used with it). Many members access the
 //!     blocks through `operator[]`, so they are efficient only if it
 //!     takes constant time.
+//!
+//!     None of the following may throw an exception: the members
+//!     `begin()`, `end()`, `cbegin()`, `cend()`, `size()`,
+//!     `max_size()`, `capacity()`, `get_allocator()`, `back()` and
+//!     `clear()` of the container, its `operator==`, its `operator[]`
+//!     with a valid index, and the operations of its iterators on
+//!     valid iterators. (The `noexcept` members of `dynamic_bitset`
+//!     rely on that.)
 // ---------------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
 class dynamic_bitset
@@ -482,9 +490,16 @@ public:
     //!     \post
     //!     `this->size() == 0`.
     //!
+    //!     \par Throws
+    //!     Nothing, unless the default constructor of `buffer_type`
+    //!     throws (that of `std::vector`, the buffer used when
+    //!     `AllocatorOrContainer` is an allocator, throws only if the
+    //!     default constructor of the allocator does). This constructor
+    //!     is `noexcept` if that constructor of `buffer_type` is.
+    //!
     //!     (Required by <a href="https://en.cppreference.com/w/cpp/named_req/DefaultConstructible">DefaultConstructible</a>.)
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20          dynamic_bitset();
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20          dynamic_bitset() noexcept( std::is_nothrow_default_constructible< buffer_type >::value );
 
     //!     Constructs a bitset of size zero.
     //!
@@ -493,8 +508,15 @@ public:
     //!
     //!     \post
     //!     `this->size() == 0`
+    //!
+    //!     \par Throws
+    //!     Nothing, unless the constructor of `buffer_type` from an
+    //!     allocator throws (that of `std::vector`, the buffer used
+    //!     when `AllocatorOrContainer` is an allocator, doesn't). This
+    //!     constructor is `noexcept` if that constructor of
+    //!     `buffer_type` is.
     // -----------------------------------------------------------------------
-    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const allocator_type & alloc );
+    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const allocator_type & alloc ) noexcept( std::is_nothrow_constructible< buffer_type, const allocator_type & >::value );
 
     //!     Constructs a bitset of `num_bits` bits, all zero.
     //!
@@ -621,6 +643,10 @@ public:
     //!     \param num_bits The size of the bitset to construct, if
     //!     different from `npos`.
     //!     \param alloc The allocator to use.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
     template< typename CharT, typename Traits, typename Alloc >
     explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = ( std::basic_string< CharT, Traits, Alloc >::npos ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
@@ -667,6 +693,10 @@ public:
     //!     \param num_bits The size of the bitset to construct, if
     //!     different from `npos`.
     //!     \param alloc The allocator to use.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
     template< typename CharT, typename = typename std::enable_if< detail::dynamic_bitset_impl::is_character_type< CharT >::value >::type >
     explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const CharT * s, std::size_t n = std::size_t( -1 ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
@@ -699,6 +729,10 @@ public:
     //!     different from `npos`. (Otherwise the size of the bitset is
     //!     `sv.length()`.)
     //!     \param alloc The allocator to use.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
     // -----------------------------------------------------------------------
     template< typename CharT, typename Traits >
     explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( std::basic_string_view< CharT, Traits > sv, size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
@@ -886,63 +920,99 @@ public:
 
     //!     Returns a read/write iterator that refers to the least
     //!     significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 iterator               begin();
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 iterator               begin() noexcept;
 
     //!     Returns a read-only iterator that refers to the least
     //!     significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_iterator         begin() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_iterator         begin() const noexcept;
 
     //!     Returns a read/write iterator that refers one past the most
     //!     significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 iterator               end();
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 iterator               end() noexcept;
 
     //!     Returns a read-only iterator that refers one past the most
     //!     significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_iterator         end() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_iterator         end() const noexcept;
 
     //!     Returns a read/write reverse iterator that refers to the
     //!     most significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 reverse_iterator       rbegin();
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 reverse_iterator       rbegin() noexcept;
 
     //!     Returns a read-only reverse iterator that refers to the most
     //!     significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reverse_iterator rbegin() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reverse_iterator rbegin() const noexcept;
 
     //!     Returns a read/write reverse iterator that refers to one
     //!     before the least significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 reverse_iterator       rend();
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 reverse_iterator       rend() noexcept;
 
     //!     Returns a read-only reverse iterator that refers to one
     //!     before the least significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reverse_iterator rend() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reverse_iterator rend() const noexcept;
 
     //!     Returns a read-only iterator that refers to the least
     //!     significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_iterator         cbegin() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_iterator         cbegin() const noexcept;
 
     //!     Returns a read-only iterator that refers to one past the
     //!     most significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_iterator         cend() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_iterator         cend() const noexcept;
 
     //!     Returns a read-only reverse iterator that refers to the most
     //!     significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reverse_iterator crbegin() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reverse_iterator crbegin() const noexcept;
 
     //!     Returns a read-only reverse iterator that refers to one
     //!     before the least significant bit in the bitset.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reverse_iterator crend() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 const_reverse_iterator crend() const noexcept;
 
     //!     Swaps the contents of this bitset and bitset `b`.
     //!
@@ -1054,8 +1124,11 @@ public:
     //!     propagates on that operation.
     //!
     //!     \return A copy of the said allocator.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 allocator_type         get_allocator() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 allocator_type         get_allocator() const noexcept;
 
     //!     Changes the number of bits of the bitset to `num_bits`.
     //!
@@ -1067,6 +1140,13 @@ public:
     //!
     //!     \param num_bits The new size of the bitset.
     //!     \param value The value to set any new bit to.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`). If the number of
+    //!     blocks needed exceeds the `max_size()` of the underlying
+    //!     container, whatever that container throws in that case
+    //!     (`std::length_error` for a `std::vector`).
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void                   resize( size_type num_bits, bool value = false );
 
@@ -1075,7 +1155,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void                   clear();
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void                   clear() noexcept;
 
     //!     Increases the size of the bitset by one, and sets the value
     //!     of the new most significant bit to `bit`.
@@ -1120,6 +1200,10 @@ public:
     //!     by `bits_per_block`. Let `s` be the old size of the bitset,
     //!     then for `i` in the range `[0, bits_per_block)`, the bit at
     //!     position `s + i` is set to `( block >> i ) & 1`.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
     //!
     //!     \param block The block to append.
     // -----------------------------------------------------------------------
@@ -1244,7 +1328,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & operator<<=( size_type n );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & operator<<=( size_type n ) noexcept;
 
     //!     Shifts the bits in this bitset to the right by `n`
     //!     positions.
@@ -1259,7 +1343,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & operator>>=( size_type n );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & operator>>=( size_type n ) noexcept;
 
     //!     Returns a shifted copy of `*this`.
     //!
@@ -1334,7 +1418,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & set();
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & set() noexcept;
 
     //!     If `len` is zero, does nothing. Otherwise, resets all the
     //!     bits in this bitset which have a position in `[pos, pos +
@@ -1367,8 +1451,11 @@ public:
     //!
     //!     \return
     //!     `*this`.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & reset();
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & reset() noexcept;
 
     //!     Toggles the bits in the range `[pos, pos + len)`.
     //!
@@ -1407,7 +1494,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & flip();
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset & flip() noexcept;
 
     //!     A checked version of `operator[]()`.
     //!
@@ -1470,7 +1557,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             all() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             all() const noexcept;
 
     //!     Checks whether any bits in `*this` are set.
     //!
@@ -1481,14 +1568,17 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             any() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             any() const noexcept;
 
     //!     Checks whether this bitset has no set bit.
     //!
     //!     \return
     //!     `true` if no bits in this bitset are set, otherwise `false`.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             none() const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool             none() const noexcept;
 
     //!     Returns a copy of `*this` with all of its bits toggled.
     //!
@@ -1651,6 +1741,13 @@ public:
     //!
     //!     \par Note
     //!     It does not change the size of the bitset.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`). If the number of
+    //!     blocks needed exceeds the `max_size()` of the underlying
+    //!     container, whatever that container throws in that case
+    //!     (`std::length_error` for a `std::vector`).
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void             reserve( size_type num_bits );
 
@@ -1723,6 +1820,9 @@ public:
     //!     Finds the first set bit in `*this` with an index >= `pos`,
     //!     if any.
     //!
+    //!     \param pos The lower bound (inclusively) to start the search
+    //!     from.
+    //!
     //!     \return
     //!     The lowest index `i` greater than or equal to `pos` such
     //!     that bit `i` is set in `*this`, or `npos` if no such index
@@ -1731,7 +1831,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first( size_type pos = 0 ) const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first( size_type pos = 0 ) const noexcept;
 
     //!     Finds the first unset bit in `*this` with an index >= `pos`,
     //!     if any.
@@ -1747,7 +1847,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first_off( size_type pos = 0 ) const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_first_off( size_type pos = 0 ) const noexcept;
 
     //!     Finds the first bit set in `*this` with an index > `pos`, if
     //!     any.
@@ -1762,7 +1862,7 @@ public:
     //!     \par Throws
     //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next( size_type pos ) const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next( size_type pos ) const noexcept;
 
     //!     Finds the first unset bit in `*this` with an index > `pos`,
     //!     if any.
@@ -1773,14 +1873,17 @@ public:
     //!     \return
     //!     The lowest index `i` greater than `pos` such that bit `i` is
     //!     unset, or `npos` if no such index exists.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next_off( size_type pos ) const;
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 size_type        find_next_off( size_type pos ) const noexcept;
 
     template< typename B, typename A >
-    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator==( const dynamic_bitset< B, A > & a, const dynamic_bitset< B, A > & b );
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator==( const dynamic_bitset< B, A > & a, const dynamic_bitset< B, A > & b ) noexcept;
 
     template< typename B, typename A >
-    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator<( const dynamic_bitset< B, A > & a, const dynamic_bitset< B, A > & b );
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator<( const dynamic_bitset< B, A > & a, const dynamic_bitset< B, A > & b ) noexcept;
 
     template< typename B, typename A, typename BlockOutputIterator >
     friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 void to_block_range( const dynamic_bitset< B, A > & b, BlockOutputIterator result );
@@ -1801,9 +1904,12 @@ public:
     //!     `boost::unordered_set`.
     //!
     //!     \return The computed hash value.
+    //!
+    //!     \par Throws
+    //!     Nothing.
     // -----------------------------------------------------------------------
     template< typename B, typename A >
-    friend std::size_t hash_value( const dynamic_bitset< B, A > & a );
+    friend std::size_t hash_value( const dynamic_bitset< B, A > & a ) noexcept;
 
     //!     Optional zero-copy serialization support.
     // -----------------------------------------------------------------------
@@ -2122,7 +2228,7 @@ public:
 //!     (Required by <a href="https://en.cppreference.com/w/cpp/named_req/EqualityComparable">EqualityComparable</a>.)
 // -----------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator==( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator==( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept;
 
 //!     Compares two bitsets.
 //!
@@ -2133,7 +2239,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator==( const dynamic_bitset< Block, A
 //!     Nothing.
 // -----------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator!=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator!=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept;
 
 //!     Compares two bitsets.
 //!
@@ -2147,7 +2253,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator!=( const dynamic_bitset< Block, A
 //!     (Required by <a href="https://en.cppreference.com/w/cpp/named_req/LessThanComparable">LessThanComparable</a>.)
 // -----------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator<( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept;
 
 //!     Compares two bitsets.
 //!
@@ -2158,7 +2264,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator<( const dynamic_bitset< Block, Al
 //!     Nothing.
 // -----------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator<=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator<=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept;
 
 //!     Compares two bitsets.
 //!
@@ -2169,7 +2275,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator<=( const dynamic_bitset< Block, A
 //!     Nothing.
 // -----------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator>( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator>( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept;
 
 //!     Compares two bitsets.
 //!
@@ -2180,7 +2286,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator>( const dynamic_bitset< Block, Al
 //!     Nothing.
 // -----------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator>=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b );
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator>=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynamic_bitset< Block, AllocatorOrContainer > & b ) noexcept;
 
 //!     Inserts a textual representation of `b` into the stream `os`,
 //!     highest bit first.
