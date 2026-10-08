@@ -16,6 +16,7 @@
 
 #include "boost/assert.hpp"
 #include "boost/core/bit.hpp"
+#include "boost/dynamic_bitset/config.hpp"
 #include <type_traits>
 
 namespace boost {
@@ -23,7 +24,7 @@ namespace detail {
 namespace dynamic_bitset_impl {
 
 template< typename T >
-int
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 int
 lowest_bit( T x )
 {
     BOOST_ASSERT( x >= 1 );
