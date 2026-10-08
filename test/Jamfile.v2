@@ -36,6 +36,7 @@ test-suite dynamic_bitset :
     [ run test_block_ranges.cpp ]
 
     [ compile test_constexpr.cpp ]
+    [ compile test_noexcept.cpp ]
     [ run test_boost_hash.cpp ]
     [ run test_std_hash.cpp          : : : [ requires cxx11_hdr_unordered_set ] ]
 
