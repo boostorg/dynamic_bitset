@@ -2353,7 +2353,10 @@ dynamic_bitset< Block, AllocatorOrContainer >::m_append( BlockInputIterator firs
 
     const int r = count_extra_bits();
     for ( ; first != last; ++first, ++i ) {
-        const Block value = static_cast< Block >( *first ); // convert before shifting
+        // Convert before shifting. (Shifting *first itself, when first
+        // is a pointer, also makes MSVC 19.44 crash with an internal
+        // compiler error in constant evaluation.)
+        const Block value = static_cast< Block >( *first );
         if ( r == 0 ) {
             m_bits[ i ] = value;
         } else {
