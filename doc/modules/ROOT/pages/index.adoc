@@ -69,6 +69,46 @@ with this, the documentation of the member functions doesn't use the term
 "precondition" for conditions that cause an exception to be emitted (the C++
 standard uses the term "requires" in such cases).
 
+== Constant evaluation
+In C++20 and later, all the functions of `dynamic_bitset`, including those of
+its iterators and of its `reference` class, are `constexpr`, except the stream
+inserter and extractor, and the support for hashing and for Boost.Serialization.
+A call to them can be a constant expression only if the underlying container
+supports constant evaluation. So, if the standard library supports constant
+evaluation of `std::vector` (i.e., if it defines `__cpp_lib_constexpr_vector`),
+a `dynamic_bitset` which uses the default underlying container can be created,
+modified and destroyed during constant evaluation:
+
+[source,cpp]
+----
+constexpr bool
+f()
+{
+    boost::dynamic_bitset<> b( 70 );
+    b.set( 3 ).set( 69 );
+    return b.count() == 2 && b.find_next( 3 ) == 69;
+}
+
+static_assert( f() );
+----
+
+The constructor from a `std::basic_string` and `to_string()` also need a
+standard library which supports constant evaluation of `std::basic_string`
+(`__cpp_lib_constexpr_string`). As with `std::vector`, any memory allocated
+during a constant evaluation must be deallocated before it ends: so, in general,
+a `dynamic_bitset` can't be a `constexpr` variable. A call which throws an
+exception (e.g., `at()` with an invalid position) is not a constant expression,
+and neither is one which violates a precondition checked by `BOOST_ASSERT()`, if
+assertions are enabled. If `AllocatorOrContainer` is a user-supplied container,
+constant evaluation is possible if that container supports it, even if
+`std::vector` doesn't; if it's a user-supplied allocator, that allocator must
+support it too.
+
+With libstdc++ in debug mode (i.e., if `_GLIBCXX_DEBUG` is defined), some of the
+functions can't be used in constant expressions, at least as of GCC 15, because
+the checks which that mode adds to standard algorithms such as `std::fill()`
+aren't `constexpr`.
+
 == Serialization
 
 `dynamic_bitset` can be serialized with Boost.Serialization (see also
