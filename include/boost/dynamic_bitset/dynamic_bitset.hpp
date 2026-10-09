@@ -42,12 +42,18 @@
 // look at declarations, and the ranges facilities which trust them
 // wouldn't compile.
 //
+// Here, "random-access" means that the iterators of the underlying
+// container either model std::random_access_iterator or have a
+// random-access iterator_category: an iterator made with
+// Boost.Iterator's iterator_facade, for instance, can have the latter
+// without modeling the former, because its operator[] returns a proxy.
+//
 // The member functions and friends with such a requirement are
 // defined in their class, because matching an out-of-class definition
 // with a requires-clause to its declaration has been a source of bugs
 // in older compilers.
 #if defined( __cpp_lib_ranges )
-#    define BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( iter ) requires std::random_access_iterator< iter >
+#    define BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( iter ) requires( std::random_access_iterator< iter > || std::derived_from< typename std::iterator_traits< iter >::iterator_category, std::random_access_iterator_tag > )
 #else
 #    define BOOST_DYNAMIC_BITSET_REQUIRES_RANDOM_ACCESS( iter )
 #endif
@@ -425,7 +431,9 @@ public:
     //!     underlying container; for instance, if the underlying
     //!     container provides LegacyBidirectionalIterators, this type
     //!     models `std::bidirectional_iterator`. If the iterators of the
-    //!     underlying container are not random-access, the operations
+    //!     underlying container neither model
+    //!     `std::random_access_iterator` nor have a random-access
+    //!     `iterator_category`, the operations
     //!     which only a random-access iterator provides (`+=`, `-=`,
     //!     `+`, binary `-`, `[]`, `<`, `<=`, `>` and `>=`) can't be
     //!     used; in C++20 and later, they don't participate in overload
@@ -477,8 +485,8 @@ public:
     static_assert( std::bidirectional_iterator< typename buffer_type::iterator >, "AllocatorOrContainer doesn't provide at least BidirectionalIterators" );
     static_assert( std::bidirectional_iterator< iterator > );
     static_assert( std::bidirectional_iterator< const_iterator > );
-    static_assert( std::random_access_iterator< iterator > == ( std::random_access_iterator< typename buffer_type::iterator > && std::derived_from< typename iterator::iterator_category, std::random_access_iterator_tag > ) );
-    static_assert( std::random_access_iterator< const_iterator > == ( std::random_access_iterator< typename buffer_type::const_iterator > && std::derived_from< typename const_iterator::iterator_category, std::random_access_iterator_tag > ) );
+    static_assert( std::random_access_iterator< iterator > == std::derived_from< typename iterator::iterator_category, std::random_access_iterator_tag > );
+    static_assert( std::random_access_iterator< const_iterator > == std::derived_from< typename const_iterator::iterator_category, std::random_access_iterator_tag > );
     static_assert( std::output_iterator< iterator, bool > );
     static_assert( std::permutable< iterator > );
 #else
