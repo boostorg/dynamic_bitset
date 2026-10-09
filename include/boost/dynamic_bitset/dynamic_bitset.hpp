@@ -1387,6 +1387,31 @@ public:
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset   operator>>( size_type n ) const;
 
+    //!     Returns the bitset made of the bits of `*this` in a given
+    //!     range.
+    //!
+    //!     Like `std::basic_string::substr()`, extracts the bits in the
+    //!     range `[pos, pos + rlen)`, where `rlen` is the smaller of
+    //!     `len` and `size() - pos`. The allocator of the result is
+    //!     obtained from that of `*this` as by the copy constructor.
+    //!
+    //!     \pre
+    //!     `pos <= this->size()`.
+    //!
+    //!     \param pos The position of the first bit to extract.
+    //!     \param len The number of bits to extract, if `*this` has that
+    //!     many from `pos` on.
+    //!
+    //!     \return
+    //!     A bitset `r` of size `rlen` such that, for all `i` in the
+    //!     range `[0, rlen)`, `r[ i ] == ( *this )[ pos + i ]`.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
+    // -----------------------------------------------------------------------
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset   extract( size_type pos = 0, size_type len = npos ) const;
+
     //!     Sets the bits in the range `[pos, pos + len)` to `val`.
     //!
     //!     If `len` is zero, does nothing. Otherwise, sets all the bits

@@ -1960,6 +1960,21 @@ struct bitset_test
     }
 
     static void
+    extract( const Bitset & b, std::size_t pos, std::size_t len )
+    {
+        if ( pos > b.size() ) {
+            // Doesn't satisfy the precondition.
+            return;
+        }
+        const Bitset      r    = b.extract( pos, len );
+        const std::size_t rlen = (std::min)( len, b.size() - pos );
+        BOOST_TEST_EQ( r.size(), rlen );
+        for ( std::size_t i = 0; i < rlen; ++i ) {
+            BOOST_TEST( r[ i ] == b[ pos + i ] );
+        }
+    }
+
+    static void
     at( const Bitset & lhs, const std::vector< bool > & bit_vec )
     {
         Bitset      b( lhs );
