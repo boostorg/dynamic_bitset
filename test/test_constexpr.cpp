@@ -476,6 +476,18 @@ shifts()
 
 template< typename Bitset >
 constexpr bool
+extracts()
+{
+    // The bits from pos on span more than one block.
+    const std::size_t pos = 2;
+    const Bitset      b   = make_bitset< Bitset >( size, { 0, pos, last_bit } );
+
+    return b.extract( pos ) == make_bitset< Bitset >( size - pos, { 0, last_bit - pos } )
+        && b.extract( pos, 1 ) == make_bitset< Bitset >( 1, { 0 } ) && b.extract( size ).empty();
+}
+
+template< typename Bitset >
+constexpr bool
 compares()
 {
     // Bitsets compare lexicographically, from their highest bit.
@@ -655,6 +667,7 @@ struct constexpr_tests
     static_assert( does_bitwise_operations< Bitset >() );
     static_assert( does_compound_bitwise_assignments< Bitset >() );
     static_assert( shifts< Bitset >() );
+    static_assert( extracts< Bitset >() );
     static_assert( compares< Bitset >() );
     static_assert( checks_set_relations< Bitset >() );
     static_assert( finds_set_bits< Bitset >() );

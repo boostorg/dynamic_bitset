@@ -881,6 +881,23 @@ run_test_cases()
         Tests::operator_shift_right( b, pos );
     }
     //=====================================================================
+    // Test b.extract( pos, len )
+    {
+        const bitset_type bitsets[] = { bitset_type(), bitset_type( std::string( "1" ) ), bitset_type( std::string( "0" ) ), bitset_type( long_string ) };
+        const std::size_t bpb       = bitset_type::bits_per_block;
+        for ( const bitset_type & b : bitsets ) {
+            const std::size_t n           = b.size();
+            const std::size_t positions[] = { 0, 1, bpb - 1, bpb, bpb + 1, n / 2, n - 1, n };
+            const std::size_t lengths[]   = { 0, 1, bpb - 1, bpb + 1, n, bitset_type::npos };
+            for ( const std::size_t pos : positions ) {
+                for ( const std::size_t len : lengths ) {
+                    Tests::extract( b, pos, len );
+                }
+            }
+            BOOST_TEST( b.extract() == b );
+        }
+    }
+    //=====================================================================
     // Test a & b
     {
         bitset_type lhs, rhs;

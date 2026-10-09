@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <limits>
 #include <list>
+#include <memory>
 #include <new>
 #if ! defined( BOOST_NO_CXX17_HDR_MEMORY_RESOURCE )
 #    include <memory_resource>
@@ -54,6 +55,60 @@ public:
         std::free( p );
     }
 };
+
+// An allocator with a state, which its copies keep.
+template< typename T >
+class stateful_allocator
+{
+public:
+    typedef T value_type;
+
+    explicit stateful_allocator( int id )
+        : m_id( id )
+    {
+    }
+
+    template< typename U >
+    stateful_allocator( const stateful_allocator< U > & other )
+        : m_id( other.id() )
+    {
+    }
+
+    int
+    id() const
+    {
+        return m_id;
+    }
+
+    T *
+    allocate( std::size_t n )
+    {
+        return std::allocator< T >().allocate( n );
+    }
+
+    void
+    deallocate( T * p, std::size_t n )
+    {
+        std::allocator< T >().deallocate( p, n );
+    }
+
+private:
+    int m_id;
+};
+
+template< typename T, typename U >
+bool
+operator==( const stateful_allocator< T > & a, const stateful_allocator< U > & b )
+{
+    return a.id() == b.id();
+}
+
+template< typename T, typename U >
+bool
+operator!=( const stateful_allocator< T > & a, const stateful_allocator< U > & b )
+{
+    return ! ( a == b );
+}
 
 // A std::vector whose iterators are made from pointers: by default,
 // they are raw pointers. It redefines only the functions which the
@@ -1261,6 +1316,15 @@ run_test_cases()
         bitset_type b[ 1 ] = {};
         (void)b;
     }
+    //=====================================================================
+    // The result of extract() gets its allocator as by the copy
+    // constructor.
+    {
+        typedef boost::dynamic_bitset< Block, stateful_allocator< Block > > Bitset;
+
+        const Bitset                                                        b( 70, 5ul, stateful_allocator< Block >( 1 ) );
+        BOOST_TEST( b.extract( 1 ).get_allocator() == b.get_allocator() );
+    }
 #if ! defined( BOOST_NO_CXX17_HDR_MEMORY_RESOURCE )
     //=====================================================================
     // A std::pmr container passes its allocator to the bitsets it
@@ -1283,12 +1347,14 @@ run_test_cases()
         // pointer constant, but ( size, 0 ) must still mean ( size, value ).
         BOOST_TEST( Bitset( b.size(), 0 ).get_allocator().resource() == std::pmr::get_default_resource() );
 
-        // A copy, and the result of an operator, get the allocator which
-        // select_on_container_copy_construction() gives, i.e. the default
-        // memory resource. A copy assignment keeps the allocator of the
-        // target, since a polymorphic_allocator doesn't propagate.
+        // A copy, and the result of an operator or of extract(), get the
+        // allocator which select_on_container_copy_construction() gives,
+        // i.e. the default memory resource. A copy assignment keeps the
+        // allocator of the target, since a polymorphic_allocator doesn't
+        // propagate.
         BOOST_TEST( Bitset( v[ 0 ] ).get_allocator().resource() == std::pmr::get_default_resource() );
         BOOST_TEST( ( ~v[ 0 ] ).get_allocator().resource() == std::pmr::get_default_resource() );
+        BOOST_TEST( v[ 0 ].extract( 1 ).get_allocator().resource() == std::pmr::get_default_resource() );
         v[ 1 ] = b;
         BOOST_TEST( v[ 1 ].get_allocator().resource() == &resource );
     }

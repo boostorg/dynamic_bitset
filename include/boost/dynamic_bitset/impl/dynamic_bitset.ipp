@@ -24,6 +24,7 @@
 #include "boost/throw_exception.hpp"
 #include <algorithm>
 #include <istream>
+#include <memory>
 #include <ostream>
 #include <stdexcept>
 #include <utility>
@@ -1083,6 +1084,28 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
 {
     dynamic_bitset r( *this );
     r >>= n;
+    return r;
+}
+
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer >
+                                 dynamic_bitset< Block, AllocatorOrContainer >::extract( size_type pos, size_type len ) const
+{
+    BOOST_ASSERT( pos <= m_num_bits );
+
+    dynamic_bitset  r( (std::min)( len, m_num_bits - pos ), std::allocator_traits< allocator_type >::select_on_container_copy_construction( get_allocator() ) );
+    const size_type first = block_index( pos );
+    const int       shift = bit_index( pos );
+
+    // Block i of the result is made of the high bits of block first + i
+    // and, unless shift is zero, the low bits of the next block, if any.
+    for ( size_type i = 0; i < r.num_blocks(); ++i ) {
+        r.m_bits[ i ] = m_bits[ first + i ] >> shift;
+        if ( shift != 0 && first + i + 1 < num_blocks() ) {
+            r.m_bits[ i ] |= m_bits[ first + i + 1 ] << ( bits_per_block - shift );
+        }
+    }
+    r.m_zero_unused_bits();
     return r;
 }
 
