@@ -105,6 +105,8 @@ public:
     typedef typename AllocatorOrContainer::allocator_type type;
 };
 
+//!     \implementationdefined
+// -----------------------------------------------------------------------
 template< typename AllocatorOrContainer, typename Block >
 class allocator_type_extractor
 {
