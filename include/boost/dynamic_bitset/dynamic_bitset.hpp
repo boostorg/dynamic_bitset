@@ -2322,7 +2322,7 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator>=( const dynamic_bitset< Block, A
 //!
 //!     \code
 //!     std::basic_string<Char, Traits> s;
-//!     boost::to_string(x, s):
+//!     boost::to_string(b, s):
 //!     os << s;
 //!     \endcode
 //!
