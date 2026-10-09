@@ -263,6 +263,238 @@ public:
     }
 };
 
+// What the operator[] of a proxy_subscript_iterator returns, as the
+// operator[] of the iterators made with Boost.Iterator's
+// iterator_facade returns a proxy.
+template< typename T >
+class subscript_proxy
+{
+public:
+    explicit subscript_proxy( T * ptr )
+        : m_ptr( ptr )
+    {
+    }
+
+    operator T &() const
+    {
+        return *m_ptr;
+    }
+
+private:
+    T * m_ptr;
+};
+
+// A LegacyRandomAccessIterator which doesn't model the C++20 concept
+// std::random_access_iterator, because its operator[] returns a proxy
+// convertible to its reference type, rather than the reference type
+// itself.
+template< typename T >
+class proxy_subscript_iterator
+{
+public:
+    typedef std::random_access_iterator_tag       iterator_category;
+    typedef typename std::remove_const< T >::type value_type;
+    typedef std::ptrdiff_t                        difference_type;
+    typedef T *                                   pointer;
+    typedef T &                                   reference;
+
+    proxy_subscript_iterator()
+        : m_ptr()
+    {
+    }
+
+    explicit proxy_subscript_iterator( T * ptr )
+        : m_ptr( ptr )
+    {
+    }
+
+    // Converts an iterator to a const iterator.
+    template< typename U, typename = typename std::enable_if< std::is_convertible< U *, T * >::value >::type >
+    proxy_subscript_iterator( const proxy_subscript_iterator< U > & other )
+        : m_ptr( other.base() )
+    {
+    }
+
+    T *
+    base() const
+    {
+        return m_ptr;
+    }
+
+    T &
+    operator*() const
+    {
+        return *m_ptr;
+    }
+
+    subscript_proxy< T >
+    operator[]( difference_type n ) const
+    {
+        return subscript_proxy< T >( m_ptr + n );
+    }
+
+    proxy_subscript_iterator &
+    operator++()
+    {
+        ++m_ptr;
+        return *this;
+    }
+
+    proxy_subscript_iterator
+    operator++( int )
+    {
+        const proxy_subscript_iterator old = *this;
+        ++m_ptr;
+        return old;
+    }
+
+    proxy_subscript_iterator &
+    operator--()
+    {
+        --m_ptr;
+        return *this;
+    }
+
+    proxy_subscript_iterator
+    operator--( int )
+    {
+        const proxy_subscript_iterator old = *this;
+        --m_ptr;
+        return old;
+    }
+
+    proxy_subscript_iterator &
+    operator+=( difference_type n )
+    {
+        m_ptr += n;
+        return *this;
+    }
+
+    proxy_subscript_iterator &
+    operator-=( difference_type n )
+    {
+        m_ptr -= n;
+        return *this;
+    }
+
+    friend proxy_subscript_iterator
+    operator+( proxy_subscript_iterator it, difference_type n )
+    {
+        return it += n;
+    }
+
+    friend proxy_subscript_iterator
+    operator+( difference_type n, proxy_subscript_iterator it )
+    {
+        return it += n;
+    }
+
+    friend proxy_subscript_iterator
+    operator-( proxy_subscript_iterator it, difference_type n )
+    {
+        return it -= n;
+    }
+
+    friend difference_type
+    operator-( const proxy_subscript_iterator & lhs, const proxy_subscript_iterator & rhs )
+    {
+        return lhs.m_ptr - rhs.m_ptr;
+    }
+
+    friend bool
+    operator==( const proxy_subscript_iterator & lhs, const proxy_subscript_iterator & rhs )
+    {
+        return lhs.m_ptr == rhs.m_ptr;
+    }
+
+    friend bool
+    operator!=( const proxy_subscript_iterator & lhs, const proxy_subscript_iterator & rhs )
+    {
+        return ! ( lhs == rhs );
+    }
+
+    friend bool
+    operator<( const proxy_subscript_iterator & lhs, const proxy_subscript_iterator & rhs )
+    {
+        return lhs.m_ptr < rhs.m_ptr;
+    }
+
+    friend bool
+    operator<=( const proxy_subscript_iterator & lhs, const proxy_subscript_iterator & rhs )
+    {
+        return ! ( rhs < lhs );
+    }
+
+    friend bool
+    operator>( const proxy_subscript_iterator & lhs, const proxy_subscript_iterator & rhs )
+    {
+        return rhs < lhs;
+    }
+
+    friend bool
+    operator>=( const proxy_subscript_iterator & lhs, const proxy_subscript_iterator & rhs )
+    {
+        return ! ( lhs < rhs );
+    }
+
+private:
+    T * m_ptr;
+};
+
+// A std::vector whose iterators are proxy_subscript_iterators.
+template< typename T >
+class proxy_subscript_vector
+    : public std::vector< T >
+{
+public:
+    typedef proxy_subscript_iterator< T >       iterator;
+    typedef proxy_subscript_iterator< const T > const_iterator;
+
+    using std::vector< T >::vector;
+
+    iterator
+    begin()
+    {
+        return iterator( this->data() );
+    }
+
+    iterator
+    end()
+    {
+        return iterator( this->data() + this->size() );
+    }
+
+    const_iterator
+    begin() const
+    {
+        return const_iterator( this->data() );
+    }
+
+    const_iterator
+    end() const
+    {
+        return const_iterator( this->data() + this->size() );
+    }
+
+    const_iterator
+    cbegin() const
+    {
+        return begin();
+    }
+
+    const_iterator
+    cend() const
+    {
+        return end();
+    }
+};
+
+#if defined( __cpp_lib_ranges )
+static_assert( std::bidirectional_iterator< proxy_subscript_iterator< unsigned char > > );
+static_assert( ! std::random_access_iterator< proxy_subscript_iterator< unsigned char > > );
+static_assert( ! std::random_access_iterator< proxy_subscript_iterator< const unsigned char > > );
+#endif
+
 // Character traits under which 'T' and 'F' are equal to '1' and '0',
 // respectively.
 struct true_false_traits : std::char_traits< char >
@@ -630,6 +862,16 @@ run_test_cases()
         bitset_test< Bitset >::bidirectional_iterators( Bitset() );
         bitset_test< Bitset >::bidirectional_iterators( Bitset( 1, 1ul ) );
         bitset_test< Bitset >::bidirectional_iterators( Bitset( 3 * Bitset::bits_per_block + 5, 0x5A5Aul ) );
+    }
+    {
+        // The iterators of a bitset whose underlying container provides
+        // LegacyRandomAccessIterators which don't model
+        // std::random_access_iterator.
+        typedef boost::dynamic_bitset< Block, proxy_subscript_vector< Block > > Bitset;
+        bitset_test< Bitset >::iterator_concepts();
+        bitset_test< Bitset >::legacy_random_access_iterators( Bitset() );
+        bitset_test< Bitset >::legacy_random_access_iterators( Bitset( 1, 1ul ) );
+        bitset_test< Bitset >::legacy_random_access_iterators( Bitset( 3 * Bitset::bits_per_block + 5, 0x5A5Aul ) );
     }
 
     //=====================================================================

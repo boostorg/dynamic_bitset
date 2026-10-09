@@ -743,6 +743,33 @@ struct bitset_test
 #endif
     }
 
+    // For a bitset whose underlying container provides
+    // LegacyRandomAccessIterators which don't model
+    // std::random_access_iterator: checks that its iterators work as
+    // random-access iterators, with both the classic algorithms and the
+    // ranges ones.
+    static void
+    legacy_random_access_iterators( const Bitset & b )
+    {
+        const std::ptrdiff_t n = static_cast< std::ptrdiff_t >( b.size() );
+        Bitset               c( b );
+        BOOST_TEST( std::distance( b.begin(), b.end() ) == n );
+        BOOST_TEST( std::distance( c.begin(), c.end() ) == n );
+
+        typename Bitset::iterator it = c.begin();
+        std::advance( it, n );
+        BOOST_TEST( it == c.end() );
+        typename Bitset::const_iterator cit = b.end();
+        std::advance( cit, -n );
+        BOOST_TEST( cit == b.begin() );
+
+        iterator_operations( b );
+        iterator_backward_offsets( b );
+        mixed_iterator_operations( b );
+        swapping_std_algorithms( b );
+        iterators_with_ranges( b );
+    }
+
     static void
     to_block_range( const Bitset & b /*, BlockOutputIterator result*/ )
     {
