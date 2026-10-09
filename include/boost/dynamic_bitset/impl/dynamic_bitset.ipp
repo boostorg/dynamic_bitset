@@ -1694,12 +1694,10 @@ detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< B, A > & b,
     typedef typename dynamic_bitset< B, A >::size_type size_type;
 
     const size_type                                    len = dump_all ? dynamic_bitset< B, A >::bits_per_block * b.num_blocks() : b.size();
-    s.assign( len, zero );
+    s.resize( len );
 
     for ( size_type i = 0; i < len; ++i ) {
-        if ( b.m_unchecked_test( i ) ) {
-            Tr::assign( s[ len - 1 - i ], one );
-        }
+        Tr::assign( s[ len - 1 - i ], b.m_unchecked_test( i ) ? one : zero );
     }
 }
 
