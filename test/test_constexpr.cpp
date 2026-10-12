@@ -182,8 +182,11 @@ constructs_from_pointers_and_string_views()
     const Bitset a( digits, std::size( digits ) - 1 ); // all but the 'x'
     const Bitset b( "0110", 3, size );                 // only "011"
     const Bitset c( std::string_view( "10110" ) );
+    const Bitset d( ".**.", 4, '.', '*' );
+    const Bitset e( std::string_view( ".**." ), '.', '*' );
 
-    return a == Bitset( 4, 0b1011ull ) && b == Bitset( size, 0b011ull ) && c == Bitset( 5, 0b10110ull );
+    return a == Bitset( 4, 0b1011ull ) && b == Bitset( size, 0b011ull ) && c == Bitset( 5, 0b10110ull )
+        && d == Bitset( 4, 0b0110ull ) && e == d;
 }
 
 template< typename Bitset >
@@ -636,7 +639,7 @@ converts_to_and_from_basic_strings()
     boost::dump_to_string( b, dump );
 
     return b == Bitset( digits.size(), 0b10110ull ) && b.to_string() == digits && b.to_string( '.', '*' ) == "*.**."
-        && dump == std::string( n - digits.size(), '0' ) + digits;
+        && Bitset( std::string( "*.**." ), 0, 5, '.', '*' ) == b && dump == std::string( n - digits.size(), '0' ) + digits;
 }
 
 #    endif

@@ -527,7 +527,23 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
 
     : m_bits( alloc ), m_num_bits( 0 )
 {
-    init_from_string< CharT, Traits >( s.c_str(), s.length(), pos, n, num_bits );
+    init_from_string< CharT, Traits >( s.c_str(), s.length(), pos, n, num_bits, CharT( '0' ), CharT( '1' ) );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+template< typename CharT, typename Traits, typename Alloc, typename ZeroOne, typename >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
+dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
+    const std::basic_string< CharT, Traits, Alloc > &             s,
+    typename std::basic_string< CharT, Traits, Alloc >::size_type pos,
+    typename std::basic_string< CharT, Traits, Alloc >::size_type n,
+    ZeroOne                                                       zero,
+    ZeroOne                                                       one,
+    size_type                                                     num_bits,
+    const allocator_type &                                        alloc )
+    : m_bits( alloc ), m_num_bits( 0 )
+{
+    init_from_string< CharT, Traits >( s.c_str(), s.length(), pos, n, num_bits, zero, one );
 }
 
 template< typename Block, typename AllocatorOrContainer >
@@ -541,7 +557,23 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
     : m_bits( alloc ), m_num_bits( 0 )
 {
     const std::size_t length = detail::dynamic_bitset_impl::bounded_length( s, n );
-    init_from_string( s, length, 0, n, num_bits );
+    init_from_string( s, length, 0, n, num_bits, CharT( '0' ), CharT( '1' ) );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+template< typename CharT, typename ZeroOne, typename >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
+dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
+    const CharT *          s,
+    std::size_t            n,
+    ZeroOne                zero,
+    ZeroOne                one,
+    size_type              num_bits,
+    const allocator_type & alloc )
+    : m_bits( alloc ), m_num_bits( 0 )
+{
+    const std::size_t length = detail::dynamic_bitset_impl::bounded_length( s, n );
+    init_from_string( s, length, 0, n, num_bits, zero, one );
 }
 
 #if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
@@ -555,7 +587,21 @@ dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
     const allocator_type &                  alloc )
     : m_bits( alloc ), m_num_bits( 0 )
 {
-    init_from_string< CharT, Traits >( sv.data(), sv.length(), 0, sv.length(), num_bits );
+    init_from_string< CharT, Traits >( sv.data(), sv.length(), 0, sv.length(), num_bits, CharT( '0' ), CharT( '1' ) );
+}
+
+template< typename Block, typename AllocatorOrContainer >
+template< typename CharT, typename Traits, typename ZeroOne, typename >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20
+dynamic_bitset< Block, AllocatorOrContainer >::dynamic_bitset(
+    std::basic_string_view< CharT, Traits > sv,
+    ZeroOne                                 zero,
+    ZeroOne                                 one,
+    size_type                               num_bits,
+    const allocator_type &                  alloc )
+    : m_bits( alloc ), m_num_bits( 0 )
+{
+    init_from_string< CharT, Traits >( sv.data(), sv.length(), 0, sv.length(), num_bits, zero, one );
 }
 
 #endif
@@ -2302,7 +2348,9 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
     std::size_t   string_length,
     std::size_t   pos,
     std::size_t   n,
-    size_type     num_bits )
+    size_type     num_bits,
+    CharT         zero,
+    CharT         one )
 {
     BOOST_ASSERT( pos <= string_length );
 
@@ -2311,8 +2359,6 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
     m_bits.resize( calc_num_blocks( sz ) );
     m_num_bits          = sz;
 
-    const CharT     one = CharT( '1' );
-
     const size_type m   = num_bits < rlen ? num_bits : rlen;
     for ( std::size_t i = 0; i < m; ++i ) {
         const CharT c = s[ ( pos + m - 1 ) - i ];
@@ -2320,9 +2366,10 @@ dynamic_bitset< Block, AllocatorOrContainer >::init_from_string(
         if ( Traits::eq( c, one ) ) {
             set( i );
         } else {
-            BOOST_ASSERT( Traits::eq( c, CharT( '0' ) ) );
+            BOOST_ASSERT( Traits::eq( c, zero ) );
         }
     }
+    static_cast< void >( zero ); // used only in the assertion above
 }
 
 template< typename Block, typename AllocatorOrContainer >

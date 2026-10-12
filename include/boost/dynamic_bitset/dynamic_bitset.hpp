@@ -655,6 +655,49 @@ public:
     template< typename CharT, typename Traits, typename Alloc >
     explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos = 0, typename std::basic_string< CharT, Traits, Alloc >::size_type n = ( std::basic_string< CharT, Traits, Alloc >::npos ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
+    //!     Constructs a bitset from a string of the characters `zero`
+    //!     and `one`.
+    //!
+    //!     The same as the constructor from a `basic_string` which
+    //!     doesn't take `zero` and `one`, except that the characters
+    //!     which stand for a zero bit and a one bit are `zero` and
+    //!     `one`, as with `std::bitset`. E.g.,
+    //!     `dynamic_bitset<>( std::string( ".**." ), 0, 4, '.', '*' )`
+    //!     is the same as `dynamic_bitset<>( 4, 6ul )`.
+    //!
+    //!     This constructor participates in overload resolution only
+    //!     if `CharT` is `char`, `wchar_t`, `char8_t`, `char16_t` or
+    //!     `char32_t`, and `ZeroOne` is `CharT`. So, e.g.,
+    //!     `dynamic_bitset<>( s, 0, 4, 8 )` still constructs a bitset
+    //!     of 8 bits with the constructor which doesn't take `zero` and
+    //!     `one`. Note, though, that an argument of type `CharT` after
+    //!     `n` (e.g., a `char` variable with a `std::string`) is taken
+    //!     as `zero`, not as `num_bits`, and that a `zero` of another
+    //!     type (e.g., `'.'` with a `std::wstring`) is taken as
+    //!     `num_bits`.
+    //!
+    //!     \pre
+    //!     `pos <= s.size()` and each character of `s` used to
+    //!     initialize a bit compares equal, according to `Traits::eq`,
+    //!     to either `zero` or `one`.
+    //!
+    //!     \param s The string to construct from.
+    //!     \param pos The start position in the string.
+    //!     \param n The maximum number of characters in the string to
+    //!     consider.
+    //!     \param zero The character which stands for a zero bit.
+    //!     \param one The character which stands for a one bit.
+    //!     \param num_bits The size of the bitset to construct, if
+    //!     different from `npos`.
+    //!     \param alloc The allocator to use.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
+    // -----------------------------------------------------------------------
+    template< typename CharT, typename Traits, typename Alloc, typename ZeroOne, typename = typename std::enable_if< detail::dynamic_bitset_impl::is_character_type< CharT >::value && std::is_same< ZeroOne, CharT >::value >::type >
+    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const std::basic_string< CharT, Traits, Alloc > & s, typename std::basic_string< CharT, Traits, Alloc >::size_type pos, typename std::basic_string< CharT, Traits, Alloc >::size_type n, ZeroOne zero, ZeroOne one = ZeroOne( '1' ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+
     //!     Similar to the constructor from a `basic_string`, but takes
     //!     a pointer to a C-style string, or to an array of characters
     //!     which need not be null-terminated (and doesn't take a
@@ -704,6 +747,42 @@ public:
     template< typename CharT, typename = typename std::enable_if< detail::dynamic_bitset_impl::is_character_type< CharT >::value >::type >
     explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const CharT * s, std::size_t n = std::size_t( -1 ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
+    //!     Similar to the constructor from a `basic_string` which takes
+    //!     `zero` and `one`, but takes a pointer to a C-style string,
+    //!     or to an array of characters which need not be
+    //!     null-terminated (and doesn't take a `pos`).
+    //!
+    //!     The same as the constructor from a pointer which doesn't take
+    //!     `zero` and `one`, except that the characters which stand for
+    //!     a zero bit and a one bit are `zero` and `one`. A null
+    //!     character ends the input even if it is `zero` or `one`. This
+    //!     constructor participates in overload resolution under the
+    //!     same conditions as the constructor from a `basic_string`
+    //!     which takes `zero` and `one`.
+    //!
+    //!     \pre
+    //!     - `s` points to the first character of either a
+    //!       null-terminated string or an array of at least `n`
+    //!       characters.
+    //!     - Each character of `s` used to initialize a bit compares
+    //!       equal, according to `std::char_traits< CharT >::eq`, to
+    //!       either `zero` or `one`.
+    //!
+    //!     \param s The string or array to construct from.
+    //!     \param n The maximum number of characters to read from `s`.
+    //!     \param zero The character which stands for a zero bit.
+    //!     \param one The character which stands for a one bit.
+    //!     \param num_bits The size of the bitset to construct, if
+    //!     different from `npos`.
+    //!     \param alloc The allocator to use.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
+    // -----------------------------------------------------------------------
+    template< typename CharT, typename ZeroOne, typename = typename std::enable_if< detail::dynamic_bitset_impl::is_character_type< CharT >::value && std::is_same< ZeroOne, CharT >::value >::type >
+    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( const CharT * s, std::size_t n, ZeroOne zero, ZeroOne one = ZeroOne( '1' ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+
 #if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
 
     //!     Similar to the constructor from a pointer to a C-style
@@ -738,6 +817,38 @@ public:
     // -----------------------------------------------------------------------
     template< typename CharT, typename Traits >
     explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( std::basic_string_view< CharT, Traits > sv, size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
+
+    //!     Similar to the constructor from a `basic_string` which takes
+    //!     `zero` and `one`, but takes a `std::basic_string_view` (and
+    //!     no `pos` or `n`). Like the constructor from a
+    //!     `basic_string_view` which doesn't take `zero` and `one`, it
+    //!     is only available if the Boost.Config macro
+    //!     `BOOST_NO_CXX17_HDR_STRING_VIEW` is not defined.
+    //!
+    //!     The same as that constructor, except that the characters
+    //!     which stand for a zero bit and a one bit are `zero` and
+    //!     `one`. This constructor participates in overload resolution
+    //!     under the same conditions as the constructor from a
+    //!     `basic_string` which takes `zero` and `one`.
+    //!
+    //!     \pre
+    //!     Each character of `sv` used to initialize a bit compares
+    //!     equal, according to `Traits::eq`, to either `zero` or `one`.
+    //!
+    //!     \param sv The basic_string_view to construct from.
+    //!     \param zero The character which stands for a zero bit.
+    //!     \param one The character which stands for a one bit.
+    //!     \param num_bits The size of the bitset to construct, if
+    //!     different from `npos`. (Otherwise the size of the bitset is
+    //!     `sv.length()`.)
+    //!     \param alloc The allocator to use.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `allocator_type` is a `std::allocator`).
+    // -----------------------------------------------------------------------
+    template< typename CharT, typename Traits, typename ZeroOne, typename = typename std::enable_if< detail::dynamic_bitset_impl::is_character_type< CharT >::value && std::is_same< ZeroOne, CharT >::value >::type >
+    explicit BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset( std::basic_string_view< CharT, Traits > sv, ZeroOne zero, ZeroOne one = ZeroOne( '1' ), size_type num_bits = npos, const allocator_type & alloc = allocator_type() );
 
 #endif
 
@@ -2022,7 +2133,7 @@ private:
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void init_from_block_range( BlockIter first, BlockIter last );
 
     template< typename CharT, typename Traits = std::char_traits< CharT > >
-    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void init_from_string( const CharT * s, std::size_t string_length, std::size_t pos, std::size_t n, size_type num_bits );
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 void init_from_string( const CharT * s, std::size_t string_length, std::size_t pos, std::size_t n, size_type num_bits, CharT zero, CharT one );
 
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 void init_from_ullong( size_type num_bits, unsigned long long value );
 

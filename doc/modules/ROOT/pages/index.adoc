@@ -101,7 +101,7 @@ f()
 static_assert( f() );
 ----
 
-The constructor from a `std::basic_string` and `to_string()` also need a
+The constructors from a `std::basic_string` and `to_string()` also need a
 standard library which supports constant evaluation of `std::basic_string`
 (`__cpp_lib_constexpr_string`). As with `std::vector`, any memory allocated
 during a constant evaluation must be deallocated before it ends: so, in general,

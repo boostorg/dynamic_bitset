@@ -178,14 +178,16 @@ struct is_block_value_type
 {
 };
 
-// Whether T is one of the character types that the constructor from a
-// pointer to a string accepts. That constructor is constrained on this
-// trait so that it doesn't take pointers to anything else: e.g., a
-// pointer to a std::pmr::memory_resource must select the constructor
-// from an allocator, when the allocator is a
-// std::pmr::polymorphic_allocator. Signed char and unsigned char are
-// intentionally excluded, because std::char_traits isn't required to
-// support them.
+// Whether T is one of the character types that the constructors from a
+// pointer to a string accept. They are constrained on this trait so
+// that they don't take pointers to anything else: e.g., a pointer to a
+// std::pmr::memory_resource must select the constructor from an
+// allocator, when the allocator is a std::pmr::polymorphic_allocator.
+// The other constructors which take the characters for zero and one are
+// constrained on it too, so that, e.g., with a string of std::uint8_t,
+// a std::uint8_t after n is still taken as num_bits. Signed char and
+// unsigned char are intentionally excluded, because std::char_traits
+// isn't required to support them.
 template< typename T >
 struct is_character_type : std::false_type
 {

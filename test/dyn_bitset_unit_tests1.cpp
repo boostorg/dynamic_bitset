@@ -772,6 +772,19 @@ run_test_cases()
         BOOST_TEST( bitset_type( std::basic_string_view< char, true_false_traits >( "TFTF" ) ) == bitset_type( 4, 10ul ) );
 #endif
     }
+    {
+        // The string constructors can take the characters which stand
+        // for zero and one, as those of std::bitset do.
+        const bitset_type b( 4, 6ul );
+        BOOST_TEST( bitset_type( std::string( ".**." ), 0, 4, '.', '*' ) == b );
+        BOOST_TEST( bitset_type( std::string( ".**." ), 0, 4, '.', '*', 8 ) == bitset_type( 8, 6ul ) );
+        BOOST_TEST( bitset_type( std::string( "11" ), 0, 2, 8 ) == bitset_type( 8, 3ul ) ); // 8 is num_bits
+        BOOST_TEST( bitset_type( ".**.", 4, '.', '*' ) == b );
+        BOOST_TEST( bitset_type( ".11.", 4, '.' ) == b );
+#if ! defined( BOOST_NO_CXX17_HDR_STRING_VIEW )
+        BOOST_TEST( bitset_type( std::string_view( ".**." ), '.', '*' ) == b );
+#endif
+    }
     static_assert( is_constructible_from_pointer_to< char >::value, "" );
     static_assert( is_constructible_from_pointer_to< wchar_t >::value, "" );
 #if defined( __cpp_char8_t ) && __cpp_char8_t >= 201811L
