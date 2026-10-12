@@ -1371,11 +1371,23 @@ dynamic_bitset< Block, AllocatorOrContainer >::
     return to_number< unsigned long >();
 }
 
+template< typename Block, typename AllocatorOrContainer >
+template< typename CharT, typename Traits, typename Allocator >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 std::basic_string< CharT, Traits, Allocator >
+dynamic_bitset< Block, AllocatorOrContainer >::to_string( CharT zero, CharT one ) const
+{
+    std::basic_string< CharT, Traits, Allocator > s;
+    detail::dynamic_bitset_impl::to_string_helper( *this, s, false, zero, one );
+    return s;
+}
+
 template< typename Block, typename AllocatorOrContainer, typename StringT >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 to_string( const dynamic_bitset< Block, AllocatorOrContainer > & b, StringT & s )
 {
-    detail::dynamic_bitset_impl::to_string_helper( b, s, false );
+    typedef typename StringT::value_type CharT;
+
+    detail::dynamic_bitset_impl::to_string_helper( b, s, false, CharT( '0' ), CharT( '1' ) );
 }
 
 // Differently from to_string this function dumps out every bit of the
@@ -1384,7 +1396,9 @@ template< typename B, typename A, typename StringT >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 dump_to_string( const dynamic_bitset< B, A > & b, StringT & s )
 {
-    detail::dynamic_bitset_impl::to_string_helper( b, s, true /* = dump_all */ );
+    typedef typename StringT::value_type CharT;
+
+    detail::dynamic_bitset_impl::to_string_helper( b, s, true /* = dump_all */, CharT( '0' ), CharT( '1' ) );
 }
 
 template< typename Block, typename AllocatorOrContainer, typename BlockOutputIterator >
@@ -1701,13 +1715,9 @@ operator>=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynam
 
 template< typename B, typename A, typename StringT >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all )
+detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all, typename StringT::value_type zero, typename StringT::value_type one )
 {
     typedef typename StringT::traits_type              Tr;
-    typedef typename StringT::value_type               Ch;
-
-    const Ch                                           zero = Ch( '0' );
-    const Ch                                           one  = Ch( '1' );
 
     // Note that this function may access (when
     // dump_all == true) bits beyond position size() - 1

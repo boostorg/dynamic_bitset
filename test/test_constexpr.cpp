@@ -632,12 +632,10 @@ converts_to_and_from_basic_strings()
     const std::size_t n      = Bitset::bits_per_block;
     const std::string digits = "10110";
     const Bitset      b( "xx" + digits, 2 ); // skips the "xx"
-    std::string       s;
     std::string       dump;
-    boost::to_string( b, s );
     boost::dump_to_string( b, dump );
 
-    return b == Bitset( digits.size(), 0b10110ull ) && s == digits
+    return b == Bitset( digits.size(), 0b10110ull ) && b.to_string() == digits && b.to_string( '.', '*' ) == "*.**."
         && dump == std::string( n - digits.size(), '0' ) + digits;
 }
 

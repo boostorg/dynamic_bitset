@@ -10,6 +10,10 @@
 //
 // -----------------------------------------------------------
 
+// The tests of to_string() also test the deprecated namespace-scope
+// to_string().
+#define BOOST_ALLOW_DEPRECATED_SYMBOLS
+
 #include "bitset_test.hpp"
 #include "boost/dynamic_bitset/dynamic_bitset.hpp"
 #include <assert.h>
@@ -118,7 +122,7 @@ run_test_cases()
         Tests::template to_number< unsigned long long >( b );
     }
     //=====================================================================
-    // Test to_string(b, str)
+    // Test to_string()
     {
         bitset_type b;
         Tests::to_string( b );

@@ -91,7 +91,7 @@ template< typename DynamicBitset >
 class const_bit_iterator;
 
 template< typename B, typename A, typename StringT >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 void to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all );
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 void to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all, typename StringT::value_type zero, typename StringT::value_type one );
 
 } // dynamic_bitset_impl
 } // namespace detail
@@ -1686,6 +1686,31 @@ public:
     // -----------------------------------------------------------------------
     BOOST_DYNAMIC_BITSET_CONSTEXPR20 unsigned long    to_ulong() const;
 
+    //!     Returns a representation of `*this` as a string of `zero`
+    //!     and `one` characters, highest bit first.
+    //!
+    //!     Like `std::bitset::to_string()`. E.g.,
+    //!     `dynamic_bitset<>( 4, 13ul ).to_string()` is the
+    //!     `std::string` `"1101"`, and
+    //!     `dynamic_bitset<>( 4, 13ul ).to_string< wchar_t >( L'.', L'*' )`
+    //!     is the `std::wstring` `L"**.*"`. Unlike the stream inserter,
+    //!     this function doesn't depend on any locale.
+    //!
+    //!     \param zero The character which stands for a zero bit.
+    //!     \param one The character which stands for a one bit.
+    //!
+    //!     \return
+    //!     A string `s` of size `size()` such that, for all `i` in the
+    //!     range `[0, size())`, `s[ i ]` is `one` if
+    //!     `( *this )[ size() - 1 - i ]` is set, and `zero` otherwise.
+    //!
+    //!     \par Throws
+    //!     An allocation error if memory is exhausted (`std::bad_alloc`
+    //!     if `Allocator` is a `std::allocator`).
+    // -----------------------------------------------------------------------
+    template< typename CharT = char, typename Traits = std::char_traits< CharT >, typename Allocator = std::allocator< CharT > >
+    BOOST_DYNAMIC_BITSET_CONSTEXPR20 std::basic_string< CharT, Traits, Allocator > to_string( CharT zero = CharT( '0' ), CharT one = CharT( '1' ) ) const;
+
     //!     Returns the number of bits in this bitset.
     //!
     //!     \par Throws
@@ -1922,7 +1947,7 @@ public:
     friend std::basic_istream< CharT, Traits > & operator>>( std::basic_istream< CharT, Traits > & is, dynamic_bitset< B, A > & b );
 
     template< typename B, typename A, typename StringT >
-    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 void detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all );
+    friend BOOST_DYNAMIC_BITSET_CONSTEXPR20 void detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all, typename StringT::value_type zero, typename StringT::value_type one );
 
     //!     Computes a hash value for a `dynamic_bitset`.
     //!
@@ -2321,13 +2346,11 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 bool operator>=( const dynamic_bitset< Block, A
 //!     Informally, the output is the same as:
 //!
 //!     \code
-//!     std::basic_string<Char, Traits> s;
-//!     boost::to_string(b, s):
-//!     os << s;
+//!     os << b.to_string< CharT, Traits >();
 //!     \endcode
 //!
 //!     except that the stream inserter takes into accout the locale
-//!     imbued into `os`, which `boost::to_string()` can't do. More
+//!     imbued into `os`, which `to_string()` can't do. More
 //!     precisely: First, for each valid position `i` into the bitset b
 //!     let's put: `character_of( b[ i ) ] ) = b[ i ] ? os.widen( '1' )
 //!     : os.widen( '0' );`. Let also `s` be a `std::basic_string<Char,
@@ -2484,31 +2507,24 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 void swap( dynamic_bitset< Block, AllocatorOrCo
 //!     Replaces the contents of the string `s` with a representation
 //!     of `b`.
 //!
-//!     After the call, `s.size() == b.size()`, and character position
-//!     `i` in `s` corresponds to bit position `b.size() - 1 - i`: it is
-//!     `CharT( '1' )` if that bit is set, and `CharT( '0' )` otherwise,
-//!     where `CharT` is `StringT::value_type`. These digits don't
-//!     depend on any locale: to take a locale into account, insert `b`
-//!     into a stream imbued with it.
+//!     Deprecated: use the member `to_string()`, which returns the
+//!     string. After the call, `s == b.to_string< CharT, Traits,
+//!     Alloc >()`, where `CharT`, `Traits` and `Alloc` are the
+//!     template arguments of the `std::basic_string` `StringT`.
+//!
+//!     Note that, in a member function of a class derived from
+//!     `dynamic_bitset`, an unqualified call to this function finds
+//!     the member `to_string()` instead: qualify it, as in
+//!     `boost::to_string( b, s )`.
 //!
 //!     \par Throws
 //!     An allocation error from `s` if memory is exhausted.
-//!
-//!     \par Rationale
-//!     This function is not a member function taking zero arguments and
-//!     returning a string for a couple of historical reasons. First, this
-//!     version could be slightly more efficient because the string is not
-//!     copied. Second, as a member function, to allow for flexibility with
-//!     regards to the template parameters of `basic_string`, the member
-//!     function would require explicit template parameters. Few C++ programmers
-//!     were familiar with explicit template parameters, and some C++ compilers
-//!     did not handle them properly.
 //!
 //!     \param b The bitset of which to copy the representation.
 //!     \param s The string in which to copy the representation.
 // -----------------------------------------------------------------------
 template< typename Block, typename AllocatorOrContainer, typename StringT >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
+BOOST_DEPRECATED( "use the member to_string()" ) BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
 to_string( const dynamic_bitset< Block, AllocatorOrContainer > & b, StringT & s );
 
 //!     Writes the bits of the bitset into the iterator `result`, a

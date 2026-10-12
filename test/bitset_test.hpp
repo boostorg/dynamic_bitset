@@ -1542,16 +1542,26 @@ struct bitset_test
     {
         typedef typename String::value_type Ch;
 
-        String                              str;
-        boost::to_string( b, str );
+        const String                        str = b.template to_string< Ch >();
         BOOST_TEST( str.size() == b.size() );
         for ( std::size_t i = 0; i < b.size(); ++i )
             BOOST_TEST( str[ b.size() - 1 - i ] == Ch( b.test( i ) ? '1' : '0' ) );
+
+        const String other_digits = b.template to_string< Ch >( Ch( 'x' ), Ch( 'y' ) );
+        BOOST_TEST( other_digits.size() == b.size() );
+        for ( std::size_t i = 0; i < b.size(); ++i )
+            BOOST_TEST( other_digits[ b.size() - 1 - i ] == Ch( b.test( i ) ? 'y' : 'x' ) );
+
+        // The deprecated namespace-scope to_string().
+        String s;
+        boost::to_string( b, s );
+        BOOST_TEST( s == str );
     }
 
     static void
     to_string( const Bitset & b )
     {
+        static_assert( std::is_same< decltype( b.to_string() ), std::string >::value, "" );
         to_string_of_type< std::string >( b );
         to_string_of_type< std::wstring >( b );
         to_string_of_type< std::u16string >( b );
@@ -2134,8 +2144,7 @@ struct bitset_test
 
             size_type         total_len = w <= 0 || static_cast< size_type >( w ) < b.size() ? b.size() : static_cast< size_type >( w );
             const string_type padding( total_len - b.size(), fill_char );
-            string_type       expected;
-            boost::to_string( b, expected );
+            string_type       expected = b.template to_string< char_type >();
             if ( ( s.flags() & std::ios::adjustfield ) != std::ios::left )
                 expected = padding + expected;
             else

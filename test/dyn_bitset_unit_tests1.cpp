@@ -577,20 +577,20 @@ struct true_false_traits : std::char_traits< char >
 template< typename T >
 using is_constructible_from_pointer_to = std::is_constructible< boost::dynamic_bitset<>, const T * >;
 
+// Clang can't evaluate the move of a short std::string of libstdc++ 12
+// in constant expressions, which a call to to_string() involves, so we
+// skip this test with Clang and libstdc++ 12.
 #if defined( __cpp_lib_constexpr_string ) && __cpp_lib_constexpr_string >= 201907L \
-    && defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L
+    && defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L \
+    && ! ( defined( __clang__ ) && defined( _GLIBCXX_RELEASE ) && _GLIBCXX_RELEASE < 13 )
 
 // The string constructors and to_string() don't depend on any locale,
 // so they can be used in constant expressions.
 constexpr bool
 converts_in_constant_expressions()
 {
-    std::string    s;
-    std::u16string u;
-    boost::to_string( boost::dynamic_bitset<>( std::string( "1101" ) ), s );
-    boost::to_string( boost::dynamic_bitset<>( u"0110" ), u );
-
-    return s == "1101" && u == u"0110"
+    return boost::dynamic_bitset<>( std::string( "1101" ) ).to_string() == "1101"
+        && boost::dynamic_bitset<>( u"0110" ).to_string< char16_t >() == u"0110"
         && boost::dynamic_bitset<>( std::string_view( "0111" ) ).count() == 3;
 }
 
@@ -806,7 +806,8 @@ run_test_cases()
         BOOST_TEST( bitset_type( digits, 4 ) == bitset_type( 4, 11ul ) );
     }
 #if defined( __cpp_lib_constexpr_string ) && __cpp_lib_constexpr_string >= 201907L \
-    && defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L
+    && defined( __cpp_lib_constexpr_vector ) && __cpp_lib_constexpr_vector >= 201907L \
+    && ! ( defined( __clang__ ) && defined( _GLIBCXX_RELEASE ) && _GLIBCXX_RELEASE < 13 )
     static_assert( converts_in_constant_expressions(), "" );
 #endif
     //=====================================================================
