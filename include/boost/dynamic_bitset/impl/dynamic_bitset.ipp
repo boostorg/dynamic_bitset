@@ -456,11 +456,11 @@ operator-( const const_bit_iterator< DynamicBitset > & it, typename const_bit_it
 } // dynamic_bitset_impl
 } // namespace detail
 
-template< typename BlockIterator, typename B, typename A >
+template< typename BlockIterator, typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< B, A > & result )
+from_block_range( BlockIterator first, BlockIterator last, dynamic_bitset< Block, AllocatorOrContainer > & result )
 {
-    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockIterator >::value_type, B >::value, "the value_type of a range of blocks must be implicitly convertible to Block, and can't be bool or a floating-point type" );
+    static_assert( detail::dynamic_bitset_impl::is_block_value_type< typename std::iterator_traits< BlockIterator >::value_type, Block >::value, "the value_type of a range of blocks must be implicitly convertible to Block, and can't be bool or a floating-point type" );
 
     // PRE: distance(first, last) <= numblocks()
     BOOST_TRY
@@ -1072,9 +1072,9 @@ BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
 // NOTE:
 //  See the comments to operator <<=.
 //
-template< typename B, typename A >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< B, A > &
-                                 dynamic_bitset< B, A >::operator>>=( size_type n ) noexcept
+template< typename Block, typename AllocatorOrContainer >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 dynamic_bitset< Block, AllocatorOrContainer > &
+                                 dynamic_bitset< Block, AllocatorOrContainer >::operator>>=( size_type n ) noexcept
 {
     if ( n >= m_num_bits ) {
         return reset();
@@ -1438,9 +1438,9 @@ to_string( const dynamic_bitset< Block, AllocatorOrContainer > & b, StringT & s 
 
 // Differently from to_string this function dumps out every bit of the
 // internal representation (may be useful for debugging purposes)
-template< typename B, typename A, typename StringT >
+template< typename Block, typename AllocatorOrContainer, typename StringT >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-dump_to_string( const dynamic_bitset< B, A > & b, StringT & s )
+dump_to_string( const dynamic_bitset< Block, AllocatorOrContainer > & b, StringT & s )
 {
     typedef typename StringT::value_type CharT;
 
@@ -1759,18 +1759,18 @@ operator>=( const dynamic_bitset< Block, AllocatorOrContainer > & a, const dynam
     return ! ( a < b );
 }
 
-template< typename B, typename A, typename StringT >
+template< typename Block, typename AllocatorOrContainer, typename StringT >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 void
-detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all, typename StringT::value_type zero, typename StringT::value_type one )
+detail::dynamic_bitset_impl::to_string_helper( const dynamic_bitset< Block, AllocatorOrContainer > & b, StringT & s, bool dump_all, typename StringT::value_type zero, typename StringT::value_type one )
 {
-    typedef typename StringT::traits_type              Tr;
+    typedef typename StringT::traits_type                                     Tr;
 
     // Note that this function may access (when
     // dump_all == true) bits beyond position size() - 1
 
-    typedef typename dynamic_bitset< B, A >::size_type size_type;
+    typedef typename dynamic_bitset< Block, AllocatorOrContainer >::size_type size_type;
 
-    const size_type                                    len = dump_all ? dynamic_bitset< B, A >::bits_per_block * b.num_blocks() : b.size();
+    const size_type                                                           len = dump_all ? dynamic_bitset< Block, AllocatorOrContainer >::bits_per_block * b.num_blocks() : b.size();
     s.resize( len );
 
     for ( size_type i = 0; i < len; ++i ) {
@@ -1793,9 +1793,9 @@ hash_value( const dynamic_bitset< Block, AllocatorOrContainer > & a ) noexcept
 //-----------------------------------------------------------------------------
 // stream operations
 
-template< typename Ch, typename Tr, typename Block, typename Alloc >
+template< typename Ch, typename Tr, typename Block, typename AllocatorOrContainer >
 std::basic_ostream< Ch, Tr > &
-operator<<( std::basic_ostream< Ch, Tr > & os, const dynamic_bitset< Block, Alloc > & b )
+operator<<( std::basic_ostream< Ch, Tr > & os, const dynamic_bitset< Block, AllocatorOrContainer > & b )
 {
     using namespace std;
 
@@ -1809,16 +1809,16 @@ operator<<( std::basic_ostream< Ch, Tr > & os, const dynamic_bitset< Block, Allo
 
         BOOST_TRY
         {
-            typedef typename dynamic_bitset< Block, Alloc >::size_type bitset_size_type;
-            typedef basic_streambuf< Ch, Tr >                          buffer_type;
+            typedef typename dynamic_bitset< Block, AllocatorOrContainer >::size_type bitset_size_type;
+            typedef basic_streambuf< Ch, Tr >                                         buffer_type;
 
-            buffer_type *                                              buf         = os.rdbuf();
+            buffer_type *                                                             buf         = os.rdbuf();
             // careful: os.width() is signed (and can be < 0)
-            const bitset_size_type                                     width       = ( os.width() <= 0 ) ? 0 : static_cast< bitset_size_type >( os.width() );
-            streamsize                                                 npad        = ( width <= b.size() ) ? 0 : width - b.size();
+            const bitset_size_type                                                    width       = ( os.width() <= 0 ) ? 0 : static_cast< bitset_size_type >( os.width() );
+            streamsize                                                                npad        = ( width <= b.size() ) ? 0 : width - b.size();
 
-            const Ch                                                   fill_char   = os.fill();
-            const ios_base::fmtflags                                   adjustfield = os.flags() & ios_base::adjustfield;
+            const Ch                                                                  fill_char   = os.fill();
+            const ios_base::fmtflags                                                  adjustfield = os.flags() & ios_base::adjustfield;
 
             // if needed fill at left; pad is decreased along the way
             if ( adjustfield != ios_base::left ) {
@@ -1880,21 +1880,21 @@ operator<<( std::basic_ostream< Ch, Tr > & os, const dynamic_bitset< Block, Allo
     return os;
 }
 
-template< typename Ch, typename Tr, typename Block, typename Alloc >
+template< typename Ch, typename Tr, typename Block, typename AllocatorOrContainer >
 std::basic_istream< Ch, Tr > &
-operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, Alloc > & b )
+operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, AllocatorOrContainer > & b )
 {
     using namespace std;
 
-    typedef dynamic_bitset< Block, Alloc >   bitset_type;
-    typedef typename bitset_type::size_type  size_type;
+    typedef dynamic_bitset< Block, AllocatorOrContainer > bitset_type;
+    typedef typename bitset_type::size_type               size_type;
 
-    const streamsize                         w                          = is.width();
-    const size_type                          limit                      = 0 < w && static_cast< size_type >( w ) < b.max_size() ? static_cast< size_type >( w ) : b.max_size();
+    const streamsize                                      w                          = is.width();
+    const size_type                                       limit                      = 0 < w && static_cast< size_type >( w ) < b.max_size() ? static_cast< size_type >( w ) : b.max_size();
 
-    bool                                     exceptions_are_from_vector = false;
-    ios_base::iostate                        err                        = ios_base::goodbit;
-    typename basic_istream< Ch, Tr >::sentry cerberos( is ); // skips whitespace
+    bool                                                  exceptions_are_from_vector = false;
+    ios_base::iostate                                     err                        = ios_base::goodbit;
+    typename basic_istream< Ch, Tr >::sentry              cerberos( is ); // skips whitespace
     if ( cerberos ) {
         // in accordance with the resolution of library issue 303
         const Ch zero = is.widen( '0' );

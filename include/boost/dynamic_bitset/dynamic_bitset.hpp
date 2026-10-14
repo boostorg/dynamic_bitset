@@ -90,8 +90,8 @@ class bit_iterator;
 template< typename DynamicBitset >
 class const_bit_iterator;
 
-template< typename B, typename A, typename StringT >
-BOOST_DYNAMIC_BITSET_CONSTEXPR20 void to_string_helper( const dynamic_bitset< B, A > & b, StringT & s, bool dump_all, typename StringT::value_type zero, typename StringT::value_type one );
+template< typename Block, typename AllocatorOrContainer, typename StringT >
+BOOST_DYNAMIC_BITSET_CONSTEXPR20 void to_string_helper( const dynamic_bitset< Block, AllocatorOrContainer > & b, StringT & s, bool dump_all, typename StringT::value_type zero, typename StringT::value_type one );
 
 } // dynamic_bitset_impl
 } // namespace detail
