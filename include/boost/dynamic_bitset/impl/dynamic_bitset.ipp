@@ -1474,8 +1474,8 @@ template< typename Block, typename AllocatorOrContainer >
 BOOST_DYNAMIC_BITSET_CONSTEXPR20 typename dynamic_bitset< Block, AllocatorOrContainer >::size_type
 dynamic_bitset< Block, AllocatorOrContainer >::max_size() const noexcept
 {
-    // The semantics of vector<>::max_size() aren't very clear (see lib
-    // issue 197).
+    // The semantics of the max_size() of containers aren't very clear
+    // (see lib issue 197).
     //
     // Because of that, I was tempted to not provide this function
     // at all, but the user could need it if they provide their own
@@ -1889,11 +1889,11 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, AllocatorO
     typedef dynamic_bitset< Block, AllocatorOrContainer > bitset_type;
     typedef typename bitset_type::size_type               size_type;
 
-    const streamsize                                      w                          = is.width();
-    const size_type                                       limit                      = 0 < w && static_cast< size_type >( w ) < b.max_size() ? static_cast< size_type >( w ) : b.max_size();
+    const streamsize                                      w                             = is.width();
+    const size_type                                       limit                         = 0 < w && static_cast< size_type >( w ) < b.max_size() ? static_cast< size_type >( w ) : b.max_size();
 
-    bool                                                  exceptions_are_from_vector = false;
-    ios_base::iostate                                     err                        = ios_base::goodbit;
+    bool                                                  exceptions_are_from_container = false;
+    ios_base::iostate                                     err                           = ios_base::goodbit;
     typename basic_istream< Ch, Tr >::sentry              cerberos( is ); // skips whitespace
     if ( cerberos ) {
         // in accordance with the resolution of library issue 303
@@ -1918,21 +1918,21 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, AllocatorO
                         break; // non digit character
                     }
 
-                    exceptions_are_from_vector = true;
+                    exceptions_are_from_container = true;
                     appender.do_append( is_one );
-                    exceptions_are_from_vector = false;
+                    exceptions_are_from_container = false;
                 }
 
             } // for
         }
         BOOST_CATCH( ... )
         {
-            // catches from stream buf, or from vector:
+            // catches from stream buf, or from the underlying container:
             //
             // bits_stored bits have been extracted and stored, and
             // either no further character is extractable or we can't
-            // append to the underlying vector (out of memory)
-            if ( exceptions_are_from_vector ) {
+            // append to the underlying container (out of memory)
+            if ( exceptions_are_from_container ) {
                 BOOST_RETHROW
             }
 
