@@ -1929,7 +1929,7 @@ operator>>( std::basic_istream< Ch, Tr > & is, dynamic_bitset< Block, AllocatorO
         {
             // catches from stream buf, or from the underlying container:
             //
-            // bits_stored bits have been extracted and stored, and
+            // b.size() bits have been extracted and stored, and
             // either no further character is extractable or we can't
             // append to the underlying container (out of memory)
             if ( exceptions_are_from_container ) {
